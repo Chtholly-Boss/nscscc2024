@@ -8,8 +8,7 @@ import pipeline.regfile.RegfileUtils.{wInit => RegWriteInit}
 
 class WBackStage extends Module {
   val io = IO(new WBackIo)
-  val outReg = RegInit(new WBackOut)
-  outReg := init
+  val outReg: WBackOut = RegInit(init)
   io.out := outReg
 
   object State extends ChiselEnum {
@@ -22,14 +21,17 @@ class WBackStage extends Module {
     is (IDLE) {
       when (io.in.req) {
         stat := WRITE
-        outReg := io.in.bits
+        outReg.bits := io.in.bits
+        outReg.ack := true.B
+
       } .otherwise {
-        outReg := RegWriteInit
+        outReg.bits := RegWriteInit
+        outReg.ack := false.B
       }
     }
     is (WRITE) {
       stat := IDLE
-      outReg := RegWriteInit
+      outReg:= init
     }
   }
 }

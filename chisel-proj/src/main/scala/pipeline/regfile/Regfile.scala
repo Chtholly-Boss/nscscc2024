@@ -32,4 +32,7 @@ class Regfile extends Module {
       io.rChannel_2.out := regs(io.rChannel_2.in.addr)
     }
   }
+  when (io.wChannel.en) {
+    regs(io.wChannel.addr) := io.wChannel.data
+  }
 }

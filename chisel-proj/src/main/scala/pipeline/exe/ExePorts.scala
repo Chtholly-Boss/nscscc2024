@@ -5,7 +5,7 @@ import pipeline.regfile.RegfilePorts.WriteCtrl
 object ExePorts {
   class ExeOp extends Bundle {
     val opType = UInt(typeWidth)
-    val op = UInt(opWidth)
+    val opFunc = UInt(opWidth)
   }
   class ExeReq extends Bundle {
     val req = Bool()
@@ -21,5 +21,17 @@ object ExePorts {
   class ExeIo extends Bundle {
     val in = Input(new ExeReq)
     val out = Output(new ExeOut)
+  }
+  class AluIo extends Bundle {
+    val in = Input(new Bundle {
+      val op = new ExeOp
+      val operand = new Bundle {
+        val left = UInt(dataWidth)
+        val right = UInt(dataWidth)
+      }
+    })
+    val out = Output(new Bundle() {
+      val res = UInt(dataWidth)
+    })
   }
 }

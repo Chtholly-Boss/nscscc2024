@@ -10,6 +10,6 @@ object ExeUtils {
   init.req := false.B
 
   val opInit = Wire(new ExeOp)
-  opInit.op := 0.U
+  opInit.opFunc := 0.U
   opInit.opType := 0.U
 }

@@ -27,6 +27,13 @@ object DecodePorts {
     val bits = new DecodeRes
     val req = Bool()
   }
+  class DecoderIo extends Bundle {
+    val in = Input(new DecodeSrcInfo)
+    val out = Output(new Bundle {
+      val isMatched = Bool()
+      val bits = new DecodeRes
+    })
+  }
   class DecodeIo extends Bundle {
     val in = Input(new DecodeReq)
     val out = Output(new DecodeOut)

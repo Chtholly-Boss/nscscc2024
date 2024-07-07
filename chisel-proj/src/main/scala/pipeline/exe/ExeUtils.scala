@@ -9,7 +9,11 @@ object ExeUtils {
   init.bits := wInit
   init.req := false.B
 
-  val opInit = Wire(new ExeOp)
-  opInit.opFunc := 0.U
-  opInit.opType := 0.U
+  def opInit:ExeOp = {
+    val res = Wire(new ExeOp)
+    res.opFunc := 0.U
+    res.opType := 0.U
+    res
+  }
+
 }

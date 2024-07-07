@@ -3,13 +3,20 @@ import chisel3._
 import RegfilePorts._
 
 object RegfileUtils {
-  val wInit = Wire(new WriteCtrl)
-  wInit.en := false.B
-  wInit.addr := 0.U
-  wInit.data := 0.U
-  val rInit = Wire(new ReadCtrl)
-  rInit.en := false.B
-  rInit.addr := 0.U
+  def wInit:WriteCtrl = {
+    val res = Wire(new WriteCtrl)
+    res.en := false.B
+    res.addr := 0.U
+    res.data := 0.U
+    res
+  }
+  def rInit:ReadCtrl = {
+    val res = Wire(new ReadCtrl)
+    res.en := false.B
+    res.addr := 0.U
+    res
+  }
+
 
   def rDataFAddr(addr:UInt):ReadCtrl = {
     val rCtrl = Wire(new ReadCtrl)

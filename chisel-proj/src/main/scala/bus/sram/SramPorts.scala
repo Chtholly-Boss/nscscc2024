@@ -1,7 +1,7 @@
-package sram
+package bus.sram
 
 import chisel3._
-import sram.SramParam._
+import bus.sram.SramParam._
 
 object SramPorts {
   class SramRequest extends Bundle {

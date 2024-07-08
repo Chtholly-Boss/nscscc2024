@@ -1,4 +1,4 @@
-package sram
+package bus.sram
 
 import chisel3._
 

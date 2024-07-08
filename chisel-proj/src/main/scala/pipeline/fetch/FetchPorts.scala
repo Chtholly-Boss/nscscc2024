@@ -21,6 +21,9 @@ object FetchPorts {
     val out = Output(new FetchAsideOut)
   }
   class FetchIo extends Bundle {
+    val in = Input(new Bundle() {
+      val ack = Bool()
+    })
     val out = Output(new FetchOut)
     val aside = new FetchAsideIo
   }

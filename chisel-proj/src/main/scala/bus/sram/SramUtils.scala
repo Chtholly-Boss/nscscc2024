@@ -1,17 +1,20 @@
-package sram
+package bus.sram
 import chisel3._
-import SramParam._
-import SramPorts._
+import bus.sram.SramParam._
+import bus.sram.SramPorts._
 object SramUtils {
-  val sramInit = Wire(new SramRequest)
-  sramInit.ce := highLevel
-  sramInit.oe := highLevel
-  sramInit.we := highLevel
-  sramInit.byteSelN := "b1111".U
-  sramInit.addr := 0.U
-  sramInit.wData := 0.U
+  def sramInit:SramRequest = {
+    val res = Wire(new SramRequest)
+    res.ce := highLevel
+    res.oe := highLevel
+    res.we := highLevel
+    res.byteSelN := "b1111".U
+    res.addr := 0.U
+    res.wData := 0.U
+    res
+  }
 
-  def sramReadWord(addr: UInt) : SramRequest = {
+  def sramReadWord(addr: Bits) : SramRequest = {
     val sramReadWord = Wire(new SramRequest)
     sramReadWord.ce := lowLevel
     sramReadWord.oe := lowLevel
@@ -22,7 +25,7 @@ object SramUtils {
     sramReadWord
   }
 
-  def sramWrite(addr:UInt,data:UInt) : SramRequest = {
+  def sramWrite(addr:Bits,data:Bits) : SramRequest = {
     val sramWriteWord = Wire(new SramRequest)
     sramWriteWord.ce := lowLevel
     sramWriteWord.oe := lowLevel

@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.util._
 import WBackPorts._
 import WBackUtils._
-import pipeline.regfile.RegfileUtils.{wInit => RegWriteInit}
+import pipeline.regfile.RegfileUtils.{initWctrl => RegWriteInit}
 
 class WBackStage extends Module {
   val io = IO(new WBackIo)

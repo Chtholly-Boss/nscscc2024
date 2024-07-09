@@ -3,14 +3,14 @@ import chisel3._
 import RegfilePorts._
 
 object RegfileUtils {
-  def wInit:WriteCtrl = {
+  def initWctrl:WriteCtrl = {
     val res = Wire(new WriteCtrl)
     res.en := false.B
     res.addr := 0.U
     res.data := 0.U
     res
   }
-  def rInit:ReadCtrl = {
+  def initRctrl:ReadCtrl = {
     val res = Wire(new ReadCtrl)
     res.en := false.B
     res.addr := 0.U

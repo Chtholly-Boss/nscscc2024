@@ -12,7 +12,7 @@ class Du extends BaseDecoder {
         Module(new Decoder_Special)
       )
   decoders.foreach(_.io.in := io.in)
-  val dMux = Module(new MultiMux1(decoders.length,new DecodeRes,0.U.asTypeOf(new DecodeRes)))
+  val dMux = Module(new MultiMux1(decoders.length,new DecoderRes,0.U.asTypeOf(new DecoderRes)))
   dMux.io.inputs.zip(decoders).foreach {
     case (dst,src) =>
       dst.valid := src.io.out.isMatched

@@ -2,36 +2,47 @@ package pipeline.exe
 import chisel3._
 import ExeParams._
 import pipeline.regfile.RegfilePorts.WriteCtrl
+import pipeline.decode.DecodePorts.DecodeOut
+
 object ExePorts {
+  class Operands extends Bundle {
+    val left = UInt(dataWidth)
+    val right = UInt(dataWidth)
+  }
   class ExeOp extends Bundle {
     val opType = UInt(typeWidth)
     val opFunc = UInt(opWidth)
   }
-  class ExeReq extends Bundle {
-    val req = Bool()
-    val exeOp = new ExeOp
-    val opLeft = UInt()
-    val opRight = UInt()
-  }
-  class ExeOut extends Bundle {
-    val ack = Bool()
-    val req = Bool()
-    val bits = new WriteCtrl
-  }
-  class ExeIo extends Bundle {
-    val in = Input(new ExeReq)
-    val out = Output(new ExeOut)
-  }
+  // Alu Ports: to calculate a result
   class AluIo extends Bundle {
     val in = Input(new Bundle {
       val op = new ExeOp
-      val operand = new Bundle {
-        val left = UInt(dataWidth)
-        val right = UInt(dataWidth)
-      }
+      val operand = new Operands
     })
     val out = Output(new Bundle() {
       val res = UInt(dataWidth)
     })
   }
+  // Exe IO: to cooperate in the pipeline
+  class ExeSrcInfo extends Bundle {
+    val exeOp = new ExeOp
+    val wCtrl = new WriteCtrl
+    val operands = new Operands
+  }
+
+  class ExeOut extends Bundle {
+    val req = Bool()
+    val bits = new WriteCtrl
+  }
+  class ExeIo extends Bundle {
+    val in = Input(new Bundle() {
+      val decode = new DecodeOut
+      val ack = Bool()
+    })
+    val out = Output(new Bundle {
+      val ack = Bool()
+      val exe = new ExeOut
+    })
+  }
+
 }

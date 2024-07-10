@@ -6,17 +6,20 @@ import ExeUtils._
 
 class ExeStage extends Module {
   val io = IO(new ExeIo)
-  val outReg: ExeOut = RegInit(initExeOut)
-  io.out := outReg
+  io.out.ack := false.B
+  io.out.exe := initExeOut
 
+  val outReg: ExeOut = RegInit(initExeOut)
+  io.out.exe := outReg
+  val srcInfo = RegInit(initExeSrcInfo)
   val alu = Module(new Alu)
-  val opLeft = RegInit(0.U(32.W))
-  val opRight = RegInit(0.U(32.W))
-  val exeOp = RegInit(initOp)
-  // Ports may need to be revised
-  alu.io.in.op := exeOp
-  alu.io.in.operand.left := opLeft
-  alu.io.in.operand.right := opRight
+  alu.io.in.op := srcInfo.exeOp
+  alu.io.in.operand.left := srcInfo.operands.regData_1
+  when (srcInfo.operands.hasImm) {
+    alu.io.in.operand.right := srcInfo.operands.imm
+  } .otherwise {
+    alu.io.in.operand.right := srcInfo.operands.regData_2
+  }
 
   object State extends ChiselEnum {
     val IDLE,ALUEXE,DONE = Value
@@ -27,25 +30,24 @@ class ExeStage extends Module {
     is (IDLE) {
       when (io.in.decode.req) {
         stat := ALUEXE
-        exeOp := io.in.decode.bits.exeOp
-
-        //outReg := true.B
-        outReg.bits.en := io.in.decode.bits.wCtrl.en
-        outReg.bits.addr := io.in.decode.bits.wCtrl.addr
+        // Cache the inputs
+        srcInfo := io.in.decode.bits
+        io.out.ack := true.B
       } .otherwise {
-        //outReg := init
+        io.out.ack := false.B
       }
     }
     is (ALUEXE) {
       stat := DONE
       outReg.req := true.B
+      outReg.bits.en := srcInfo.wCtrl.en
+      outReg.bits.addr := srcInfo.wCtrl.addr
       outReg.bits.data := alu.io.out.res
-      //outReg.ack := false.B
     }
     is (DONE) {
       when (io.in.ack) {
         stat := IDLE
-        //outReg := init
+        outReg := initExeOut
       }
     }
   }

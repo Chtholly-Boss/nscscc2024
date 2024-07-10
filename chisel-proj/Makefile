@@ -9,7 +9,7 @@ OBJDUMP=$(CROSS_COMPILE)objdump
 # Directory Defining
 TOOLKITS=./toolkit
 FUNC=./func
-TEST_HOME=$(FUNC)/bintests
+TEST_HOME=$(FUNC)/bintests/
 ASM_HOME=$(FUNC)/asm
 VIVADO=../vivado-proj
 VERILOG_SRC=$(VIVADO)/thinpad_top.srcs/sources_1/new
@@ -19,7 +19,7 @@ VERILOG_SRC=$(VIVADO)/thinpad_top.srcs/sources_1/new
 TEST_OBJECTS = simpleTest.txt
 test: $(TEST_OBJECTS)
 	cp *.txt $(TEST_HOME)
-	rm *.o *.om *.bin *.data *.txt
+	rm -f *.o *.om *.bin *.data *.txt
 %.o:$(ASM_HOME)/%.S
 	@echo "Assembling..."
 	$(AS) $< -o $@
@@ -43,4 +43,4 @@ verilog:
 	@echo "Changing to the Src Directory"
 	@cd $(VERILOG_SRC)
 clean:
-	rm $(TEST_HOME)/*
+	rm -rf $(TEST_HOME)/*

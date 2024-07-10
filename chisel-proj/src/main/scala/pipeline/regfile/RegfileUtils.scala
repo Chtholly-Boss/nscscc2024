@@ -17,7 +17,6 @@ object RegfileUtils {
     res
   }
 
-
   def rDataFAddr(addr:UInt):ReadCtrl = {
     val rCtrl = Wire(new ReadCtrl)
     rCtrl.en := true.B

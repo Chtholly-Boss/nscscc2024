@@ -6,6 +6,8 @@ import RegfileParam._
 
 class Regfile extends Module {
   val io = IO(new RegfileIo)
+  io.rChannel_1.out := 0.U
+  io.rChannel_2.out := 0.U
   val regs = RegInit(VecInit(Seq.fill(32)(0.U(dataWidth))))
   // rChannel 1
   when (io.rChannel_1.in.en) {

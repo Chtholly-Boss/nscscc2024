@@ -6,7 +6,7 @@ import ExeUtils._
 
 class ExeStage extends Module {
   val io = IO(new ExeIo)
-  val outReg: ExeOut = RegInit(init)
+  val outReg: ExeOut = RegInit(initExeOut)
   io.out := outReg
 
   val alu = Module(new Alu)
@@ -29,23 +29,23 @@ class ExeStage extends Module {
         stat := ALUEXE
         exeOp := io.in.decode.bits.exeOp
 
-        outReg.ack := true.B
+        //outReg := true.B
         outReg.bits.en := io.in.decode.bits.wCtrl.en
         outReg.bits.addr := io.in.decode.bits.wCtrl.addr
       } .otherwise {
-        outReg := init
+        //outReg := init
       }
     }
     is (ALUEXE) {
       stat := DONE
       outReg.req := true.B
       outReg.bits.data := alu.io.out.res
-      outReg.ack := false.B
+      //outReg.ack := false.B
     }
     is (DONE) {
       when (io.in.ack) {
         stat := IDLE
-        outReg := init
+        //outReg := init
       }
     }
   }

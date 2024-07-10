@@ -27,7 +27,12 @@ object ExePorts {
   class ExeSrcInfo extends Bundle {
     val exeOp = new ExeOp
     val wCtrl = new WriteCtrl
-    val operands = new Operands
+    val operands = new Bundle() {
+      val hasImm = Bool()
+      val imm = UInt(dataWidth)
+      val regData_1 = UInt(dataWidth)
+      val regData_2 = UInt(dataWidth)
+    }
   }
 
   class ExeOut extends Bundle {

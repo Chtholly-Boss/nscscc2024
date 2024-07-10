@@ -19,7 +19,10 @@ object ExeUtils {
   def initExeSrcInfo:ExeSrcInfo = {
     val res = Wire(new ExeSrcInfo)
     res.exeOp := initOp
-    res.operands := initOperands
+    res.operands.imm := 0.U
+    res.operands.hasImm := false.B
+    res.operands.regData_1 := 0.U
+    res.operands.regData_2 := 0.U
     res.wCtrl := initWctrl
     res
   }

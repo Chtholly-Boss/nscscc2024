@@ -3,15 +3,15 @@ import chisel3._
 import bus.sram.SramParam._
 import bus.sram.SramPorts._
 object SramUtils {
-  def sramInit:SramRequest = {
-    val res = Wire(new SramRequest)
-    res.ce := highLevel
-    res.oe := highLevel
-    res.we := highLevel
-    res.byteSelN := "b1111".U
-    res.addr := 0.U
-    res.wData := 0.U
-    res
+  def initSramReq:SramRequest = {
+    val init = Wire(new SramRequest)
+    init.ce := highLevel
+    init.oe := highLevel
+    init.we := highLevel
+    init.byteSelN := "b1111".U
+    init.addr := 0.U
+    init.wData := 0.U
+    init
   }
 
   def sramReadWord(addr: Bits) : SramRequest = {

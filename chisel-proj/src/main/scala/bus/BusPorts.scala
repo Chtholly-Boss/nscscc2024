@@ -3,6 +3,7 @@ package bus
 import chisel3._
 import bus.sram.SramPorts._
 import pipeline.fetch.FetchPorts.{FetchAsideIn,FetchAsideOut}
+import pipeline.exe.ExePorts.{ExeAsideIn,ExeAsideOut}
 object BusPorts {
   class SramChannel extends Bundle {
     val rspns = Input(new SramResponse)
@@ -15,16 +16,7 @@ object BusPorts {
   }
 
   class DataChannel extends Bundle {
-    val req = Input(new Bundle() {
-      val rReq = Bool()
-      val wReq = Bool()
-      val addr = UInt(32.W)
-      val wData = UInt(32.W)
-    })
-    val rspns = Output(new Bundle() {
-      val data = UInt(32.W)
-      val rdy = Bool()
-      val done = Bool()
-    })
+    val req = Input(new ExeAsideOut)
+    val rspns = Output(new ExeAsideIn)
   }
 }

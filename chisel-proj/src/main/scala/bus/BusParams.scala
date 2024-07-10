@@ -3,6 +3,8 @@ import chisel3._
 object BusParams {
   object SpaceMap {
     // Address Map of Virtual Address Space
+    val baseRamHighBits = "b1000_0000_00".U
+    val extRamHighBits = "b1000_0000_01".U
     val baseRamB = "h8000_0000".U
     val baseRamE = "h803F_FFFF".U
     val extRamB = "h8040_0000".U

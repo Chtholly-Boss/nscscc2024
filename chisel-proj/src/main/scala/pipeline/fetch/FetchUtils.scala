@@ -2,23 +2,30 @@ package pipeline.fetch
 import chisel3._
 import FetchPorts._
 object FetchUtils {
-  def init:FetchOut = {
-    val res = Wire(new FetchOut)
-    res.req := false.B
-    res.bits.pc := 0.U
-    res.bits.inst := 0.U
-    res
+  def initFetchOut:FetchOut = {
+    val init = Wire(new FetchOut)
+    init.req := false.B
+    init.bits.pc := 0.U
+    init.bits.inst := 0.U
+    init
   }
-  def initAside:FetchAsideOut = {
-    val res = Wire(new FetchAsideOut)
-    res.req := false.B
-    res.pc := 0.U
-    res
+  def initFetchAsideIn:FetchAsideIn = {
+    val init = Wire(new FetchAsideIn)
+    init.inst := 0.U
+    init.rrdy := false.B
+    init.rvalid := false.B
+    init
+  }
+  def initFetchAsideOut:FetchAsideOut = {
+    val init = Wire(new FetchAsideOut)
+    init.req := false.B
+    init.pc := 0.U
+    init
   }
   def fetch(addr:UInt):FetchAsideOut = {
-    val res = Wire(new FetchAsideOut)
-    res.req := true.B
-    res.pc := addr
-    res
+    val init = Wire(new FetchAsideOut)
+    init.req := true.B
+    init.pc := addr
+    init
   }
 }

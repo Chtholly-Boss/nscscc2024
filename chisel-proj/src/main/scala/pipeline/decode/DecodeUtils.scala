@@ -7,37 +7,37 @@ import DecodePorts._
 
 object DecodeUtils {
   def initDecoderRes:DecoderRes = {
-    val res = Wire(new DecoderRes)
-    res.reg_1 := initRctrl
-    res.reg_2 := initRctrl
-    res.wCtrl := initWctrl
-    res.hasImm := 0.U
-    res.imm := 0.U
-    res.exeOp := initOp
-    res
+    val init = Wire(new DecoderRes)
+    init.reg_1 := initRctrl
+    init.reg_2 := initRctrl
+    init.wCtrl := initWctrl
+    init.hasImm := 0.U
+    init.imm := 0.U
+    init.exeOp := initOp
+    init
   }
   def initDecodeAsideIn:DecodeAsideIn = {
-    val res = Wire(new DecodeAsideIn)
-    res.regLeft := 0.U
-    res.regRight := 0.U
-    res
+    val init = Wire(new DecodeAsideIn)
+    init.regLeft := 0.U
+    init.regRight := 0.U
+    init
   }
   def initDecodeAsideOut:DecodeAsideOut = {
-    val res = Wire(new DecodeAsideOut)
-    res.reg_1 := initRctrl
-    res.reg_2 := initRctrl
-    res
+    val init = Wire(new DecodeAsideOut)
+    init.reg_1 := initRctrl
+    init.reg_2 := initRctrl
+    init
   }
   def initDecodeSrcInfo:DecodeSrcInfo = {
-    val res = Wire(new DecodeSrcInfo)
-    res.pc := 0.U
-    res.inst := 0.U
-    res
+    val init = Wire(new DecodeSrcInfo)
+    init.pc := 0.U
+    init.inst := 0.U
+    init
   }
   def initDecodeOut:DecodeOut = {
-    val res = Wire(new DecodeOut)
-    res.bits := initExeSrcInfo
-    res.req := false.B
-    res
+    val init = Wire(new DecodeOut)
+    init.bits := initExeSrcInfo
+    init.req := false.B
+    init
   }
 }

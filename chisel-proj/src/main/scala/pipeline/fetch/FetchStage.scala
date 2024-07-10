@@ -6,10 +6,10 @@ import FetchUtils._
 import FetchParams._
 class FetchStage extends Module {
   val io = IO(new FetchIo)
-  io.aside.out := initAside
-  io.out := init
+  io.aside.out := initFetchAsideOut
+  io.out := initFetchOut
 
-  val outReg = RegInit(init)
+  val outReg = RegInit(initFetchOut)
   io.out := outReg
 
   object State extends ChiselEnum {

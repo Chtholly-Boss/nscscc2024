@@ -5,8 +5,8 @@ import pipeline.decode.DecodeStage
 import pipeline.exe.ExeStage
 import pipeline.regfile.Regfile
 import pipeline.exe.ExePorts.ExeOut
-import bus.sram.BaseSram
-import bus.NaiveBus
+import bus.sram._
+import bus.AlphaBus
 import pipeline.exe.ExePorts._
 
 class F2D2E extends Module {
@@ -24,15 +24,19 @@ class F2D2E extends Module {
   val fetch = Module(new FetchStage)
   val decode = Module(new DecodeStage)
   val exe = Module(new ExeStage)
-  val bus = Module(new NaiveBus)
+  val bus = Module(new AlphaBus)
   val iRom = Module(new BaseSram)
-
-  fetch.io.aside.in <> bus.io.out
-  fetch.io.aside.out <> bus.io.in
-
-  bus.io.sram.in <> iRom.io.out
-  bus.io.sram.out <> iRom.io.in
-
+  val dRam = Module(new SramSim)
+  // Bus Connection
+  fetch.io.aside.in <> bus.io.instChannel.rspns
+  fetch.io.aside.out <> bus.io.instChannel.req
+  exe.io.aside.in <> bus.io.dataChannel.rspns
+  exe.io.aside.out <> bus.io.dataChannel.req
+  bus.io.baseRam.rspns <> iRom.io.out
+  bus.io.baseRam.req <> iRom.io.in
+  bus.io.extRam.rspns <> dRam.io.out
+  bus.io.extRam.req <> dRam.io.in
+  // Pipeline Connection
   fetch.io.in.ack <> decode.io.out.ack
   fetch.io.out <> decode.io.in.fetch
 

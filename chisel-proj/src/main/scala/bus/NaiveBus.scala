@@ -2,7 +2,7 @@ package bus
 import chisel3.util._
 import chisel3._
 import pipeline.fetch.FetchPorts.{FetchAsideIn, FetchAsideOut}
-import bus.sram.SramUtils.{sramInit,sramReadWord}
+import bus.sram.SramUtils.{initSramReq,sramReadWord}
 import bus.sram.SramPorts.{SramRequest,SramResponse}
 
 class NaiveBus extends Module {
@@ -21,11 +21,11 @@ class NaiveBus extends Module {
   initOut.inst := 0.U
   io.out := initOut
 
-  io.sram.out := sramInit
+  io.sram.out := initSramReq
 
   val outReg = RegInit(initOut)
   io.out := outReg
-  val sramReqReg = RegInit(sramInit)
+  val sramReqReg = RegInit(initSramReq)
   io.sram.out := sramReqReg
 
   object State extends ChiselEnum {

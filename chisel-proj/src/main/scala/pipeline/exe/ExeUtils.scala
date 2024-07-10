@@ -5,48 +5,49 @@ import ExePorts._
 import pipeline.regfile.RegfileUtils.initWctrl
 object ExeUtils {
   def initOperands:Operands = {
-    val res = Wire(new Operands)
-    res.left := 0.U
-    res.right := 0.U
-    res
+    val init = Wire(new Operands)
+    init.left := 0.U
+    init.right := 0.U
+    init
   }
   def initOp:ExeOp = {
-    val res = Wire(new ExeOp)
-    res.opFunc := 0.U
-    res.opType := 0.U
-    res
+    val init = Wire(new ExeOp)
+    init.opFunc := 0.U
+    init.opType := 0.U
+    init
   }
   def initExeSrcInfo:ExeSrcInfo = {
-    val res = Wire(new ExeSrcInfo)
-    res.exeOp := initOp
-    res.operands.imm := 0.U
-    res.operands.hasImm := false.B
-    res.operands.regData_1 := 0.U
-    res.operands.regData_2 := 0.U
-    res.wCtrl := initWctrl
-    res
+    val init = Wire(new ExeSrcInfo)
+    init.exeOp := initOp
+    init.operands.imm := 0.U
+    init.operands.hasImm := false.B
+    init.operands.regData_1 := 0.U
+    init.operands.regData_2 := 0.U
+    init.wCtrl := initWctrl
+    init
   }
   def initExeOut:ExeOut = {
-    val res = Wire(new ExeOut)
-    res.bits := initWctrl
-    res.req := false.B
-    res
+    val init = Wire(new ExeOut)
+    init.bits := initWctrl
+    init.req := false.B
+    init
   }
   def initExeAsideIn:ExeAsideIn = {
-    val res = Wire(new ExeAsideIn)
-    res.rvalid := false.B
-    res.rrdy := false.B
-    res.rdata := 0.U
-    res.wdone := false.B
-    res
+    val init = Wire(new ExeAsideIn)
+    init.rvalid := false.B
+    init.rrdy := false.B
+    init.rdata := 0.U
+    init.wdone := false.B
+    init.wrdy := false.B
+    init
   }
   def initExeAsideOut:ExeAsideOut = {
-    val res = Wire(new ExeAsideOut)
-    res.addr := 0.U
-    res.wdata := 0.U
-    res.rreq := false.B
-    res.wreq := false.B
-    res
+    val init = Wire(new ExeAsideOut)
+    init.addr := 0.U
+    init.wdata := 0.U
+    init.rreq := false.B
+    init.wreq := false.B
+    init
   }
 
 

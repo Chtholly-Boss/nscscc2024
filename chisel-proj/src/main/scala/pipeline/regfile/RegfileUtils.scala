@@ -4,17 +4,17 @@ import RegfilePorts._
 
 object RegfileUtils {
   def initWctrl:WriteCtrl = {
-    val res = Wire(new WriteCtrl)
-    res.en := false.B
-    res.addr := 0.U
-    res.data := 0.U
-    res
+    val init = Wire(new WriteCtrl)
+    init.en := false.B
+    init.addr := 0.U
+    init.data := 0.U
+    init
   }
   def initRctrl:ReadCtrl = {
-    val res = Wire(new ReadCtrl)
-    res.en := false.B
-    res.addr := 0.U
-    res
+    val init = Wire(new ReadCtrl)
+    init.en := false.B
+    init.addr := 0.U
+    init
   }
 
   def rDataFAddr(addr:UInt):ReadCtrl = {

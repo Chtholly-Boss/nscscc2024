@@ -251,7 +251,6 @@ crashlytics-build.properties
 *.lib
 
 # Executables
-*.exe
 *.out
 *.app
 ### OSX template

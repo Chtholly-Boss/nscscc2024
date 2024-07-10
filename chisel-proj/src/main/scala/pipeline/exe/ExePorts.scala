@@ -39,6 +39,24 @@ object ExePorts {
     val req = Bool()
     val bits = new WriteCtrl
   }
+  // Exe aside: to communicate with Memory
+  class ExeAsideIn extends Bundle {
+    val rdata = UInt(dataWidth)
+    val rrdy = Bool()
+    val rvalid = Bool()
+    val wrdy = Bool()
+    val wdone = Bool()
+  }
+  class ExeAsideOut extends Bundle {
+    val rreq = Bool()
+    val wreq = Bool()
+    val addr = UInt(32.W)
+    val wdata = UInt(32.W)
+  }
+  class ExeAsideIo extends Bundle {
+    val in = Input(new ExeAsideIn)
+    val out = Output(new ExeAsideOut)
+  }
   class ExeIo extends Bundle {
     val in = Input(new Bundle() {
       val decode = new DecodeOut
@@ -48,6 +66,7 @@ object ExePorts {
       val ack = Bool()
       val exe = new ExeOut
     })
+    val aside = new ExeAsideIo
   }
 
 }

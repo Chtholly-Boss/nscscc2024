@@ -64,5 +64,8 @@ class Alu extends Module {
         }
       }
     }
+    is (tp.load,tp.store) {
+      res := (left.asSInt + right.asSInt).asUInt
+    }
   }
 }

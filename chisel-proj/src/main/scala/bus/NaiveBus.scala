@@ -6,6 +6,7 @@ import bus.sram.SramUtils.{sramInit,sramReadWord}
 import bus.sram.SramPorts.{SramRequest,SramResponse}
 
 class NaiveBus extends Module {
+  // This Bus only support Read from one SRAM
   val io = IO(new Bundle() {
     val in = Input(new FetchAsideOut)
     val out = Output(new FetchAsideIn)

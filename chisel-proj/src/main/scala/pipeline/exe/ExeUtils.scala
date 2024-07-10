@@ -32,7 +32,22 @@ object ExeUtils {
     res.req := false.B
     res
   }
-
+  def initExeAsideIn:ExeAsideIn = {
+    val res = Wire(new ExeAsideIn)
+    res.rvalid := false.B
+    res.rrdy := false.B
+    res.rdata := 0.U
+    res.wdone := false.B
+    res
+  }
+  def initExeAsideOut:ExeAsideOut = {
+    val res = Wire(new ExeAsideOut)
+    res.addr := 0.U
+    res.wdata := 0.U
+    res.rreq := false.B
+    res.wreq := false.B
+    res
+  }
 
 
 }

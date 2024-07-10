@@ -39,6 +39,7 @@ class DecodeStage extends Module {
       }
     }
     is (DECODE) {
+      stat := READ
       // Send read req to regfile
       when (du.io.out.isMatched) {
         asideOut.reg_1 := du.io.out.bits.reg_1
@@ -46,6 +47,7 @@ class DecodeStage extends Module {
       }
     }
     is (READ) {
+      stat := DONE
       // Send Decode Res
       when (du.io.out.isMatched) {
         decodeOut.req := true.B

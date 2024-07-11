@@ -19,34 +19,40 @@ class FetchStage extends Module {
 
   val stat = RegInit(RST)
 
-  switch (stat) {
-    is (RST) {
-      outReg.bits.pc := pcRst
-      stat := SEND
-    }
-    is (SEND) {
-      when (io.aside.in.rrdy) {
-        stat := WAIT
-        io.aside.out := fetch(outReg.bits.pc)
+  when(io.bCtrl.isMispredict) {
+    stat := SEND
+    outReg.req := false.B
+    outReg.bits.pc := io.bCtrl.npc
+  } .otherwise {
+    switch (stat) {
+      is (RST) {
+        outReg.bits.pc := pcRst
+        stat := SEND
       }
-    }
-    is (WAIT) {
-      when (io.aside.in.rvalid) {
-        stat := DONE
-        outReg.bits.inst := io.aside.in.inst
-        outReg.req := true.B
+      is (SEND) {
+        when (io.aside.in.rrdy) {
+          stat := WAIT
+          io.aside.out := fetch(outReg.bits.pc)
+        }
       }
-    }
-    is (DONE) {
-      when (io.in.ack) {
-        stat := PCGEN
-        outReg.req := false.B
+      is (WAIT) {
+        when (io.aside.in.rvalid) {
+          stat := DONE
+          outReg.bits.inst := io.aside.in.inst
+          outReg.req := true.B
+        }
       }
-    }
-    is (PCGEN) {
-      stat := SEND
-      // Generate new pc: May need a pcGen
-      outReg.bits.pc := outReg.bits.pc + 4.U
+      is (DONE) {
+        when (io.in.ack) {
+          stat := PCGEN
+          outReg.req := false.B
+        }
+      }
+      is (PCGEN) {
+        stat := SEND
+        // Generate new pc: May need a pcGen
+        outReg.bits.pc := outReg.bits.pc + 4.U
+      }
     }
   }
 }

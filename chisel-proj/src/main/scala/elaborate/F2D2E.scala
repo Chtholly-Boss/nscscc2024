@@ -16,6 +16,7 @@ class F2D2E extends Module {
       val exeAside = new ExeAsideIn
     })
     val out = Output(new Bundle() {
+      val exeBctrl = new ExeBranchInfo
       val exeOut = new ExeOut
       val exeAside = new ExeAsideOut
     })
@@ -38,6 +39,7 @@ class F2D2E extends Module {
   bus.io.extRam.req <> dRam.io.in
   // Pipeline Connection
   fetch.io.in.ack <> decode.io.out.ack
+  fetch.io.bCtrl <> exe.io.bCtrl
   fetch.io.out <> decode.io.in.fetch
 
   decode.io.aside.out.reg_1 <> regfile.io.rChannel_1.in
@@ -45,7 +47,8 @@ class F2D2E extends Module {
   decode.io.aside.in.regLeft <> regfile.io.rChannel_1.out
   decode.io.aside.in.regRight <> regfile.io.rChannel_2.out
 
-  decode.io.in.ack := exe.io.out.ack
+  decode.io.bCtrl <> exe.io.bCtrl
+  decode.io.in.ack <> exe.io.out.ack
   decode.io.out.decode <> exe.io.in.decode
 
   exe.io.in.ack := io.in.ack
@@ -54,4 +57,5 @@ class F2D2E extends Module {
 
   io.out.exeOut := exe.io.out.exe
   io.out.exeAside := exe.io.aside.out
+  io.out.exeBctrl := exe.io.bCtrl
 }

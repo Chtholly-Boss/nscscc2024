@@ -1,6 +1,7 @@
 package pipeline.fetch
 import chisel3._
 import pipeline.decode.DecodePorts.DecodeSrcInfo
+import pipeline.exe.ExePorts.ExeBranchInfo
 object FetchPorts {
   class FetchOut extends Bundle {
     val req = Bool()
@@ -26,5 +27,6 @@ object FetchPorts {
     })
     val out = Output(new FetchOut)
     val aside = new FetchAsideIo
+    val bCtrl = Input(new ExeBranchInfo)
   }
 }

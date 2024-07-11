@@ -24,45 +24,52 @@ class DecodeStage extends Module {
   import State._
 
   val stat = RegInit(IDLE)
-  switch(stat) {
-    is (IDLE) {
-      when (io.in.fetch.req) {
-        // Cache the inputs
-        stat := DECODE
-        srcInfo := io.in.fetch.bits
-        // ack the req
-        io.out.ack := true.B
-      } .otherwise {
-        stat := IDLE
-        srcInfo := initDecodeSrcInfo
-        io.out.ack := false.B
+  when (io.bCtrl.isMispredict) {
+    stat := IDLE
+    decodeOut := initDecodeOut
+    asideOut := initDecodeAsideOut
+  } .otherwise {
+    switch(stat) {
+      is (IDLE) {
+        when (io.in.fetch.req) {
+          // Cache the inputs
+          stat := DECODE
+          srcInfo := io.in.fetch.bits
+          // ack the req
+          io.out.ack := true.B
+        } .otherwise {
+          stat := IDLE
+          srcInfo := initDecodeSrcInfo
+          io.out.ack := false.B
+        }
       }
-    }
-    is (DECODE) {
-      stat := READ
-      // Send read req to regfile
-      when (du.io.out.isMatched) {
-        asideOut.reg_1 := du.io.out.bits.reg_1
-        asideOut.reg_2 := du.io.out.bits.reg_2
+      is (DECODE) {
+        stat := READ
+        // Send read req to regfile
+        when (du.io.out.isMatched) {
+          asideOut.reg_1 := du.io.out.bits.reg_1
+          asideOut.reg_2 := du.io.out.bits.reg_2
+        }
       }
-    }
-    is (READ) {
-      stat := DONE
-      // Send Decode Res
-      when (du.io.out.isMatched) {
-        decodeOut.req := true.B
-        decodeOut.bits.exeOp := du.io.out.bits.exeOp
-        decodeOut.bits.wCtrl := du.io.out.bits.wCtrl
-        decodeOut.bits.operands.hasImm := du.io.out.bits.hasImm
-        decodeOut.bits.operands.imm := du.io.out.bits.imm
-        decodeOut.bits.operands.regData_1 := io.aside.in.regLeft
-        decodeOut.bits.operands.regData_2 := io.aside.in.regRight
+      is (READ) {
+        stat := DONE
+        // Send Decode Res
+        when (du.io.out.isMatched) {
+          decodeOut.req := true.B
+          decodeOut.bits.exeOp := du.io.out.bits.exeOp
+          decodeOut.bits.wCtrl := du.io.out.bits.wCtrl
+          decodeOut.bits.operands.hasImm := du.io.out.bits.hasImm
+          decodeOut.bits.operands.imm := du.io.out.bits.imm
+          decodeOut.bits.operands.regData_1 := io.aside.in.regLeft
+          decodeOut.bits.operands.regData_2 := io.aside.in.regRight
+          decodeOut.fetchInfo := srcInfo
+        }
       }
-    }
-    is (DONE) {
-      when (io.in.ack) {
-        stat := IDLE
-        decodeOut := initDecodeOut
+      is (DONE) {
+        when (io.in.ack) {
+          stat := IDLE
+          decodeOut := initDecodeOut
+        }
       }
     }
   }

@@ -2,7 +2,7 @@ package pipeline.exe
 import chisel3._
 import ExeParams._
 import ExePorts._
-import pipeline.regfile.RegfileUtils.initWctrl
+import pipeline.regfile.RegfileUtils.{initRctrl, initWctrl}
 object ExeUtils {
   def initOperands:Operands = {
     val init = Wire(new Operands)
@@ -49,6 +49,11 @@ object ExeUtils {
     init.wreq := false.B
     init
   }
-
+  def initExeBranchInfo:ExeBranchInfo = {
+    val init = Wire(new ExeBranchInfo)
+    init.isMispredict := false.B
+    init.npc := 0.U
+    init
+  }
 
 }

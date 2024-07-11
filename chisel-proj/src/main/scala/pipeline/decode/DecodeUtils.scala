@@ -38,6 +38,7 @@ object DecodeUtils {
     val init = Wire(new DecodeOut)
     init.bits := initExeSrcInfo
     init.req := false.B
+    init.fetchInfo := initDecodeSrcInfo
     init
   }
 }

@@ -57,6 +57,11 @@ object ExePorts {
     val in = Input(new ExeAsideIn)
     val out = Output(new ExeAsideOut)
   }
+  class ExeBranchInfo extends Bundle {
+    val isMispredict = Bool()
+    val npc = UInt(dataWidth)
+  }
+
   class ExeIo extends Bundle {
     val in = Input(new Bundle() {
       val decode = new DecodeOut
@@ -67,6 +72,7 @@ object ExePorts {
       val exe = new ExeOut
     })
     val aside = new ExeAsideIo
+    val bCtrl = Output(new ExeBranchInfo)
   }
 
 }

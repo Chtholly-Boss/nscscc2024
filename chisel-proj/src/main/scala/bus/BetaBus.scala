@@ -6,7 +6,7 @@ import bus.BusParams._
 import bus.sram.SramUtils._
 import pipeline.fetch.FetchUtils._
 import pipeline.exe.ExeUtils._
-
+import bus.uart._
 /*
   BetaBus stands on the perspective of Requests
   theoretically,every req could access all the address space
@@ -20,7 +20,27 @@ class BetaBus extends Module {
     val dataChannel = new DataChannel
     val baseRam = new SramChannel
     val extRam = new SramChannel
+    val uart = new UartIo
   })
+  // *********************************
+  // Uart Signals
+  val uartTransmitter = Module(new async_transmitter)
+  val uartReceiver = Module(new async_receiver)
+  val tData = Wire(UInt(8.W))
+  val tStart = Wire(Bool())
+  val rClear = Wire(Bool())
+  val uStatus = Wire(UInt(2.W))
+  uStatus := uartReceiver.io.RxD_data_ready ## ~uartTransmitter.io.TxD_busy
+
+  uartTransmitter.io.clk := clock
+  io.uart.txd := uartTransmitter.io.TxD
+  uartTransmitter.io.TxD_data := tData
+  uartTransmitter.io.TxD_start := tStart
+
+  uartReceiver.io.clk := clock
+  uartReceiver.io.RxD := io.uart.rxd
+  uartReceiver.io.RxD_clear := rClear
+  // *********************************
   io.instChannel.rspns := initFetchAsideIn
   io.dataChannel.rspns := initExeAsideIn
   val instReg = RegInit(initFetchAsideIn)
@@ -57,7 +77,10 @@ class BetaBus extends Module {
       B_RD,
       B_WR,
       E_RD,
-      E_WR
+      E_WR,
+      U_CS, // Check Status
+      U_RD,
+      U_WR
     = Value
   }
   val dstat = RegInit(DS.IDLE)
@@ -105,8 +128,21 @@ class BetaBus extends Module {
     is (DS.IDLE) {
       dataReg.rvalid := false.B
       dataReg.wdone := false.B
+      rClear := false.B
+      tStart := false.B
       when(dataHasReq) {
         dataReqBuf := io.dataChannel.req
+        when(io.dataChannel.req.addr === SpaceMap.uartStatusAddr) {
+          dstat := DS.U_CS
+        }
+        when(io.dataChannel.req.addr === SpaceMap.uartDataAddr) {
+          when(io.dataChannel.req.rreq) {
+            dstat := DS.U_RD
+          }
+          when(io.dataChannel.req.wreq) {
+            dstat := DS.U_WR
+          }
+        }
         when(io.dataChannel.req.addr(31,22) === SpaceMap.baseRamHighBits) {
           when(baseRamBusy) {
             dstat := DS.B_WAIT
@@ -190,6 +226,23 @@ class BetaBus extends Module {
     is (DS.E_WR) {
       dstat := DS.IDLE
       dataReg.wdone := true.B
+    }
+    is (DS.U_CS) {
+      dstat := DS.IDLE
+      dataReg.rvalid := true.B
+      dataReg.rdata := 0.U(30.W) ## uStatus
+    }
+    is (DS.U_RD) {
+      dstat := DS.IDLE
+      dataReg.rvalid := true.B
+      dataReg.rdata := 0.U(24.W) ## uartReceiver.io.RxD_data
+      rClear := true.B
+    }
+    is (DS.U_WR) {
+      dstat := DS.IDLE
+      dataReg.wdone := true.B
+      tStart := true.B
+      tData := dataReqBuf.wdata(7,0)
     }
   }
 

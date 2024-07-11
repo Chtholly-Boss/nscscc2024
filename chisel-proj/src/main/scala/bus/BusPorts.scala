@@ -19,4 +19,8 @@ object BusPorts {
     val req = Input(new ExeAsideOut)
     val rspns = Output(new ExeAsideIn)
   }
+  class UartIo extends Bundle {
+    val txd = Output(UInt(1.W))
+    val rxd = Input(UInt(1.W))
+  }
 }

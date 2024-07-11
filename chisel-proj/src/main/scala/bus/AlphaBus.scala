@@ -29,7 +29,7 @@ class AlphaBus extends Module {
   io.extRam.req := eoutReg
 
   val instHasReq = WireDefault(io.instChannel.req.req)
-  val dataHasReq = WireDefault(io.dataChannel.req.rreq | io.dataChannel.req.rreq)
+  val dataHasReq = WireDefault(io.dataChannel.req.rreq | io.dataChannel.req.wreq)
   /*
   State Machine Spec:
     1. has request? Check the address

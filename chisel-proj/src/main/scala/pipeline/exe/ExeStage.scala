@@ -21,6 +21,10 @@ class ExeStage extends Module {
 
   val srcInfo = RegInit(initExeSrcInfo)
   val fetchInfo = RegInit(initDecodeSrcInfo)
+  // To deal with Load-to-use
+  val preLoad = RegInit(false.B)
+  val preLoadAddr = RegInit(0.U(5.W))
+  val preLoadData = RegInit(0.U(32.W))
 
   val alu = Module(new Alu)
   alu.io.in.op := srcInfo.exeOp
@@ -41,19 +45,29 @@ class ExeStage extends Module {
         switch (io.in.decode.bits.exeOp.opType) {
           is (tp.branch,tp.jump) {
             stat := BRANCH
+            preLoad := false.B
           }
           is (tp.load) {
             stat := RD
+            preLoad := true.B
           }
           is (tp.store) {
             stat := WR
+            preLoad := false.B
           }
           is (tp.logic,tp.arith,tp.shift) {
             stat := ALUEXE
+            preLoad := false.B
           }
         }
         // Cache the inputs
         srcInfo := io.in.decode.bits
+        when(preLoad && preLoadAddr === io.in.decode.readInfo.reg_1.addr) {
+          srcInfo.operands.regData_1 := preLoadData
+        }
+        when(preLoad && preLoadAddr === io.in.decode.readInfo.reg_2.addr) {
+          srcInfo.operands.regData_2 := preLoadData
+        }
         fetchInfo := io.in.decode.fetchInfo
         io.out.ack := true.B
       } .otherwise {
@@ -126,6 +140,8 @@ class ExeStage extends Module {
         outReg.bits.en := srcInfo.wCtrl.en
         outReg.bits.addr := srcInfo.wCtrl.addr
         outReg.bits.data := io.aside.in.rdata
+        preLoadAddr := srcInfo.wCtrl.addr
+        preLoadData := io.aside.in.rdata
       }
     }
     is (WR) {
@@ -146,10 +162,8 @@ class ExeStage extends Module {
       }
     }
     is (DONE) {
-      when (io.in.ack) {
-        stat := IDLE
-        outReg := initExeOut
-      }
+      stat := IDLE
+      outReg := initExeOut
       bCtrlOutReg := initExeBranchInfo
     }
   }

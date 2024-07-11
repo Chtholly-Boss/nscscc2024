@@ -63,6 +63,8 @@ class DecodeStage extends Module {
           decodeOut.bits.operands.regData_1 := io.aside.in.regLeft
           decodeOut.bits.operands.regData_2 := io.aside.in.regRight
           decodeOut.fetchInfo := srcInfo
+          decodeOut.readInfo.reg_1 := du.io.out.bits.reg_1
+          decodeOut.readInfo.reg_2 := du.io.out.bits.reg_2
         }
       }
       is (DONE) {

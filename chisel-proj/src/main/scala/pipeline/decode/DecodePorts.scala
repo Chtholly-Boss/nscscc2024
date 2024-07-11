@@ -44,6 +44,10 @@ object DecodePorts {
   }
   class DecodeOut extends Bundle {
     val bits = new ExeSrcInfo
+    val readInfo = new Bundle() {
+      val reg_1 = new ReadCtrl
+      val reg_2 = new ReadCtrl
+    }
     val fetchInfo = new DecodeSrcInfo
     val req = Bool()
   }

@@ -51,8 +51,6 @@ class F2D2E extends Module {
   decode.io.in.ack <> exe.io.out.ack
   decode.io.out.decode <> exe.io.in.decode
 
-  exe.io.in.ack := io.in.ack
-  exe.io.aside.in := io.in.exeAside
   exe.io.out.exe.bits <> regfile.io.wChannel
 
   io.out.exeOut := exe.io.out.exe

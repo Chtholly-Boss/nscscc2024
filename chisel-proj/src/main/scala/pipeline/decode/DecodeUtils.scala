@@ -39,6 +39,8 @@ object DecodeUtils {
     init.bits := initExeSrcInfo
     init.req := false.B
     init.fetchInfo := initDecodeSrcInfo
+    init.readInfo.reg_1 := initRctrl
+    init.readInfo.reg_2 := initRctrl
     init
   }
 }

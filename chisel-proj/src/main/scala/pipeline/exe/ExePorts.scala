@@ -65,7 +65,6 @@ object ExePorts {
   class ExeIo extends Bundle {
     val in = Input(new Bundle() {
       val decode = new DecodeOut
-      val ack = Bool()
     })
     val out = Output(new Bundle {
       val ack = Bool()

@@ -28,11 +28,11 @@ object SramUtils {
   def sramWrite(addr:Bits,data:Bits) : SramRequest = {
     val sramWriteWord = Wire(new SramRequest)
     sramWriteWord.ce := lowLevel
-    sramWriteWord.oe := lowLevel
-    sramWriteWord.we := highLevel
+    sramWriteWord.oe := highLevel
+    sramWriteWord.we := lowLevel
     sramWriteWord.byteSelN := "b0000".U
     sramWriteWord.addr := addr
-    sramWriteWord.wData := 0.U
+    sramWriteWord.wData := data
     sramWriteWord
   }
 }

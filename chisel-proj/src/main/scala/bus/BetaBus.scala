@@ -30,6 +30,9 @@ class BetaBus extends Module {
   val tStart = Wire(Bool())
   val rClear = Wire(Bool())
   val uStatus = Wire(UInt(2.W))
+  tData := 0.U
+  tStart := false.B
+  rClear := false.B
   uStatus := uartReceiver.io.RxD_data_ready ## ~uartTransmitter.io.TxD_busy
 
   uartTransmitter.io.clk := clock

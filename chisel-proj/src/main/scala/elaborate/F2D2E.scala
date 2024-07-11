@@ -19,6 +19,7 @@ class F2D2E extends Module {
       val exeBctrl = new ExeBranchInfo
       val exeOut = new ExeOut
       val exeAside = new ExeAsideOut
+      val txd = Bool()
     })
   })
   val regfile = Module(new Regfile)
@@ -57,6 +58,8 @@ class F2D2E extends Module {
   io.out.exeOut := exe.io.out.exe
   io.out.exeAside := exe.io.aside.out
   io.out.exeBctrl := exe.io.bCtrl
+  io.out.txd := bus.io.uart.txd
+  bus.io.uart.rxd := DontCare
 }
 object F2D2E extends App {
   emitVerilog(new F2D2E)

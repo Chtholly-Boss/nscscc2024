@@ -7,6 +7,9 @@ import bus.sram.SramUtils._
 import pipeline.fetch.FetchUtils._
 import pipeline.exe.ExeUtils._
 
+// AlphaBus stand from the perspective of SRAM
+// Inst could only Read BaseRam
+// Data cound only Read/Write ExtRam
 class AlphaBus extends Module {
   val io = IO(new Bundle() {
     val instChannel = new InstChannel

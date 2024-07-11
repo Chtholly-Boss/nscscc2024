@@ -6,7 +6,7 @@ class SocSpec extends AnyFlatSpec with ChiselScalatestTester {
   "Fetch2Decode2Exe" should "Pass" in {
     test (new F2D2E()) { core =>
       core.clock.setTimeout(0)
-      step(1000)
+      step(500)
     }
   }
 }

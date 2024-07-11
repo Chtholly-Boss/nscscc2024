@@ -19,7 +19,12 @@ class DecodeStage extends Module {
 
 
   object State extends ChiselEnum {
-    val IDLE,DECODE,READ,DONE = Value
+    val
+      IDLE,
+      DECODE,
+      READ,
+      DONE
+    = Value
   }
   import State._
 
@@ -54,7 +59,7 @@ class DecodeStage extends Module {
       is (READ) {
         stat := DONE
         // Send Decode Res
-        when (du.io.out.isMatched) {
+        //when (du.io.out.isMatched) {
           decodeOut.req := true.B
           decodeOut.bits.exeOp := du.io.out.bits.exeOp
           decodeOut.bits.wCtrl := du.io.out.bits.wCtrl
@@ -65,7 +70,7 @@ class DecodeStage extends Module {
           decodeOut.fetchInfo := srcInfo
           decodeOut.readInfo.reg_1 := du.io.out.bits.reg_1
           decodeOut.readInfo.reg_2 := du.io.out.bits.reg_2
-        }
+        //}
       }
       is (DONE) {
         when (io.in.ack) {

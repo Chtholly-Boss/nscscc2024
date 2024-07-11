@@ -1,8 +1,9 @@
 package bus.uart
 
 import chisel3._
+import chisel3.util.HasBlackBoxResource
 
-class async_receiver extends BlackBox {
+class async_receiver extends BlackBox with HasBlackBoxResource {
   val io = IO(new Bundle {
     val clk = Input(Clock())
     val RxD = Input(UInt(1.W))
@@ -10,4 +11,5 @@ class async_receiver extends BlackBox {
     val RxD_clear = Input(Bool())
     val RxD_data = Output(UInt(8.W))
   })
+  addResource("/async.v")
 }

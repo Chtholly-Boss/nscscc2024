@@ -13,7 +13,13 @@ class FetchStage extends Module {
   io.out := outReg
 
   object State extends ChiselEnum {
-    val RST,SEND,WAIT,DONE,PCGEN = Value
+    val
+      RST,
+      SEND,
+      WAIT,
+      DONE,
+      PCGEN
+    = Value
   }
   import State._
 

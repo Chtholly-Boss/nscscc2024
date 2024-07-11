@@ -6,7 +6,7 @@ import pipeline.exe.ExeStage
 import pipeline.regfile.Regfile
 import pipeline.exe.ExePorts.ExeOut
 import bus.sram._
-import bus.AlphaBus
+import bus._
 import pipeline.exe.ExePorts._
 
 class F2D2E extends Module {
@@ -25,7 +25,8 @@ class F2D2E extends Module {
   val fetch = Module(new FetchStage)
   val decode = Module(new DecodeStage)
   val exe = Module(new ExeStage)
-  val bus = Module(new AlphaBus)
+  val bus = Module(new BetaBus)
+  //val bus = Module(new AlphaBus)
   val iRom = Module(new BaseSram)
   val dRam = Module(new SramSim)
   // Bus Connection
@@ -56,4 +57,7 @@ class F2D2E extends Module {
   io.out.exeOut := exe.io.out.exe
   io.out.exeAside := exe.io.aside.out
   io.out.exeBctrl := exe.io.bCtrl
+}
+object F2D2E extends App {
+  emitVerilog(new F2D2E)
 }

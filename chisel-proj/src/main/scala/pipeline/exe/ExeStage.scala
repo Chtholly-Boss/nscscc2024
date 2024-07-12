@@ -127,7 +127,20 @@ class ExeStage extends Module {
     is (RD) {
       when (io.aside.in.rrdy) {
         when (srcInfo.exeOp.opFunc === Load.ld_b) {
-          io.aside.out.byteSelN := "b1110".U
+          switch(alu.io.out.res(1,0)) {
+            is ("b00".U) {
+              io.aside.out.byteSelN := "b1110".U
+            }
+            is ("b01".U) {
+              io.aside.out.byteSelN := "b1101".U
+            }
+            is ("b10".U) {
+              io.aside.out.byteSelN := "b1011".U
+            }
+            is ("b11".U) {
+              io.aside.out.byteSelN := "b0111".U
+            }
+          }
         }
         io.aside.out.rreq := true.B
         io.aside.out.addr := alu.io.out.res
@@ -148,7 +161,20 @@ class ExeStage extends Module {
     is (WR) {
       when (io.aside.in.wrdy) {
         when (srcInfo.exeOp.opFunc === Store.st_b) {
-          io.aside.out.byteSelN := "b1110".U
+          switch(alu.io.out.res(1,0)) {
+            is ("b00".U) {
+              io.aside.out.byteSelN := "b1110".U
+            }
+            is ("b01".U) {
+              io.aside.out.byteSelN := "b1101".U
+            }
+            is ("b10".U) {
+              io.aside.out.byteSelN := "b1011".U
+            }
+            is ("b11".U) {
+              io.aside.out.byteSelN := "b0111".U
+            }
+          }
         }
         io.aside.out.wreq := true.B
         io.aside.out.addr := alu.io.out.res

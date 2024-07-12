@@ -203,7 +203,23 @@ class BetaBus extends Module {
     is (DS.B_RD) {
       dstat := DS.IDLE
       dataReg.rvalid := true.B
-      dataReg.rdata := io.baseRam.rspns.rData
+      switch(dataReqBuf.byteSelN) {
+        is ("b0111".U) {
+          dataReg.rdata := 0.U(24.W) ## io.baseRam.rspns.rData(31,24)
+        }
+        is ("b1011".U) {
+          dataReg.rdata := 0.U(24.W) ## io.baseRam.rspns.rData(23,16)
+        }
+        is ("b1101".U) {
+          dataReg.rdata := 0.U(24.W) ## io.baseRam.rspns.rData(15,8)
+        }
+        is ("b1110".U) {
+          dataReg.rdata := 0.U(24.W) ## io.baseRam.rspns.rData(7,0)
+        }
+        is ("b0000".U) {
+          dataReg.rdata := io.baseRam.rspns.rData
+        }
+      }
     }
     is (DS.B_WR) {
       dstat := DS.IDLE
@@ -228,7 +244,23 @@ class BetaBus extends Module {
     is (DS.E_RD) {
       dstat := DS.IDLE
       dataReg.rvalid := true.B
-      dataReg.rdata := io.extRam.rspns.rData
+      switch(dataReqBuf.byteSelN) {
+        is ("b0111".U) {
+          dataReg.rdata := 0.U(24.W) ## io.extRam.rspns.rData(31,24)
+        }
+        is ("b1011".U) {
+          dataReg.rdata := 0.U(24.W) ## io.extRam.rspns.rData(23,16)
+        }
+        is ("b1101".U) {
+          dataReg.rdata := 0.U(24.W) ## io.extRam.rspns.rData(15,8)
+        }
+        is ("b1110".U) {
+          dataReg.rdata := 0.U(24.W) ## io.extRam.rspns.rData(7,0)
+        }
+        is ("b0000".U) {
+          dataReg.rdata := io.extRam.rspns.rData
+        }
+      }
     }
     is (DS.E_WR) {
       dstat := DS.IDLE

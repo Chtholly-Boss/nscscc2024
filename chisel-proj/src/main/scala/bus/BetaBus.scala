@@ -220,10 +220,12 @@ class BetaBus extends Module {
           dataReg.rdata := io.baseRam.rspns.rData
         }
       }
+      boutReg := initSramReq
     }
     is (DS.B_WR) {
       dstat := DS.IDLE
       dataReg.wdone := true.B
+      boutReg := initSramReq
     }
     is (DS.E_WAIT) {
       when(!extRamBusy){
@@ -261,10 +263,12 @@ class BetaBus extends Module {
           dataReg.rdata := io.extRam.rspns.rData
         }
       }
+      eoutReg := initSramReq
     }
     is (DS.E_WR) {
       dstat := DS.IDLE
       dataReg.wdone := true.B
+      eoutReg := initSramReq
     }
     is (DS.U_CS) {
       dstat := DS.IDLE

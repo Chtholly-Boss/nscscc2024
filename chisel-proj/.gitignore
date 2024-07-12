@@ -1,3 +1,4 @@
+test_run_dir/
 ### XilinxISE template
 # intermediate build files
 *.bgn

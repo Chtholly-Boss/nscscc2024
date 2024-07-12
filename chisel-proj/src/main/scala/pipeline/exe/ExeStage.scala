@@ -64,7 +64,7 @@ class ExeStage extends Module {
             stat := ALUEXE
           }
         }
-        when (io.in.decode.bits.wCtrl.en) {
+        when (io.in.decode.bits.wCtrl.en && io.in.decode.bits.wCtrl.addr =/= 0.U) {
           preLoad := true.B
           preLoadAddr := io.in.decode.bits.wCtrl.addr
         } .otherwise {

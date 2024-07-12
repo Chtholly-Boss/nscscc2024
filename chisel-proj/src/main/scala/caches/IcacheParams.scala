@@ -1,17 +1,13 @@
-package caches.blkmem
+package caches
 import chisel3._
 import chisel3.util._
-
-object BlockMemUtils {
-
+object IcacheParams {
   val _KB = 1 << 10
   val _MB = 1 << 20
 
   val wordLength = 32
   val instMemSize = 1 << 22
-  val dataMemSize = 1 << 23
   val instMemAddrWidth = 22
-  val dataMemAddrWidth = 23
 
   class ICacheParams(size:Int,wordsPerLine:Int) {
     val offsetWidth = log2Ceil(wordsPerLine)

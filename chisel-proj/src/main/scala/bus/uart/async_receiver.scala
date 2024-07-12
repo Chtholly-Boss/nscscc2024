@@ -11,5 +11,4 @@ class async_receiver extends BlackBox with HasBlackBoxResource {
     val RxD_clear = Input(Bool())
     val RxD_data = Output(UInt(8.W))
   })
-  addResource("/async.v")
 }

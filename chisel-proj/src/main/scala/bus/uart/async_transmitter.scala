@@ -10,5 +10,4 @@ class async_transmitter extends BlackBox with HasBlackBoxResource {
     val TxD = Output(UInt(1.W))
     val TxD_busy = Output(Bool())
   })
-  addResource("/async.v")
 }

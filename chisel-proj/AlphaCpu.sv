@@ -1466,18 +1466,18 @@ module BetaBus(	// src/main/scala/bus/BetaBus.scala:17:7
   reg  [3:0]  dataReqBuf_byteSelN;	// src/main/scala/bus/BetaBus.scala:90:27
   reg  [31:0] dataReqBuf_addr;	// src/main/scala/bus/BetaBus.scala:90:27
   reg  [31:0] dataReqBuf_wdata;	// src/main/scala/bus/BetaBus.scala:90:27
-  wire        _GEN = dstat == 4'h1;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22, :130:17
-  wire        _GEN_0 = dstat == 4'h3;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22, :130:17
-  wire        _GEN_1 = dstat == 4'h4;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22, :130:17
-  wire        _GEN_2 = dstat == 4'h2;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22, :130:17
-  wire        _GEN_3 = dstat == 4'h5;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22, :130:17
-  wire        _GEN_4 = dstat == 4'h6;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22, :130:17
-  wire        _GEN_5 = dstat == 4'h7;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22, :130:17
-  wire        _GEN_6 = dstat == 4'h8;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22, :130:17
-  wire        _GEN_7 = _GEN_5 | _GEN_6;	// src/main/scala/bus/BetaBus.scala:50:24, :130:17, :271:22, :276:22
-  wire        _GEN_8 = dstat == 4'h9;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22, :130:17
+  wire        _GEN = dstat == 4'h1;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22, :131:17
+  wire        _GEN_0 = dstat == 4'h3;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22, :131:17
+  wire        _GEN_1 = dstat == 4'h4;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22, :131:17
+  wire        _GEN_2 = dstat == 4'h2;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22, :131:17
+  wire        _GEN_3 = dstat == 4'h5;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22, :131:17
+  wire        _GEN_4 = dstat == 4'h6;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22, :131:17
+  wire        _GEN_5 = dstat == 4'h7;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22, :131:17
+  wire        _GEN_6 = dstat == 4'h8;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22, :131:17
+  wire        _GEN_7 = _GEN_5 | _GEN_6;	// src/main/scala/bus/BetaBus.scala:50:24, :131:17, :276:22, :281:22
+  wire        _GEN_8 = dstat == 4'h9;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22, :131:17
   wire        _GEN_9 =
-    ~(|dstat) | _GEN | _GEN_0 | _GEN_1 | _GEN_2 | _GEN_3 | _GEN_4 | _GEN_7;	// src/main/scala/bus/BetaBus.scala:34:10, :50:24, :89:22, :91:25, :130:17, :135:14, :271:22, :276:22
+    ~(|dstat) | _GEN | _GEN_0 | _GEN_1 | _GEN_2 | _GEN_3 | _GEN_4 | _GEN_7;	// src/main/scala/bus/BetaBus.scala:34:10, :50:24, :89:22, :91:25, :131:17, :136:14, :276:22, :281:22
   always @(posedge clock) begin	// src/main/scala/bus/BetaBus.scala:17:7
     if (reset) begin	// src/main/scala/bus/BetaBus.scala:17:7
       instReg_inst <= 32'h0;	// src/main/scala/bus/BetaBus.scala:49:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
@@ -1520,14 +1520,15 @@ module BetaBus(	// src/main/scala/bus/BetaBus.scala:17:7
       automatic logic _GEN_14;	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
       automatic logic _GEN_15;	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
       automatic logic _GEN_16;	// src/main/scala/bus/BetaBus.scala:100:17
-      automatic logic _GEN_17;	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :117:26, :119:17
-      automatic logic _GEN_18;	// src/main/scala/bus/BetaBus.scala:100:17, :102:24
-      automatic logic _GEN_19;	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :117:26, :119:17
+      automatic logic _GEN_17;	// src/main/scala/bus/BetaBus.scala:56:24, :117:26, :119:17
+      automatic logic _GEN_18;	// src/main/scala/bus/BetaBus.scala:56:24, :117:26, :119:17
+      automatic logic _GEN_19;	// src/main/scala/bus/BetaBus.scala:100:17
       automatic logic _GEN_20;	// src/main/scala/bus/BetaBus.scala:100:17, :102:24
-      automatic logic _GEN_21;	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :117:26, :119:17
+      automatic logic _GEN_21;	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :127:15
       automatic logic _GEN_22;	// src/main/scala/bus/BetaBus.scala:100:17, :102:24
-      automatic logic _GEN_23;	// src/main/scala/bus/BetaBus.scala:100:17
-      automatic logic _GEN_24;	// src/main/scala/bus/BetaBus.scala:50:24, :130:17
+      automatic logic _GEN_23;	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :127:15
+      automatic logic _GEN_24;	// src/main/scala/bus/BetaBus.scala:100:17, :102:24
+      automatic logic _GEN_25;	// src/main/scala/bus/BetaBus.scala:50:24, :131:17
       dataHasReq = io_dataChannel_req_rreq | io_dataChannel_req_wreq;	// src/main/scala/bus/BetaBus.scala:62:56
       baseRamBusy = istat == 2'h2 | dstat == 4'h3 | dstat == 4'h4;	// src/main/scala/bus/BetaBus.scala:17:7, :71:22, :89:22, :96:{24,45,57,66}
       extRamBusy = dstat == 4'h5 | dstat == 4'h6;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22, :97:{23,35,44}
@@ -1538,203 +1539,268 @@ module BetaBus(	// src/main/scala/bus/BetaBus.scala:17:7
       _GEN_14 = _GEN_13 & boutReg_oe;	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
       _GEN_15 = io_instChannel_req_req & ~_GEN_12 | boutReg_we;	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89, :106:17, :107:34, :108:17, :110:17, :111:19
       _GEN_16 = istat == 2'h1;	// src/main/scala/bus/BetaBus.scala:71:22, :100:17, :106:17
-      _GEN_17 = _GEN_16 & ~baseRamBusy;	// src/main/scala/bus/BetaBus.scala:56:24, :96:57, :100:17, :117:{12,26}, :119:17
-      _GEN_18 = (|istat) ? ~_GEN_17 & boutReg_ce : _GEN_13 & boutReg_ce;	// src/main/scala/bus/BetaBus.scala:56:24, :71:22, :73:25, :100:17, :102:24, :105:89, :117:26, :119:17
-      _GEN_19 = ~_GEN_17 & boutReg_oe;	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :117:26, :119:17
-      _GEN_20 = (|istat) ? _GEN_19 : _GEN_14;	// src/main/scala/bus/BetaBus.scala:56:24, :71:22, :73:25, :100:17, :102:24, :105:89, :117:26, :119:17
-      _GEN_21 = _GEN_17 | boutReg_we;	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :117:26, :119:17
-      _GEN_22 = (|istat) ? _GEN_21 : _GEN_15;	// src/main/scala/bus/BetaBus.scala:56:24, :71:22, :73:25, :100:17, :102:24, :105:89, :117:26, :119:17
-      _GEN_23 = istat == 2'h2;	// src/main/scala/bus/BetaBus.scala:71:22, :96:24, :100:17
-      _GEN_24 = _GEN_1 | _GEN_2;	// src/main/scala/bus/BetaBus.scala:50:24, :130:17
-      if (~(|istat) | _GEN_16 | ~_GEN_23) begin	// src/main/scala/bus/BetaBus.scala:49:24, :71:22, :73:25, :100:17
+      _GEN_17 = baseRamBusy & boutReg_oe;	// src/main/scala/bus/BetaBus.scala:56:24, :96:57, :117:26, :119:17
+      _GEN_18 = ~baseRamBusy | boutReg_we;	// src/main/scala/bus/BetaBus.scala:56:24, :96:57, :117:{12,26}, :119:17
+      _GEN_19 = istat == 2'h2;	// src/main/scala/bus/BetaBus.scala:71:22, :96:24, :100:17
+      _GEN_20 =
+        (|istat)
+          ? (_GEN_16 ? baseRamBusy & boutReg_ce : _GEN_19 | boutReg_ce)
+          : _GEN_13 & boutReg_ce;	// src/main/scala/bus/BetaBus.scala:56:24, :71:22, :73:25, :96:57, :100:17, :102:24, :105:89, :117:26, :119:17, :127:15
+      _GEN_21 = _GEN_19 | boutReg_oe;	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :127:15
+      _GEN_22 = (|istat) ? (_GEN_16 ? _GEN_17 : _GEN_21) : _GEN_14;	// src/main/scala/bus/BetaBus.scala:56:24, :71:22, :73:25, :100:17, :102:24, :105:89, :117:26, :119:17, :127:15
+      _GEN_23 = _GEN_19 | boutReg_we;	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :127:15
+      _GEN_24 = (|istat) ? (_GEN_16 ? _GEN_18 : _GEN_23) : _GEN_15;	// src/main/scala/bus/BetaBus.scala:56:24, :71:22, :73:25, :100:17, :102:24, :105:89, :117:26, :119:17, :127:15
+      _GEN_25 = _GEN_1 | _GEN_2;	// src/main/scala/bus/BetaBus.scala:50:24, :131:17
+      if (~(|istat) | _GEN_16 | ~_GEN_19) begin	// src/main/scala/bus/BetaBus.scala:49:24, :71:22, :73:25, :100:17
       end
       else	// src/main/scala/bus/BetaBus.scala:49:24, :100:17
         instReg_inst <= io_baseRam_rspns_rData;	// src/main/scala/bus/BetaBus.scala:49:24
       instReg_rrdy <= ~(|istat);	// src/main/scala/bus/BetaBus.scala:49:24, :71:22, :73:25
-      instReg_rvalid <= (|istat) & (~_GEN_16 & _GEN_23 | instReg_rvalid);	// src/main/scala/bus/BetaBus.scala:49:24, :71:22, :73:25, :100:17, :114:22
-      if (~(~(|dstat) | _GEN)) begin	// src/main/scala/bus/BetaBus.scala:50:24, :89:22, :91:25, :130:17
-        automatic logic _GEN_25;	// src/main/scala/bus/BetaBus.scala:206:35
-        automatic logic _GEN_26;	// src/main/scala/bus/BetaBus.scala:206:35
-        automatic logic _GEN_27;	// src/main/scala/bus/BetaBus.scala:206:35
-        automatic logic _GEN_28;	// src/main/scala/bus/BetaBus.scala:206:35
-        automatic logic _GEN_29;	// src/main/scala/bus/BetaBus.scala:206:35
-        _GEN_25 = dataReqBuf_byteSelN == 4'h7;	// src/main/scala/bus/BetaBus.scala:17:7, :90:27, :206:35
-        _GEN_26 = dataReqBuf_byteSelN == 4'hB;	// src/main/scala/bus/BetaBus.scala:90:27, :206:35
-        _GEN_27 = dataReqBuf_byteSelN == 4'hD;	// src/main/scala/bus/BetaBus.scala:90:27, :206:35
-        _GEN_28 = dataReqBuf_byteSelN == 4'hE;	// src/main/scala/bus/BetaBus.scala:90:27, :206:35
-        _GEN_29 = dataReqBuf_byteSelN == 4'h0;	// src/main/scala/bus/BetaBus.scala:17:7, :90:27, :206:35
-        if (_GEN_0) begin	// src/main/scala/bus/BetaBus.scala:130:17
-          if (_GEN_25)	// src/main/scala/bus/BetaBus.scala:206:35
-            dataReg_rdata <= {24'h0, io_baseRam_rspns_rData[31:24]};	// src/main/scala/bus/BetaBus.scala:50:24, :208:{38,63}
-          else if (_GEN_26)	// src/main/scala/bus/BetaBus.scala:206:35
-            dataReg_rdata <= {24'h0, io_baseRam_rspns_rData[23:16]};	// src/main/scala/bus/BetaBus.scala:50:24, :208:38, :211:{38,63}
-          else if (_GEN_27)	// src/main/scala/bus/BetaBus.scala:206:35
-            dataReg_rdata <= {24'h0, io_baseRam_rspns_rData[15:8]};	// src/main/scala/bus/BetaBus.scala:50:24, :208:38, :214:{38,63}
-          else if (_GEN_28)	// src/main/scala/bus/BetaBus.scala:206:35
-            dataReg_rdata <= {24'h0, io_baseRam_rspns_rData[7:0]};	// src/main/scala/bus/BetaBus.scala:50:24, :208:38, :217:{38,63}
-          else if (_GEN_29)	// src/main/scala/bus/BetaBus.scala:206:35
+      instReg_rvalid <= (|istat) & (~_GEN_16 & _GEN_19 | instReg_rvalid);	// src/main/scala/bus/BetaBus.scala:49:24, :71:22, :73:25, :100:17, :114:22
+      if (~(~(|dstat) | _GEN)) begin	// src/main/scala/bus/BetaBus.scala:50:24, :89:22, :91:25, :131:17
+        automatic logic _GEN_26;	// src/main/scala/bus/BetaBus.scala:207:35
+        automatic logic _GEN_27;	// src/main/scala/bus/BetaBus.scala:207:35
+        automatic logic _GEN_28;	// src/main/scala/bus/BetaBus.scala:207:35
+        automatic logic _GEN_29;	// src/main/scala/bus/BetaBus.scala:207:35
+        automatic logic _GEN_30;	// src/main/scala/bus/BetaBus.scala:207:35
+        _GEN_26 = dataReqBuf_byteSelN == 4'h7;	// src/main/scala/bus/BetaBus.scala:17:7, :90:27, :207:35
+        _GEN_27 = dataReqBuf_byteSelN == 4'hB;	// src/main/scala/bus/BetaBus.scala:90:27, :207:35
+        _GEN_28 = dataReqBuf_byteSelN == 4'hD;	// src/main/scala/bus/BetaBus.scala:90:27, :207:35
+        _GEN_29 = dataReqBuf_byteSelN == 4'hE;	// src/main/scala/bus/BetaBus.scala:90:27, :207:35
+        _GEN_30 = dataReqBuf_byteSelN == 4'h0;	// src/main/scala/bus/BetaBus.scala:17:7, :90:27, :207:35
+        if (_GEN_0) begin	// src/main/scala/bus/BetaBus.scala:131:17
+          if (_GEN_26)	// src/main/scala/bus/BetaBus.scala:207:35
+            dataReg_rdata <= {24'h0, io_baseRam_rspns_rData[31:24]};	// src/main/scala/bus/BetaBus.scala:50:24, :209:{38,63}
+          else if (_GEN_27)	// src/main/scala/bus/BetaBus.scala:207:35
+            dataReg_rdata <= {24'h0, io_baseRam_rspns_rData[23:16]};	// src/main/scala/bus/BetaBus.scala:50:24, :209:38, :212:{38,63}
+          else if (_GEN_28)	// src/main/scala/bus/BetaBus.scala:207:35
+            dataReg_rdata <= {24'h0, io_baseRam_rspns_rData[15:8]};	// src/main/scala/bus/BetaBus.scala:50:24, :209:38, :215:{38,63}
+          else if (_GEN_29)	// src/main/scala/bus/BetaBus.scala:207:35
+            dataReg_rdata <= {24'h0, io_baseRam_rspns_rData[7:0]};	// src/main/scala/bus/BetaBus.scala:50:24, :209:38, :218:{38,63}
+          else if (_GEN_30)	// src/main/scala/bus/BetaBus.scala:207:35
             dataReg_rdata <= io_baseRam_rspns_rData;	// src/main/scala/bus/BetaBus.scala:50:24
         end
-        else if (~_GEN_24) begin	// src/main/scala/bus/BetaBus.scala:50:24, :130:17
-          if (_GEN_3) begin	// src/main/scala/bus/BetaBus.scala:130:17
-            if (_GEN_25)	// src/main/scala/bus/BetaBus.scala:206:35
-              dataReg_rdata <= {24'h0, io_extRam_rspns_rData[31:24]};	// src/main/scala/bus/BetaBus.scala:50:24, :208:38, :249:{38,62}
-            else if (_GEN_26)	// src/main/scala/bus/BetaBus.scala:206:35
-              dataReg_rdata <= {24'h0, io_extRam_rspns_rData[23:16]};	// src/main/scala/bus/BetaBus.scala:50:24, :208:38, :252:{38,62}
-            else if (_GEN_27)	// src/main/scala/bus/BetaBus.scala:206:35
-              dataReg_rdata <= {24'h0, io_extRam_rspns_rData[15:8]};	// src/main/scala/bus/BetaBus.scala:50:24, :208:38, :255:{38,62}
-            else if (_GEN_28)	// src/main/scala/bus/BetaBus.scala:206:35
-              dataReg_rdata <= {24'h0, io_extRam_rspns_rData[7:0]};	// src/main/scala/bus/BetaBus.scala:50:24, :208:38, :258:{38,62}
-            else if (_GEN_29)	// src/main/scala/bus/BetaBus.scala:206:35
+        else if (~_GEN_25) begin	// src/main/scala/bus/BetaBus.scala:50:24, :131:17
+          if (_GEN_3) begin	// src/main/scala/bus/BetaBus.scala:131:17
+            if (_GEN_26)	// src/main/scala/bus/BetaBus.scala:207:35
+              dataReg_rdata <= {24'h0, io_extRam_rspns_rData[31:24]};	// src/main/scala/bus/BetaBus.scala:50:24, :209:38, :252:{38,62}
+            else if (_GEN_27)	// src/main/scala/bus/BetaBus.scala:207:35
+              dataReg_rdata <= {24'h0, io_extRam_rspns_rData[23:16]};	// src/main/scala/bus/BetaBus.scala:50:24, :209:38, :255:{38,62}
+            else if (_GEN_28)	// src/main/scala/bus/BetaBus.scala:207:35
+              dataReg_rdata <= {24'h0, io_extRam_rspns_rData[15:8]};	// src/main/scala/bus/BetaBus.scala:50:24, :209:38, :258:{38,62}
+            else if (_GEN_29)	// src/main/scala/bus/BetaBus.scala:207:35
+              dataReg_rdata <= {24'h0, io_extRam_rspns_rData[7:0]};	// src/main/scala/bus/BetaBus.scala:50:24, :209:38, :261:{38,62}
+            else if (_GEN_30)	// src/main/scala/bus/BetaBus.scala:207:35
               dataReg_rdata <= io_extRam_rspns_rData;	// src/main/scala/bus/BetaBus.scala:50:24
           end
-          else if (~_GEN_4) begin	// src/main/scala/bus/BetaBus.scala:50:24, :130:17
-            if (_GEN_5)	// src/main/scala/bus/BetaBus.scala:130:17
+          else if (~_GEN_4) begin	// src/main/scala/bus/BetaBus.scala:50:24, :131:17
+            if (_GEN_5)	// src/main/scala/bus/BetaBus.scala:131:17
               dataReg_rdata <=
-                {30'h0, _uartReceiver_RxD_data_ready, ~_uartTransmitter_TxD_busy};	// src/main/scala/bus/BetaBus.scala:27:31, :28:28, :36:48, :50:24, :272:34
-            else if (_GEN_6)	// src/main/scala/bus/BetaBus.scala:130:17
-              dataReg_rdata <= {24'h0, _uartReceiver_RxD_data};	// src/main/scala/bus/BetaBus.scala:28:28, :50:24, :208:38, :277:34
+                {30'h0, _uartReceiver_RxD_data_ready, ~_uartTransmitter_TxD_busy};	// src/main/scala/bus/BetaBus.scala:27:31, :28:28, :36:48, :50:24, :277:34
+            else if (_GEN_6)	// src/main/scala/bus/BetaBus.scala:131:17
+              dataReg_rdata <= {24'h0, _uartReceiver_RxD_data};	// src/main/scala/bus/BetaBus.scala:28:28, :50:24, :209:38, :282:34
           end
         end
       end
       dataReg_rrdy <= ~(|dstat);	// src/main/scala/bus/BetaBus.scala:50:24, :89:22, :91:25
       dataReg_rvalid <=
         (|dstat)
-        & (~_GEN & (_GEN_0 | ~_GEN_24 & (_GEN_3 | ~_GEN_4 & _GEN_7)) | dataReg_rvalid);	// src/main/scala/bus/BetaBus.scala:50:24, :89:22, :91:25, :130:17, :132:22, :205:22, :246:22, :271:22, :276:22
+        & (~_GEN & (_GEN_0 | ~_GEN_25 & (_GEN_3 | ~_GEN_4 & _GEN_7)) | dataReg_rvalid);	// src/main/scala/bus/BetaBus.scala:50:24, :89:22, :91:25, :131:17, :133:22, :206:22, :249:22, :276:22, :281:22
       dataReg_wrdy <= ~(|dstat);	// src/main/scala/bus/BetaBus.scala:50:24, :89:22, :91:25
       dataReg_wdone <=
         (|dstat)
         & (~(_GEN | _GEN_0) & (_GEN_1 | ~(_GEN_2 | _GEN_3) & (_GEN_4 | ~_GEN_7 & _GEN_8))
-           | dataReg_wdone);	// src/main/scala/bus/BetaBus.scala:50:24, :89:22, :91:25, :130:17, :133:21, :226:21, :267:21, :271:22, :276:22
+           | dataReg_wdone);	// src/main/scala/bus/BetaBus.scala:50:24, :89:22, :91:25, :131:17, :134:21, :228:21, :271:21, :276:22, :281:22
       if (|dstat) begin	// src/main/scala/bus/BetaBus.scala:89:22, :91:25
-        automatic logic _GEN_30;	// src/main/scala/bus/BetaBus.scala:100:17, :130:17, :188:25, :193:31
-        automatic logic _GEN_31;	// src/main/scala/bus/BetaBus.scala:189:31, :193:31, :195:19
-        automatic logic _GEN_32;	// src/main/scala/bus/BetaBus.scala:100:17, :189:31, :191:19, :193:31, :195:19
-        automatic logic _GEN_33;	// src/main/scala/bus/BetaBus.scala:57:24, :130:17, :229:24, :234:31
-        automatic logic _GEN_34;	// src/main/scala/bus/BetaBus.scala:57:24, :130:17
-        automatic logic _GEN_35;	// src/main/scala/bus/BetaBus.scala:57:24, :130:17
-        automatic logic _GEN_36;	// src/main/scala/bus/BetaBus.scala:57:24, :130:17
-        _GEN_30 = _GEN & ~baseRamBusy;	// src/main/scala/bus/BetaBus.scala:96:57, :100:17, :117:12, :130:17, :188:25, :193:31
-        _GEN_31 = dataReqBuf_wreq | dataReqBuf_rreq;	// src/main/scala/bus/BetaBus.scala:90:27, :189:31, :193:31, :195:19
-        _GEN_32 = dataReqBuf_wreq | dataReqBuf_rreq;	// src/main/scala/bus/BetaBus.scala:90:27, :100:17, :189:31, :191:19, :193:31, :195:19
-        _GEN_33 = _GEN_2 & ~extRamBusy;	// src/main/scala/bus/BetaBus.scala:57:24, :97:35, :130:17, :229:{12,24}, :234:31
-        _GEN_34 = _GEN_0 | _GEN_1;	// src/main/scala/bus/BetaBus.scala:57:24, :130:17
-        _GEN_35 = _GEN | _GEN_34;	// src/main/scala/bus/BetaBus.scala:57:24, :130:17
-        _GEN_36 = _GEN_35 | ~_GEN_33;	// src/main/scala/bus/BetaBus.scala:57:24, :130:17, :229:24, :234:31
-        if (_GEN_30) begin	// src/main/scala/bus/BetaBus.scala:100:17, :130:17, :188:25, :193:31
-          if (dataReqBuf_wreq) begin	// src/main/scala/bus/BetaBus.scala:90:27
-            boutReg_wData <= dataReqBuf_wdata;	// src/main/scala/bus/BetaBus.scala:56:24, :90:27
-            boutReg_addr <= dataReqBuf_addr[21:2];	// src/main/scala/bus/BetaBus.scala:56:24, :90:27, :196:28
-          end
-          else if (dataReqBuf_rreq) begin	// src/main/scala/bus/BetaBus.scala:90:27
-            boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
-            boutReg_addr <= dataReqBuf_addr[21:2];	// src/main/scala/bus/BetaBus.scala:56:24, :90:27, :191:46
-          end
-          else if (|istat) begin	// src/main/scala/bus/BetaBus.scala:71:22, :73:25
-            if (_GEN_17) begin	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :117:26, :119:17
-              boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
-              boutReg_addr <= instReqBuf_pc[21:2];	// src/main/scala/bus/BetaBus.scala:56:24, :72:27, :119:46
+        automatic logic _GEN_31;	// src/main/scala/bus/BetaBus.scala:190:31, :194:31, :196:19
+        automatic logic _GEN_32;	// src/main/scala/bus/BetaBus.scala:100:17, :190:31, :192:19, :194:31, :196:19
+        automatic logic _GEN_33;	// src/main/scala/bus/BetaBus.scala:100:17, :131:17, :224:15, :229:15
+        _GEN_31 = dataReqBuf_wreq | dataReqBuf_rreq;	// src/main/scala/bus/BetaBus.scala:90:27, :190:31, :194:31, :196:19
+        _GEN_32 = dataReqBuf_wreq | dataReqBuf_rreq;	// src/main/scala/bus/BetaBus.scala:90:27, :100:17, :190:31, :192:19, :194:31, :196:19
+        _GEN_33 = _GEN_0 | _GEN_1;	// src/main/scala/bus/BetaBus.scala:100:17, :131:17, :224:15, :229:15
+        if (_GEN) begin	// src/main/scala/bus/BetaBus.scala:131:17
+          if (baseRamBusy) begin	// src/main/scala/bus/BetaBus.scala:96:57
+            if (|istat) begin	// src/main/scala/bus/BetaBus.scala:71:22, :73:25
+              if (_GEN_16) begin	// src/main/scala/bus/BetaBus.scala:100:17
+                if (~baseRamBusy) begin	// src/main/scala/bus/BetaBus.scala:96:57
+                  boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
+                  boutReg_addr <= instReqBuf_pc[21:2];	// src/main/scala/bus/BetaBus.scala:56:24, :72:27, :119:46
+                end
+                boutReg_oe <= _GEN_17;	// src/main/scala/bus/BetaBus.scala:56:24, :117:26, :119:17
+                boutReg_we <= _GEN_18;	// src/main/scala/bus/BetaBus.scala:56:24, :117:26, :119:17
+              end
+              else begin	// src/main/scala/bus/BetaBus.scala:100:17
+                if (_GEN_19) begin	// src/main/scala/bus/BetaBus.scala:100:17
+                  boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
+                  boutReg_addr <= 20'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/bus/sram/SramUtils.scala:12:15
+                end
+                boutReg_oe <= _GEN_21;	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :127:15
+                boutReg_we <= _GEN_23;	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :127:15
+              end
+            end
+            else begin	// src/main/scala/bus/BetaBus.scala:73:25
+              if (_GEN_13) begin	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
+              end
+              else begin	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
+                boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
+                boutReg_addr <= io_instChannel_req_pc[21:2];	// src/main/scala/bus/BetaBus.scala:56:24, :111:56
+              end
+              boutReg_oe <= _GEN_14;	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
+              boutReg_we <= _GEN_15;	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
             end
           end
-          else if (_GEN_13) begin	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
-          end
-          else begin	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
-            boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
-            boutReg_addr <= io_instChannel_req_pc[21:2];	// src/main/scala/bus/BetaBus.scala:56:24, :111:56
-          end
-          boutReg_oe <= dataReqBuf_wreq | ~dataReqBuf_rreq & _GEN_20;	// src/main/scala/bus/BetaBus.scala:56:24, :90:27, :100:17, :102:24, :189:31, :191:19, :193:31, :195:19
-          boutReg_we <= ~dataReqBuf_wreq & (dataReqBuf_rreq | _GEN_22);	// src/main/scala/bus/BetaBus.scala:56:24, :90:27, :100:17, :102:24, :189:31, :191:19, :193:31, :195:19
-        end
-        else if (|istat) begin	// src/main/scala/bus/BetaBus.scala:71:22, :73:25
-          if (_GEN_17) begin	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :117:26, :119:17
-            boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
-            boutReg_addr <= instReqBuf_pc[21:2];	// src/main/scala/bus/BetaBus.scala:56:24, :72:27, :119:46
-          end
-          boutReg_oe <= _GEN_19;	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :117:26, :119:17
-          boutReg_we <= _GEN_21;	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :117:26, :119:17
-        end
-        else begin	// src/main/scala/bus/BetaBus.scala:73:25
-          if (_GEN_13) begin	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
-          end
-          else begin	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
-            boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
-            boutReg_addr <= io_instChannel_req_pc[21:2];	// src/main/scala/bus/BetaBus.scala:56:24, :111:56
-          end
-          boutReg_oe <= _GEN_14;	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
-          boutReg_we <= _GEN_15;	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
-        end
-        if (_GEN_30 & _GEN_31)	// src/main/scala/bus/BetaBus.scala:100:17, :130:17, :188:25, :189:31, :193:31, :195:19
-          boutReg_byteSelN <= dataReqBuf_byteSelN;	// src/main/scala/bus/BetaBus.scala:56:24, :90:27
-        else if (|istat) begin	// src/main/scala/bus/BetaBus.scala:71:22, :73:25
-          if (_GEN_17)	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :117:26, :119:17
-            boutReg_byteSelN <= 4'h0;	// src/main/scala/bus/BetaBus.scala:17:7, :56:24
-        end
-        else if (_GEN_13) begin	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
-        end
-        else	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
-          boutReg_byteSelN <= 4'h0;	// src/main/scala/bus/BetaBus.scala:17:7, :56:24
-        boutReg_ce <= ~(_GEN & ~baseRamBusy & _GEN_32) & _GEN_18;	// src/main/scala/bus/BetaBus.scala:56:24, :96:57, :100:17, :102:24, :117:12, :130:17, :188:25, :189:31, :191:19, :193:31, :195:19
-        if (_GEN_36) begin	// src/main/scala/bus/BetaBus.scala:57:24, :130:17
-        end
-        else if (dataReqBuf_wreq) begin	// src/main/scala/bus/BetaBus.scala:90:27
-          eoutReg_wData <= dataReqBuf_wdata;	// src/main/scala/bus/BetaBus.scala:57:24, :90:27
-          eoutReg_addr <= dataReqBuf_addr[21:2];	// src/main/scala/bus/BetaBus.scala:57:24, :90:27, :237:28
-        end
-        else if (dataReqBuf_rreq) begin	// src/main/scala/bus/BetaBus.scala:90:27
-          eoutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:57:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
-          eoutReg_addr <= dataReqBuf_addr[21:2];	// src/main/scala/bus/BetaBus.scala:57:24, :90:27, :232:46
-        end
-        if (_GEN_35 | ~(_GEN_33 & _GEN_31)) begin	// src/main/scala/bus/BetaBus.scala:57:24, :130:17, :189:31, :193:31, :195:19, :229:24, :234:31
-        end
-        else	// src/main/scala/bus/BetaBus.scala:57:24, :130:17
-          eoutReg_byteSelN <= dataReqBuf_byteSelN;	// src/main/scala/bus/BetaBus.scala:57:24, :90:27
-        eoutReg_ce <= (_GEN_35 | ~(_GEN_2 & ~extRamBusy & _GEN_32)) & eoutReg_ce;	// src/main/scala/bus/BetaBus.scala:57:24, :97:35, :100:17, :130:17, :189:31, :191:19, :193:31, :195:19, :229:{12,24}, :230:31, :232:19, :234:31, :236:19
-        if (_GEN_36) begin	// src/main/scala/bus/BetaBus.scala:57:24, :130:17
-        end
-        else begin	// src/main/scala/bus/BetaBus.scala:57:24, :130:17
-          eoutReg_oe <= dataReqBuf_wreq | ~dataReqBuf_rreq & eoutReg_oe;	// src/main/scala/bus/BetaBus.scala:57:24, :90:27, :100:17, :189:31, :191:19, :230:31, :232:19, :234:31, :236:19
-          eoutReg_we <= ~dataReqBuf_wreq & (dataReqBuf_rreq | eoutReg_we);	// src/main/scala/bus/BetaBus.scala:57:24, :90:27, :189:31, :193:31, :195:19, :230:31, :232:19, :234:31, :236:19
-        end
-        if (_GEN) begin	// src/main/scala/bus/BetaBus.scala:130:17
-          if (~baseRamBusy) begin	// src/main/scala/bus/BetaBus.scala:96:57
-            if (dataReqBuf_wreq)	// src/main/scala/bus/BetaBus.scala:90:27
+          else begin	// src/main/scala/bus/BetaBus.scala:96:57
+            if (dataReqBuf_wreq) begin	// src/main/scala/bus/BetaBus.scala:90:27
+              boutReg_wData <= dataReqBuf_wdata;	// src/main/scala/bus/BetaBus.scala:56:24, :90:27
+              boutReg_addr <= dataReqBuf_addr[21:2];	// src/main/scala/bus/BetaBus.scala:56:24, :90:27, :197:28
               dstat <= 4'h4;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
-            else if (dataReqBuf_rreq)	// src/main/scala/bus/BetaBus.scala:90:27
+            end
+            else if (dataReqBuf_rreq) begin	// src/main/scala/bus/BetaBus.scala:90:27
+              boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
+              boutReg_addr <= dataReqBuf_addr[21:2];	// src/main/scala/bus/BetaBus.scala:56:24, :90:27, :192:46
               dstat <= 4'h3;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
+            end
+            else if (|istat) begin	// src/main/scala/bus/BetaBus.scala:71:22, :73:25
+              if (_GEN_16) begin	// src/main/scala/bus/BetaBus.scala:100:17
+                if (~baseRamBusy) begin	// src/main/scala/bus/BetaBus.scala:96:57
+                  boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
+                  boutReg_addr <= instReqBuf_pc[21:2];	// src/main/scala/bus/BetaBus.scala:56:24, :72:27, :119:46
+                end
+              end
+              else if (_GEN_19) begin	// src/main/scala/bus/BetaBus.scala:100:17
+                boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
+                boutReg_addr <= 20'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/bus/sram/SramUtils.scala:12:15
+              end
+            end
+            else if (_GEN_13) begin	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
+            end
+            else begin	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
+              boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
+              boutReg_addr <= io_instChannel_req_pc[21:2];	// src/main/scala/bus/BetaBus.scala:56:24, :111:56
+            end
+            boutReg_oe <= dataReqBuf_wreq | ~dataReqBuf_rreq & _GEN_22;	// src/main/scala/bus/BetaBus.scala:56:24, :90:27, :100:17, :102:24, :190:31, :192:19, :194:31, :196:19
+            boutReg_we <= ~dataReqBuf_wreq & (dataReqBuf_rreq | _GEN_24);	// src/main/scala/bus/BetaBus.scala:56:24, :90:27, :100:17, :102:24, :190:31, :192:19, :194:31, :196:19
+          end
+          if (baseRamBusy | ~_GEN_31) begin	// src/main/scala/bus/BetaBus.scala:96:57, :100:17, :189:25, :190:31, :194:31, :196:19
+            if (|istat) begin	// src/main/scala/bus/BetaBus.scala:71:22, :73:25
+              if (_GEN_16) begin	// src/main/scala/bus/BetaBus.scala:100:17
+                if (~baseRamBusy)	// src/main/scala/bus/BetaBus.scala:96:57
+                  boutReg_byteSelN <= 4'h0;	// src/main/scala/bus/BetaBus.scala:17:7, :56:24
+              end
+              else if (_GEN_19)	// src/main/scala/bus/BetaBus.scala:100:17
+                boutReg_byteSelN <= 4'hF;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/bus/sram/SramUtils.scala:11:19
+            end
+            else if (_GEN_13) begin	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
+            end
+            else	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
+              boutReg_byteSelN <= 4'h0;	// src/main/scala/bus/BetaBus.scala:17:7, :56:24
+          end
+          else	// src/main/scala/bus/BetaBus.scala:100:17, :189:25, :194:31
+            boutReg_byteSelN <= dataReqBuf_byteSelN;	// src/main/scala/bus/BetaBus.scala:56:24, :90:27
+          boutReg_ce <= ~(~baseRamBusy & _GEN_32) & _GEN_20;	// src/main/scala/bus/BetaBus.scala:56:24, :96:57, :100:17, :102:24, :117:12, :189:25, :190:31, :192:19, :194:31, :196:19
+        end
+        else begin	// src/main/scala/bus/BetaBus.scala:131:17
+          if (_GEN_33) begin	// src/main/scala/bus/BetaBus.scala:100:17, :131:17, :224:15, :229:15
+            boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
+            boutReg_addr <= 20'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/bus/sram/SramUtils.scala:12:15
+            boutReg_byteSelN <= 4'hF;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/bus/sram/SramUtils.scala:11:19
+            dstat <= 4'h0;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
+          end
+          else begin	// src/main/scala/bus/BetaBus.scala:100:17, :131:17, :224:15, :229:15
+            if (|istat) begin	// src/main/scala/bus/BetaBus.scala:71:22, :73:25
+              if (_GEN_16) begin	// src/main/scala/bus/BetaBus.scala:100:17
+                if (~baseRamBusy) begin	// src/main/scala/bus/BetaBus.scala:96:57
+                  boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
+                  boutReg_addr <= instReqBuf_pc[21:2];	// src/main/scala/bus/BetaBus.scala:56:24, :72:27, :119:46
+                  boutReg_byteSelN <= 4'h0;	// src/main/scala/bus/BetaBus.scala:17:7, :56:24
+                end
+              end
+              else if (_GEN_19) begin	// src/main/scala/bus/BetaBus.scala:100:17
+                boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
+                boutReg_addr <= 20'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/bus/sram/SramUtils.scala:12:15
+                boutReg_byteSelN <= 4'hF;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/bus/sram/SramUtils.scala:11:19
+              end
+            end
+            else if (_GEN_13) begin	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
+            end
+            else begin	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
+              boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
+              boutReg_addr <= io_instChannel_req_pc[21:2];	// src/main/scala/bus/BetaBus.scala:56:24, :111:56
+              boutReg_byteSelN <= 4'h0;	// src/main/scala/bus/BetaBus.scala:17:7, :56:24
+            end
+            if (_GEN_2) begin	// src/main/scala/bus/BetaBus.scala:131:17
+              if (~extRamBusy) begin	// src/main/scala/bus/BetaBus.scala:97:35
+                if (dataReqBuf_wreq)	// src/main/scala/bus/BetaBus.scala:90:27
+                  dstat <= 4'h6;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
+                else if (dataReqBuf_rreq)	// src/main/scala/bus/BetaBus.scala:90:27
+                  dstat <= 4'h5;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
+              end
+            end
+            else if (_GEN_3 | _GEN_4 | _GEN_5 | _GEN_6 | _GEN_8)	// src/main/scala/bus/BetaBus.scala:89:22, :131:17, :248:13, :270:13, :275:13, :280:13, :286:13
+              dstat <= 4'h0;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
+          end
+          boutReg_ce <= _GEN_33 | _GEN_20;	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :102:24, :131:17, :224:15, :229:15
+          boutReg_oe <= _GEN_33 | _GEN_22;	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :102:24, :131:17, :224:15, :229:15
+          boutReg_we <= _GEN_33 | _GEN_24;	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :102:24, :131:17, :224:15, :229:15
+        end
+        if (~(_GEN | _GEN_33)) begin	// src/main/scala/bus/BetaBus.scala:57:24, :100:17, :131:17, :224:15, :229:15
+          if (_GEN_2) begin	// src/main/scala/bus/BetaBus.scala:131:17
+            if (~extRamBusy) begin	// src/main/scala/bus/BetaBus.scala:97:35
+              if (dataReqBuf_wreq) begin	// src/main/scala/bus/BetaBus.scala:90:27
+                eoutReg_wData <= dataReqBuf_wdata;	// src/main/scala/bus/BetaBus.scala:57:24, :90:27
+                eoutReg_addr <= dataReqBuf_addr[21:2];	// src/main/scala/bus/BetaBus.scala:57:24, :90:27, :240:28
+              end
+              else if (dataReqBuf_rreq) begin	// src/main/scala/bus/BetaBus.scala:90:27
+                eoutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:57:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
+                eoutReg_addr <= dataReqBuf_addr[21:2];	// src/main/scala/bus/BetaBus.scala:57:24, :90:27, :235:46
+              end
+              eoutReg_oe <= dataReqBuf_wreq | ~dataReqBuf_rreq & eoutReg_oe;	// src/main/scala/bus/BetaBus.scala:57:24, :90:27, :100:17, :190:31, :192:19, :233:31, :235:19, :237:31, :239:19
+              eoutReg_we <= ~dataReqBuf_wreq & (dataReqBuf_rreq | eoutReg_we);	// src/main/scala/bus/BetaBus.scala:57:24, :90:27, :190:31, :194:31, :196:19, :233:31, :235:19, :237:31, :239:19
+            end
+            if (extRamBusy | ~_GEN_31) begin	// src/main/scala/bus/BetaBus.scala:57:24, :97:35, :100:17, :189:25, :190:31, :194:31, :196:19, :232:24, :237:31
+            end
+            else	// src/main/scala/bus/BetaBus.scala:57:24, :232:24, :237:31
+              eoutReg_byteSelN <= dataReqBuf_byteSelN;	// src/main/scala/bus/BetaBus.scala:57:24, :90:27
+            eoutReg_ce <= ~(~extRamBusy & _GEN_32) & eoutReg_ce;	// src/main/scala/bus/BetaBus.scala:57:24, :97:35, :100:17, :190:31, :192:19, :194:31, :196:19, :232:{12,24}, :233:31, :235:19, :237:31, :239:19
+          end
+          else begin	// src/main/scala/bus/BetaBus.scala:131:17
+            automatic logic _GEN_34 = _GEN_3 | _GEN_4;	// src/main/scala/bus/BetaBus.scala:57:24, :131:17, :267:15, :272:15
+            if (_GEN_34) begin	// src/main/scala/bus/BetaBus.scala:57:24, :131:17, :267:15, :272:15
+              eoutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:57:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
+              eoutReg_addr <= 20'h0;	// src/main/scala/bus/BetaBus.scala:57:24, src/main/scala/bus/sram/SramUtils.scala:12:15
+              eoutReg_byteSelN <= 4'hF;	// src/main/scala/bus/BetaBus.scala:57:24, src/main/scala/bus/sram/SramUtils.scala:11:19
+            end
+            eoutReg_ce <= _GEN_34 | eoutReg_ce;	// src/main/scala/bus/BetaBus.scala:57:24, :131:17, :267:15, :272:15
+            eoutReg_oe <= _GEN_34 | eoutReg_oe;	// src/main/scala/bus/BetaBus.scala:57:24, :131:17, :267:15, :272:15
+            eoutReg_we <= _GEN_34 | eoutReg_we;	// src/main/scala/bus/BetaBus.scala:57:24, :131:17, :267:15, :272:15
           end
         end
-        else if (_GEN_34)	// src/main/scala/bus/BetaBus.scala:57:24, :130:17
-          dstat <= 4'h0;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
-        else if (_GEN_2) begin	// src/main/scala/bus/BetaBus.scala:130:17
-          if (~extRamBusy) begin	// src/main/scala/bus/BetaBus.scala:97:35
-            if (dataReqBuf_wreq)	// src/main/scala/bus/BetaBus.scala:90:27
-              dstat <= 4'h6;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
-            else if (dataReqBuf_rreq)	// src/main/scala/bus/BetaBus.scala:90:27
-              dstat <= 4'h5;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
-          end
-        end
-        else if (_GEN_3 | _GEN_4 | _GEN_5 | _GEN_6 | _GEN_8)	// src/main/scala/bus/BetaBus.scala:89:22, :130:17, :245:13, :266:13, :270:13, :275:13, :281:13
-          dstat <= 4'h0;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
       end
       else begin	// src/main/scala/bus/BetaBus.scala:91:25
-        automatic logic _GEN_37;	// src/main/scala/bus/BetaBus.scala:100:17, :136:24, :149:75, :150:29
-        automatic logic _GEN_38 = io_dataChannel_req_wreq | io_dataChannel_req_rreq;	// src/main/scala/bus/BetaBus.scala:100:17, :153:43, :155:23, :157:43, :159:23
-        automatic logic _GEN_39;	// src/main/scala/bus/BetaBus.scala:100:17, :136:24, :149:75, :150:29
-        automatic logic _GEN_40;	// src/main/scala/bus/BetaBus.scala:167:45
-        automatic logic _GEN_41;	// src/main/scala/bus/BetaBus.scala:57:24, :136:24, :167:74, :168:28
-        automatic logic _GEN_42;	// src/main/scala/bus/BetaBus.scala:57:24, :136:24, :167:74, :168:28
-        automatic logic _GEN_43;	// src/main/scala/bus/BetaBus.scala:57:24, :136:24, :167:74, :168:28
-        _GEN_37 = ~_GEN_11 | baseRamBusy;	// src/main/scala/bus/BetaBus.scala:96:57, :100:17, :105:25, :136:24, :149:75, :150:29
-        _GEN_39 = ~_GEN_11 | baseRamBusy | ~_GEN_38;	// src/main/scala/bus/BetaBus.scala:96:57, :100:17, :105:25, :136:24, :149:75, :150:29, :153:43, :155:23, :157:43, :159:23
-        _GEN_40 = io_dataChannel_req_addr[31:22] == 10'h201;	// src/main/scala/bus/BetaBus.scala:105:51, :167:45
-        _GEN_41 = dataHasReq & _GEN_40;	// src/main/scala/bus/BetaBus.scala:57:24, :62:56, :136:24, :167:{45,74}, :168:28
-        _GEN_42 = ~_GEN_41 | extRamBusy;	// src/main/scala/bus/BetaBus.scala:57:24, :97:35, :136:24, :167:74, :168:28
-        _GEN_43 = ~_GEN_41 | extRamBusy | ~_GEN_38;	// src/main/scala/bus/BetaBus.scala:57:24, :97:35, :100:17, :136:24, :150:29, :153:43, :155:23, :157:43, :159:23, :167:74, :168:28
-        if (_GEN_37) begin	// src/main/scala/bus/BetaBus.scala:100:17, :136:24, :149:75, :150:29
+        automatic logic _GEN_35;	// src/main/scala/bus/BetaBus.scala:100:17, :137:24, :150:75, :151:29
+        automatic logic _GEN_36 = io_dataChannel_req_wreq | io_dataChannel_req_rreq;	// src/main/scala/bus/BetaBus.scala:100:17, :154:43, :156:23, :158:43, :160:23
+        automatic logic _GEN_37;	// src/main/scala/bus/BetaBus.scala:100:17, :137:24, :150:75, :151:29
+        automatic logic _GEN_38;	// src/main/scala/bus/BetaBus.scala:168:45
+        automatic logic _GEN_39;	// src/main/scala/bus/BetaBus.scala:57:24, :137:24, :168:74, :169:28
+        automatic logic _GEN_40;	// src/main/scala/bus/BetaBus.scala:57:24, :137:24, :168:74, :169:28
+        automatic logic _GEN_41;	// src/main/scala/bus/BetaBus.scala:57:24, :137:24, :168:74, :169:28
+        _GEN_35 = ~_GEN_11 | baseRamBusy;	// src/main/scala/bus/BetaBus.scala:96:57, :100:17, :105:25, :137:24, :150:75, :151:29
+        _GEN_37 = ~_GEN_11 | baseRamBusy | ~_GEN_36;	// src/main/scala/bus/BetaBus.scala:96:57, :100:17, :105:25, :137:24, :150:75, :151:29, :154:43, :156:23, :158:43, :160:23
+        _GEN_38 = io_dataChannel_req_addr[31:22] == 10'h201;	// src/main/scala/bus/BetaBus.scala:105:51, :168:45
+        _GEN_39 = dataHasReq & _GEN_38;	// src/main/scala/bus/BetaBus.scala:57:24, :62:56, :137:24, :168:{45,74}, :169:28
+        _GEN_40 = ~_GEN_39 | extRamBusy;	// src/main/scala/bus/BetaBus.scala:57:24, :97:35, :137:24, :168:74, :169:28
+        _GEN_41 = ~_GEN_39 | extRamBusy | ~_GEN_36;	// src/main/scala/bus/BetaBus.scala:57:24, :97:35, :100:17, :137:24, :151:29, :154:43, :156:23, :158:43, :160:23, :168:74, :169:28
+        if (_GEN_35) begin	// src/main/scala/bus/BetaBus.scala:100:17, :137:24, :150:75, :151:29
           if (|istat) begin	// src/main/scala/bus/BetaBus.scala:71:22, :73:25
-            if (_GEN_17) begin	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :117:26, :119:17
+            if (_GEN_16) begin	// src/main/scala/bus/BetaBus.scala:100:17
+              if (~baseRamBusy)	// src/main/scala/bus/BetaBus.scala:96:57
+                boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
+              if (~baseRamBusy)	// src/main/scala/bus/BetaBus.scala:96:57
+                boutReg_addr <= instReqBuf_pc[21:2];	// src/main/scala/bus/BetaBus.scala:56:24, :72:27, :119:46
+            end
+            else if (_GEN_19) begin	// src/main/scala/bus/BetaBus.scala:100:17
               boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
-              boutReg_addr <= instReqBuf_pc[21:2];	// src/main/scala/bus/BetaBus.scala:56:24, :72:27, :119:46
+              boutReg_addr <= 20'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/bus/sram/SramUtils.scala:12:15
             end
           end
           else if (_GEN_13) begin	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
@@ -1746,16 +1812,22 @@ module BetaBus(	// src/main/scala/bus/BetaBus.scala:17:7
         end
         else if (io_dataChannel_req_wreq) begin	// src/main/scala/bus/BetaBus.scala:18:14
           boutReg_wData <= io_dataChannel_req_wdata;	// src/main/scala/bus/BetaBus.scala:56:24
-          boutReg_addr <= io_dataChannel_req_addr[21:2];	// src/main/scala/bus/BetaBus.scala:56:24, :160:40
+          boutReg_addr <= io_dataChannel_req_addr[21:2];	// src/main/scala/bus/BetaBus.scala:56:24, :161:40
         end
         else if (io_dataChannel_req_rreq) begin	// src/main/scala/bus/BetaBus.scala:18:14
           boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
-          boutReg_addr <= io_dataChannel_req_addr[21:2];	// src/main/scala/bus/BetaBus.scala:56:24, :155:58
+          boutReg_addr <= io_dataChannel_req_addr[21:2];	// src/main/scala/bus/BetaBus.scala:56:24, :156:58
         end
         else if (|istat) begin	// src/main/scala/bus/BetaBus.scala:71:22, :73:25
-          if (_GEN_17) begin	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :117:26, :119:17
+          if (_GEN_16) begin	// src/main/scala/bus/BetaBus.scala:100:17
+            if (~baseRamBusy)	// src/main/scala/bus/BetaBus.scala:96:57
+              boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
+            if (~baseRamBusy)	// src/main/scala/bus/BetaBus.scala:96:57
+              boutReg_addr <= instReqBuf_pc[21:2];	// src/main/scala/bus/BetaBus.scala:56:24, :72:27, :119:46
+          end
+          else if (_GEN_19) begin	// src/main/scala/bus/BetaBus.scala:100:17
             boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
-            boutReg_addr <= instReqBuf_pc[21:2];	// src/main/scala/bus/BetaBus.scala:56:24, :72:27, :119:46
+            boutReg_addr <= 20'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/bus/sram/SramUtils.scala:12:15
           end
         end
         else if (_GEN_13) begin	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
@@ -1764,73 +1836,83 @@ module BetaBus(	// src/main/scala/bus/BetaBus.scala:17:7
           boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
           boutReg_addr <= io_instChannel_req_pc[21:2];	// src/main/scala/bus/BetaBus.scala:56:24, :111:56
         end
-        if (_GEN_39) begin	// src/main/scala/bus/BetaBus.scala:100:17, :136:24, :149:75, :150:29
+        if (_GEN_37) begin	// src/main/scala/bus/BetaBus.scala:100:17, :137:24, :150:75, :151:29
           if (|istat) begin	// src/main/scala/bus/BetaBus.scala:71:22, :73:25
-            if (_GEN_17)	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :117:26, :119:17
-              boutReg_byteSelN <= 4'h0;	// src/main/scala/bus/BetaBus.scala:17:7, :56:24
+            if (_GEN_16) begin	// src/main/scala/bus/BetaBus.scala:100:17
+              if (~baseRamBusy)	// src/main/scala/bus/BetaBus.scala:96:57
+                boutReg_byteSelN <= 4'h0;	// src/main/scala/bus/BetaBus.scala:17:7, :56:24
+            end
+            else if (_GEN_19)	// src/main/scala/bus/BetaBus.scala:100:17
+              boutReg_byteSelN <= 4'hF;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/bus/sram/SramUtils.scala:11:19
           end
           else if (_GEN_13) begin	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
           end
           else	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
             boutReg_byteSelN <= 4'h0;	// src/main/scala/bus/BetaBus.scala:17:7, :56:24
         end
-        else	// src/main/scala/bus/BetaBus.scala:100:17, :136:24, :149:75, :150:29
+        else	// src/main/scala/bus/BetaBus.scala:100:17, :137:24, :150:75, :151:29
           boutReg_byteSelN <= io_dataChannel_req_byteSelN;	// src/main/scala/bus/BetaBus.scala:56:24
-        boutReg_ce <= _GEN_39 & _GEN_18;	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :102:24, :136:24, :149:75, :150:29
-        if (_GEN_37) begin	// src/main/scala/bus/BetaBus.scala:100:17, :136:24, :149:75, :150:29
+        boutReg_ce <= _GEN_37 & _GEN_20;	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :102:24, :137:24, :150:75, :151:29
+        if (_GEN_35) begin	// src/main/scala/bus/BetaBus.scala:100:17, :137:24, :150:75, :151:29
           if (|istat) begin	// src/main/scala/bus/BetaBus.scala:71:22, :73:25
-            boutReg_oe <= _GEN_19;	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :117:26, :119:17
-            boutReg_we <= _GEN_21;	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :117:26, :119:17
+            if (_GEN_16) begin	// src/main/scala/bus/BetaBus.scala:100:17
+              boutReg_oe <= _GEN_17;	// src/main/scala/bus/BetaBus.scala:56:24, :117:26, :119:17
+              boutReg_we <= _GEN_18;	// src/main/scala/bus/BetaBus.scala:56:24, :117:26, :119:17
+            end
+            else begin	// src/main/scala/bus/BetaBus.scala:100:17
+              boutReg_oe <= _GEN_21;	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :127:15
+              boutReg_we <= _GEN_23;	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :127:15
+            end
           end
           else begin	// src/main/scala/bus/BetaBus.scala:73:25
             boutReg_oe <= _GEN_14;	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
             boutReg_we <= _GEN_15;	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
           end
         end
-        else begin	// src/main/scala/bus/BetaBus.scala:100:17, :136:24, :149:75, :150:29
-          boutReg_oe <= io_dataChannel_req_wreq | ~io_dataChannel_req_rreq & _GEN_20;	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :102:24, :153:43, :155:23, :157:43, :159:23
-          boutReg_we <= ~io_dataChannel_req_wreq & (io_dataChannel_req_rreq | _GEN_22);	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :102:24, :153:43, :155:23, :157:43, :159:23
+        else begin	// src/main/scala/bus/BetaBus.scala:100:17, :137:24, :150:75, :151:29
+          boutReg_oe <= io_dataChannel_req_wreq | ~io_dataChannel_req_rreq & _GEN_22;	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :102:24, :154:43, :156:23, :158:43, :160:23
+          boutReg_we <= ~io_dataChannel_req_wreq & (io_dataChannel_req_rreq | _GEN_24);	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :102:24, :154:43, :156:23, :158:43, :160:23
         end
-        if (_GEN_42) begin	// src/main/scala/bus/BetaBus.scala:57:24, :136:24, :167:74, :168:28
+        if (_GEN_40) begin	// src/main/scala/bus/BetaBus.scala:57:24, :137:24, :168:74, :169:28
         end
         else if (io_dataChannel_req_wreq) begin	// src/main/scala/bus/BetaBus.scala:18:14
           eoutReg_wData <= io_dataChannel_req_wdata;	// src/main/scala/bus/BetaBus.scala:57:24
-          eoutReg_addr <= io_dataChannel_req_addr[21:2];	// src/main/scala/bus/BetaBus.scala:57:24, :178:40
+          eoutReg_addr <= io_dataChannel_req_addr[21:2];	// src/main/scala/bus/BetaBus.scala:57:24, :179:40
         end
         else if (io_dataChannel_req_rreq) begin	// src/main/scala/bus/BetaBus.scala:18:14
           eoutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:57:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
-          eoutReg_addr <= io_dataChannel_req_addr[21:2];	// src/main/scala/bus/BetaBus.scala:57:24, :173:58
+          eoutReg_addr <= io_dataChannel_req_addr[21:2];	// src/main/scala/bus/BetaBus.scala:57:24, :174:58
         end
-        if (_GEN_43) begin	// src/main/scala/bus/BetaBus.scala:57:24, :136:24, :167:74, :168:28
+        if (_GEN_41) begin	// src/main/scala/bus/BetaBus.scala:57:24, :137:24, :168:74, :169:28
         end
-        else	// src/main/scala/bus/BetaBus.scala:57:24, :136:24, :167:74, :168:28
+        else	// src/main/scala/bus/BetaBus.scala:57:24, :137:24, :168:74, :169:28
           eoutReg_byteSelN <= io_dataChannel_req_byteSelN;	// src/main/scala/bus/BetaBus.scala:57:24
-        eoutReg_ce <= _GEN_43 & eoutReg_ce;	// src/main/scala/bus/BetaBus.scala:57:24, :136:24, :167:74, :168:28
-        if (_GEN_42) begin	// src/main/scala/bus/BetaBus.scala:57:24, :136:24, :167:74, :168:28
+        eoutReg_ce <= _GEN_41 & eoutReg_ce;	// src/main/scala/bus/BetaBus.scala:57:24, :137:24, :168:74, :169:28
+        if (_GEN_40) begin	// src/main/scala/bus/BetaBus.scala:57:24, :137:24, :168:74, :169:28
         end
-        else begin	// src/main/scala/bus/BetaBus.scala:57:24, :136:24, :167:74, :168:28
-          eoutReg_oe <= io_dataChannel_req_wreq | ~io_dataChannel_req_rreq & eoutReg_oe;	// src/main/scala/bus/BetaBus.scala:57:24, :100:17, :153:43, :155:23, :171:43, :173:23, :175:43, :177:23
-          eoutReg_we <= ~io_dataChannel_req_wreq & (io_dataChannel_req_rreq | eoutReg_we);	// src/main/scala/bus/BetaBus.scala:57:24, :153:43, :157:43, :159:23, :171:43, :173:23, :175:43, :177:23
+        else begin	// src/main/scala/bus/BetaBus.scala:57:24, :137:24, :168:74, :169:28
+          eoutReg_oe <= io_dataChannel_req_wreq | ~io_dataChannel_req_rreq & eoutReg_oe;	// src/main/scala/bus/BetaBus.scala:57:24, :100:17, :154:43, :156:23, :172:43, :174:23, :176:43, :178:23
+          eoutReg_we <= ~io_dataChannel_req_wreq & (io_dataChannel_req_rreq | eoutReg_we);	// src/main/scala/bus/BetaBus.scala:57:24, :154:43, :158:43, :160:23, :172:43, :174:23, :176:43, :178:23
         end
         if (dataHasReq) begin	// src/main/scala/bus/BetaBus.scala:62:56
-          automatic logic _GEN_44;	// src/main/scala/bus/BetaBus.scala:138:38
-          automatic logic _GEN_45;	// src/main/scala/bus/BetaBus.scala:141:38
-          automatic logic _GEN_46;	// src/main/scala/bus/BetaBus.scala:138:67, :141:65, :142:41, :145:41, :146:19
-          _GEN_44 = io_dataChannel_req_addr == 32'hBFD003FC;	// src/main/scala/bus/BetaBus.scala:138:38
-          _GEN_45 = io_dataChannel_req_addr == 32'hBFD003F8;	// src/main/scala/bus/BetaBus.scala:141:38
-          _GEN_46 = _GEN_45 & io_dataChannel_req_wreq;	// src/main/scala/bus/BetaBus.scala:138:67, :141:{38,65}, :142:41, :145:41, :146:19
-          if (_GEN_40) begin	// src/main/scala/bus/BetaBus.scala:167:45
+          automatic logic _GEN_42;	// src/main/scala/bus/BetaBus.scala:139:38
+          automatic logic _GEN_43;	// src/main/scala/bus/BetaBus.scala:142:38
+          automatic logic _GEN_44;	// src/main/scala/bus/BetaBus.scala:139:67, :142:65, :143:41, :146:41, :147:19
+          _GEN_42 = io_dataChannel_req_addr == 32'hBFD003FC;	// src/main/scala/bus/BetaBus.scala:139:38
+          _GEN_43 = io_dataChannel_req_addr == 32'hBFD003F8;	// src/main/scala/bus/BetaBus.scala:142:38
+          _GEN_44 = _GEN_43 & io_dataChannel_req_wreq;	// src/main/scala/bus/BetaBus.scala:139:67, :142:{38,65}, :143:41, :146:41, :147:19
+          if (_GEN_38) begin	// src/main/scala/bus/BetaBus.scala:168:45
             if (extRamBusy)	// src/main/scala/bus/BetaBus.scala:97:35
               dstat <= 4'h2;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
             else if (io_dataChannel_req_wreq)	// src/main/scala/bus/BetaBus.scala:18:14
               dstat <= 4'h6;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
             else if (io_dataChannel_req_rreq)	// src/main/scala/bus/BetaBus.scala:18:14
               dstat <= 4'h5;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
-            else if (_GEN_10 & baseRamBusy)	// src/main/scala/bus/BetaBus.scala:96:57, :105:59, :141:65, :149:75, :150:29
+            else if (_GEN_10 & baseRamBusy)	// src/main/scala/bus/BetaBus.scala:96:57, :105:59, :142:65, :150:75, :151:29
               dstat <= 4'h1;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
-            else if (_GEN_46)	// src/main/scala/bus/BetaBus.scala:138:67, :141:65, :142:41, :145:41, :146:19
+            else if (_GEN_44)	// src/main/scala/bus/BetaBus.scala:139:67, :142:65, :143:41, :146:41, :147:19
               dstat <= 4'h9;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
-            else if (_GEN_44)	// src/main/scala/bus/BetaBus.scala:138:38
+            else if (_GEN_42)	// src/main/scala/bus/BetaBus.scala:139:38
               dstat <= 4'h7;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
           end
           else if (_GEN_10) begin	// src/main/scala/bus/BetaBus.scala:105:59
@@ -1840,20 +1922,20 @@ module BetaBus(	// src/main/scala/bus/BetaBus.scala:17:7
               dstat <= 4'h4;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
             else if (io_dataChannel_req_rreq)	// src/main/scala/bus/BetaBus.scala:18:14
               dstat <= 4'h3;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
-            else if (_GEN_46)	// src/main/scala/bus/BetaBus.scala:138:67, :141:65, :142:41, :145:41, :146:19
+            else if (_GEN_44)	// src/main/scala/bus/BetaBus.scala:139:67, :142:65, :143:41, :146:41, :147:19
               dstat <= 4'h9;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
-            else if (_GEN_44)	// src/main/scala/bus/BetaBus.scala:138:38
+            else if (_GEN_42)	// src/main/scala/bus/BetaBus.scala:139:38
               dstat <= 4'h7;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
           end
-          else if (_GEN_45) begin	// src/main/scala/bus/BetaBus.scala:141:38
+          else if (_GEN_43) begin	// src/main/scala/bus/BetaBus.scala:142:38
             if (io_dataChannel_req_wreq)	// src/main/scala/bus/BetaBus.scala:18:14
               dstat <= 4'h9;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
             else if (io_dataChannel_req_rreq)	// src/main/scala/bus/BetaBus.scala:18:14
               dstat <= 4'h8;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
-            else if (_GEN_44)	// src/main/scala/bus/BetaBus.scala:138:38
+            else if (_GEN_42)	// src/main/scala/bus/BetaBus.scala:139:38
               dstat <= 4'h7;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
           end
-          else if (_GEN_44)	// src/main/scala/bus/BetaBus.scala:138:38
+          else if (_GEN_42)	// src/main/scala/bus/BetaBus.scala:139:38
             dstat <= 4'h7;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
         end
       end
@@ -1862,7 +1944,7 @@ module BetaBus(	// src/main/scala/bus/BetaBus.scala:17:7
           if (~baseRamBusy)	// src/main/scala/bus/BetaBus.scala:96:57
             istat <= 2'h2;	// src/main/scala/bus/BetaBus.scala:71:22, :96:24
         end
-        else if (_GEN_23)	// src/main/scala/bus/BetaBus.scala:100:17
+        else if (_GEN_19)	// src/main/scala/bus/BetaBus.scala:100:17
           istat <= 2'h0;	// src/main/scala/bus/BetaBus.scala:71:22, :124:13
       end
       else if (io_instChannel_req_req) begin	// src/main/scala/bus/BetaBus.scala:18:14
@@ -1873,7 +1955,7 @@ module BetaBus(	// src/main/scala/bus/BetaBus.scala:17:7
       end
       if (~(|istat) & io_instChannel_req_req)	// src/main/scala/bus/BetaBus.scala:71:22, :72:27, :73:25, :100:17, :102:24, :104:20
         instReqBuf_pc <= io_instChannel_req_pc;	// src/main/scala/bus/BetaBus.scala:72:27
-      if (~(|dstat) & dataHasReq) begin	// src/main/scala/bus/BetaBus.scala:62:56, :89:22, :90:27, :91:25, :130:17, :136:24, :137:20
+      if (~(|dstat) & dataHasReq) begin	// src/main/scala/bus/BetaBus.scala:62:56, :89:22, :90:27, :91:25, :131:17, :137:24, :138:20
         dataReqBuf_rreq <= io_dataChannel_req_rreq;	// src/main/scala/bus/BetaBus.scala:90:27
         dataReqBuf_wreq <= io_dataChannel_req_wreq;	// src/main/scala/bus/BetaBus.scala:90:27
         dataReqBuf_byteSelN <= io_dataChannel_req_byteSelN;	// src/main/scala/bus/BetaBus.scala:90:27
@@ -1931,8 +2013,8 @@ module BetaBus(	// src/main/scala/bus/BetaBus.scala:17:7
   `endif // ENABLE_INITIAL_REG_
   async_transmitter uartTransmitter (	// src/main/scala/bus/BetaBus.scala:27:31
     .clk       (clock),
-    .TxD_start (~_GEN_9 & _GEN_8),	// src/main/scala/bus/BetaBus.scala:34:10, :130:17, :135:14
-    .TxD_data  (_GEN_9 | ~_GEN_8 ? 8'h0 : dataReqBuf_wdata[7:0]),	// src/main/scala/bus/BetaBus.scala:33:9, :34:10, :90:27, :130:17, :135:14, :284:32
+    .TxD_start (~_GEN_9 & _GEN_8),	// src/main/scala/bus/BetaBus.scala:34:10, :131:17, :136:14
+    .TxD_data  (_GEN_9 | ~_GEN_8 ? 8'h0 : dataReqBuf_wdata[7:0]),	// src/main/scala/bus/BetaBus.scala:33:9, :34:10, :90:27, :131:17, :136:14, :289:32
     .TxD       (io_uart_txd),
     .TxD_busy  (_uartTransmitter_TxD_busy)
   );
@@ -1942,7 +2024,7 @@ module BetaBus(	// src/main/scala/bus/BetaBus.scala:17:7
     .RxD_data_ready (_uartReceiver_RxD_data_ready),
     .RxD_clear
       (~(~(|dstat) | _GEN | _GEN_0 | _GEN_1 | _GEN_2 | _GEN_3 | _GEN_4 | _GEN_5)
-       & _GEN_6),	// src/main/scala/bus/BetaBus.scala:35:10, :89:22, :91:25, :130:17, :134:14
+       & _GEN_6),	// src/main/scala/bus/BetaBus.scala:35:10, :89:22, :91:25, :131:17, :135:14
     .RxD_data       (_uartReceiver_RxD_data)
   );
   assign io_instChannel_rspns_inst = instReg_inst;	// src/main/scala/bus/BetaBus.scala:17:7, :49:24

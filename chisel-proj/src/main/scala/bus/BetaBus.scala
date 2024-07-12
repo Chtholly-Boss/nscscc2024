@@ -124,6 +124,7 @@ class BetaBus extends Module {
       istat := IS.IDLE
       instReg.rvalid := true.B
       instReg.inst := io.baseRam.rspns.rData
+      boutReg := initSramReq
     }
   }
   // Data Req State Machine

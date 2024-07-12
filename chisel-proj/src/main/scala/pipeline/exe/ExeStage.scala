@@ -35,7 +35,15 @@ class ExeStage extends Module {
     alu.io.in.operand.right := srcInfo.operands.regData_2
   }
   object State extends ChiselEnum {
-    val IDLE,ALUEXE,BRANCH,RD,RDWAIT,WR,WRWAIT,DONE = Value
+    val
+      IDLE,
+      ALUEXE,
+      BRANCH,
+      RD,
+      RDWAIT,
+      WR,
+      WRWAIT,
+      DONE = Value
   }
   import State._
   val stat = RegInit(IDLE)
@@ -45,20 +53,22 @@ class ExeStage extends Module {
         switch (io.in.decode.bits.exeOp.opType) {
           is (tp.branch,tp.jump) {
             stat := BRANCH
-            preLoad := false.B
           }
           is (tp.load) {
             stat := RD
-            preLoad := true.B
           }
           is (tp.store) {
             stat := WR
-            preLoad := false.B
           }
           is (tp.logic,tp.arith,tp.shift) {
             stat := ALUEXE
-            preLoad := false.B
           }
+        }
+        when (io.in.decode.bits.wCtrl.en) {
+          preLoad := true.B
+          preLoadAddr := io.in.decode.bits.wCtrl.addr
+        } .otherwise {
+          preLoad := false.B
         }
         // Cache the inputs
         srcInfo := io.in.decode.bits
@@ -79,10 +89,12 @@ class ExeStage extends Module {
         outReg.bits.en := srcInfo.wCtrl.en
         outReg.bits.addr := srcInfo.wCtrl.addr
         outReg.bits.data := alu.io.out.res
+        preLoadData := alu.io.out.res
     }
     is (BRANCH) {
       stat := DONE
       outReg.bits := srcInfo.wCtrl
+      preLoadData := srcInfo.wCtrl.data
       switch (srcInfo.exeOp.opType) {
         is (tp.branch) {
           switch(srcInfo.exeOp.opFunc) {
@@ -118,7 +130,7 @@ class ExeStage extends Module {
           switch(srcInfo.exeOp.opFunc) {
             is (JumpBranch.jirl) {
               bCtrlOutReg.isMispredict := true.B
-              bCtrlOutReg.npc := (fetchInfo.pc.asSInt + srcInfo.operands.imm.asSInt).asUInt
+              bCtrlOutReg.npc := (srcInfo.operands.regData_1.asSInt + srcInfo.operands.imm.asSInt).asUInt
             }
           }
         }
@@ -154,7 +166,6 @@ class ExeStage extends Module {
         outReg.bits.en := srcInfo.wCtrl.en
         outReg.bits.addr := srcInfo.wCtrl.addr
         outReg.bits.data := io.aside.in.rdata
-        preLoadAddr := srcInfo.wCtrl.addr
         preLoadData := io.aside.in.rdata
       }
     }

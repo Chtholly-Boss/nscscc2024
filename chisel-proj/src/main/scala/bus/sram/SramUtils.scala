@@ -15,24 +15,35 @@ object SramUtils {
   }
 
   def sramReadWord(addr: Bits) : SramRequest = {
-    val sramReadWord = Wire(new SramRequest)
-    sramReadWord.ce := lowLevel
-    sramReadWord.oe := lowLevel
-    sramReadWord.we := highLevel
-    sramReadWord.byteSelN := "b0000".U
-    sramReadWord.addr := addr
-    sramReadWord.wData := 0.U
-    sramReadWord
+    val sig = Wire(new SramRequest)
+    sig.ce := lowLevel
+    sig.oe := lowLevel
+    sig.we := highLevel
+    sig.byteSelN := "b0000".U
+    sig.addr := addr
+    sig.wData := 0.U
+    sig
   }
 
-  def sramWrite(addr:Bits,data:Bits) : SramRequest = {
-    val sramWriteWord = Wire(new SramRequest)
-    sramWriteWord.ce := lowLevel
-    sramWriteWord.oe := highLevel
-    sramWriteWord.we := lowLevel
-    sramWriteWord.byteSelN := "b0000".U
-    sramWriteWord.addr := addr
-    sramWriteWord.wData := data
-    sramWriteWord
+  def sramRead(addr:Bits,bSelN:Bits):SramRequest = {
+    val sig = Wire(new SramRequest)
+    sig.ce := lowLevel
+    sig.oe := lowLevel
+    sig.we := highLevel
+    sig.byteSelN := bSelN
+    sig.addr := addr
+    sig.wData := 0.U
+    sig
+  }
+
+  def sramWrite(addr:Bits,data:Bits,bSelN:Bits) : SramRequest = {
+    val sig = Wire(new SramRequest)
+    sig.ce := lowLevel
+    sig.oe := highLevel
+    sig.we := lowLevel
+    sig.byteSelN := bSelN
+    sig.addr := addr
+    sig.wData := data
+    sig
   }
 }

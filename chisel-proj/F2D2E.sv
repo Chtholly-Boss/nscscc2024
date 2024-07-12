@@ -926,18 +926,16 @@ module DecodeStage(	// src/main/scala/pipeline/decode/DecodeStage.scala:7:7
         end
         if (~_GEN_4) begin	// src/main/scala/pipeline/decode/DecodeStage.scala:13:26, :37:18
           if (_GEN_2) begin	// src/main/scala/pipeline/decode/DecodeStage.scala:37:18
-            if (_du_io_out_isMatched) begin	// src/main/scala/pipeline/decode/DecodeStage.scala:16:18
-              decodeOut_bits_exeOp_opType <= _du_io_out_bits_exeOp_opType;	// src/main/scala/pipeline/decode/DecodeStage.scala:13:26, :16:18
-              decodeOut_bits_exeOp_opFunc <= _du_io_out_bits_exeOp_opFunc;	// src/main/scala/pipeline/decode/DecodeStage.scala:13:26, :16:18
-              decodeOut_bits_wCtrl_addr <= _du_io_out_bits_wCtrl_addr;	// src/main/scala/pipeline/decode/DecodeStage.scala:13:26, :16:18
-              decodeOut_bits_wCtrl_data <= _du_io_out_bits_wCtrl_data;	// src/main/scala/pipeline/decode/DecodeStage.scala:13:26, :16:18
-              decodeOut_bits_operands_imm <= _du_io_out_bits_imm;	// src/main/scala/pipeline/decode/DecodeStage.scala:13:26, :16:18
-              decodeOut_bits_operands_regData_1 <= io_aside_in_regLeft;	// src/main/scala/pipeline/decode/DecodeStage.scala:13:26
-              decodeOut_bits_operands_regData_2 <= io_aside_in_regRight;	// src/main/scala/pipeline/decode/DecodeStage.scala:13:26
-              decodeOut_readInfo_reg_1_addr <= _du_io_out_bits_reg_1_addr;	// src/main/scala/pipeline/decode/DecodeStage.scala:13:26, :16:18
-              decodeOut_readInfo_reg_2_addr <= _du_io_out_bits_reg_2_addr;	// src/main/scala/pipeline/decode/DecodeStage.scala:13:26, :16:18
-              decodeOut_fetchInfo_pc <= srcInfo_pc;	// src/main/scala/pipeline/decode/DecodeStage.scala:13:26, :17:24
-            end
+            decodeOut_bits_exeOp_opType <= _du_io_out_bits_exeOp_opType;	// src/main/scala/pipeline/decode/DecodeStage.scala:13:26, :16:18
+            decodeOut_bits_exeOp_opFunc <= _du_io_out_bits_exeOp_opFunc;	// src/main/scala/pipeline/decode/DecodeStage.scala:13:26, :16:18
+            decodeOut_bits_wCtrl_addr <= _du_io_out_bits_wCtrl_addr;	// src/main/scala/pipeline/decode/DecodeStage.scala:13:26, :16:18
+            decodeOut_bits_wCtrl_data <= _du_io_out_bits_wCtrl_data;	// src/main/scala/pipeline/decode/DecodeStage.scala:13:26, :16:18
+            decodeOut_bits_operands_imm <= _du_io_out_bits_imm;	// src/main/scala/pipeline/decode/DecodeStage.scala:13:26, :16:18
+            decodeOut_bits_operands_regData_1 <= io_aside_in_regLeft;	// src/main/scala/pipeline/decode/DecodeStage.scala:13:26
+            decodeOut_bits_operands_regData_2 <= io_aside_in_regRight;	// src/main/scala/pipeline/decode/DecodeStage.scala:13:26
+            decodeOut_readInfo_reg_1_addr <= _du_io_out_bits_reg_1_addr;	// src/main/scala/pipeline/decode/DecodeStage.scala:13:26, :16:18
+            decodeOut_readInfo_reg_2_addr <= _du_io_out_bits_reg_2_addr;	// src/main/scala/pipeline/decode/DecodeStage.scala:13:26, :16:18
+            decodeOut_fetchInfo_pc <= srcInfo_pc;	// src/main/scala/pipeline/decode/DecodeStage.scala:13:26, :17:24
           end
           else if (_GEN_3) begin	// src/main/scala/pipeline/decode/DecodeStage.scala:31:21, :37:18, :76:26, :77:16
             decodeOut_bits_exeOp_opType <= 4'h0;	// src/main/scala/pipeline/decode/DecodeStage.scala:7:7, :13:26
@@ -961,25 +959,17 @@ module DecodeStage(	// src/main/scala/pipeline/decode/DecodeStage.scala:7:7
         ~io_bCtrl_isMispredict
         & (_GEN_4
              ? decodeOut_bits_wCtrl_en
-             : _GEN_2
-                 ? (_du_io_out_isMatched
-                      ? _du_io_out_bits_wCtrl_en
-                      : decodeOut_bits_wCtrl_en)
-                 : ~_GEN_3 & decodeOut_bits_wCtrl_en);	// src/main/scala/pipeline/decode/DecodeStage.scala:9:14, :13:26, :16:18, :31:21, :32:32, :34:15, :37:18, :62:36, :65:32, :76:26, :77:16, :78:21
+             : _GEN_2 ? _du_io_out_bits_wCtrl_en : ~_GEN_3 & decodeOut_bits_wCtrl_en);	// src/main/scala/pipeline/decode/DecodeStage.scala:9:14, :13:26, :16:18, :31:21, :32:32, :34:15, :37:18, :65:32, :76:26, :77:16, :78:21
       decodeOut_bits_operands_hasImm <=
         ~io_bCtrl_isMispredict
         & (_GEN_4
              ? decodeOut_bits_operands_hasImm
              : _GEN_2
-                 ? (_du_io_out_isMatched
-                      ? _du_io_out_bits_hasImm
-                      : decodeOut_bits_operands_hasImm)
-                 : ~_GEN_3 & decodeOut_bits_operands_hasImm);	// src/main/scala/pipeline/decode/DecodeStage.scala:9:14, :13:26, :16:18, :31:21, :32:32, :34:15, :37:18, :62:36, :66:42, :76:26, :77:16, :78:21
+                 ? _du_io_out_bits_hasImm
+                 : ~_GEN_3 & decodeOut_bits_operands_hasImm);	// src/main/scala/pipeline/decode/DecodeStage.scala:9:14, :13:26, :16:18, :31:21, :32:32, :34:15, :37:18, :66:42, :76:26, :77:16, :78:21
       decodeOut_req <=
         ~io_bCtrl_isMispredict
-        & (_GEN_4
-             ? decodeOut_req
-             : _GEN_2 ? _du_io_out_isMatched | decodeOut_req : ~_GEN_3 & decodeOut_req);	// src/main/scala/pipeline/decode/DecodeStage.scala:9:14, :13:26, :16:18, :31:21, :32:32, :34:15, :37:18, :62:36, :63:25, :76:26, :77:16, :78:21
+        & (_GEN_4 ? decodeOut_req : _GEN_2 | ~_GEN_3 & decodeOut_req);	// src/main/scala/pipeline/decode/DecodeStage.scala:9:14, :13:26, :31:21, :32:32, :34:15, :37:18, :63:25, :76:26, :77:16, :78:21
       if (io_bCtrl_isMispredict | ~_GEN) begin	// src/main/scala/pipeline/decode/DecodeStage.scala:17:24, :32:32, :37:18
       end
       else begin	// src/main/scala/pipeline/decode/DecodeStage.scala:17:24, :32:32, :37:18
@@ -1127,7 +1117,6 @@ module ExeStage(	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
   input  [31:0] io_in_decode_fetchInfo_pc,	// src/main/scala/pipeline/exe/ExeStage.scala:11:14
   input         io_in_decode_req,	// src/main/scala/pipeline/exe/ExeStage.scala:11:14
   output        io_out_ack,	// src/main/scala/pipeline/exe/ExeStage.scala:11:14
-                io_out_exe_req,	// src/main/scala/pipeline/exe/ExeStage.scala:11:14
                 io_out_exe_bits_en,	// src/main/scala/pipeline/exe/ExeStage.scala:11:14
   output [4:0]  io_out_exe_bits_addr,	// src/main/scala/pipeline/exe/ExeStage.scala:11:14
   output [31:0] io_out_exe_bits_data,	// src/main/scala/pipeline/exe/ExeStage.scala:11:14
@@ -1138,6 +1127,7 @@ module ExeStage(	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
                 io_aside_in_wdone,	// src/main/scala/pipeline/exe/ExeStage.scala:11:14
   output        io_aside_out_rreq,	// src/main/scala/pipeline/exe/ExeStage.scala:11:14
                 io_aside_out_wreq,	// src/main/scala/pipeline/exe/ExeStage.scala:11:14
+  output [3:0]  io_aside_out_byteSelN,	// src/main/scala/pipeline/exe/ExeStage.scala:11:14
   output [31:0] io_aside_out_addr,	// src/main/scala/pipeline/exe/ExeStage.scala:11:14
                 io_aside_out_wdata,	// src/main/scala/pipeline/exe/ExeStage.scala:11:14
   output        io_bCtrl_isMispredict,	// src/main/scala/pipeline/exe/ExeStage.scala:11:14
@@ -1145,7 +1135,6 @@ module ExeStage(	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
 );
 
   wire [31:0] _alu_io_out_res;	// src/main/scala/pipeline/exe/ExeStage.scala:29:19
-  reg         outReg_req;	// src/main/scala/pipeline/exe/ExeStage.scala:17:31
   reg         outReg_bits_en;	// src/main/scala/pipeline/exe/ExeStage.scala:17:31
   reg  [4:0]  outReg_bits_addr;	// src/main/scala/pipeline/exe/ExeStage.scala:17:31
   reg  [31:0] outReg_bits_data;	// src/main/scala/pipeline/exe/ExeStage.scala:17:31
@@ -1168,15 +1157,15 @@ module ExeStage(	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
   wire        _GEN = stat == 3'h0;	// src/main/scala/pipeline/exe/ExeStage.scala:41:21, :42:16, src/main/scala/pipeline/exe/ExeUtils.scala:15:17
   wire        _GEN_0 = stat == 3'h1;	// src/main/scala/pipeline/exe/ExeStage.scala:41:21, :42:16, :59:18
   wire        _GEN_1 = stat == 3'h2;	// src/main/scala/pipeline/exe/ExeStage.scala:41:21, :42:16, :47:18
-  wire        _GEN_2 = stat == 3'h3;	// src/main/scala/pipeline/exe/ExeStage.scala:41:21, :42:16, :51:18
-  wire        _GEN_3 = stat == 3'h4;	// src/main/scala/pipeline/exe/ExeStage.scala:41:21, :42:16, :45:49
-  wire        _GEN_4 = _GEN | _GEN_0 | _GEN_1;	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :42:16
-  wire        _GEN_5 = stat == 3'h5;	// src/main/scala/pipeline/exe/ExeStage.scala:41:21, :42:16, :45:49
-  wire        _GEN_6 = _GEN_5 & io_aside_in_wrdy;	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :42:16, :148:31, :150:27
-  wire        _GEN_7 = _GEN | _GEN_0 | _GEN_1 | _GEN_2 | _GEN_3;	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :42:16
+  wire        _GEN_2 = srcInfo_exeOp_opFunc == 3'h2;	// src/main/scala/pipeline/exe/ExeStage.scala:22:24, :47:18, :88:40
+  wire        _GEN_3 = stat == 3'h3;	// src/main/scala/pipeline/exe/ExeStage.scala:41:21, :42:16, :51:18
+  wire        _GEN_4 = stat == 3'h4;	// src/main/scala/pipeline/exe/ExeStage.scala:41:21, :42:16, :45:49
+  wire        _GEN_5 = _GEN | _GEN_0 | _GEN_1;	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :42:16
+  wire        _GEN_6 = stat == 3'h5;	// src/main/scala/pipeline/exe/ExeStage.scala:41:21, :42:16, :45:49
+  wire        _GEN_7 = _GEN_6 & io_aside_in_wrdy;	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :42:16, :149:31, :154:27
+  wire        _GEN_8 = _GEN | _GEN_0 | _GEN_1 | _GEN_3 | _GEN_4;	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :42:16
   always @(posedge clock) begin	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
     if (reset) begin	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
-      outReg_req <= 1'h0;	// src/main/scala/pipeline/exe/ExeStage.scala:12:14, :17:31
       outReg_bits_en <= 1'h0;	// src/main/scala/pipeline/exe/ExeStage.scala:12:14, :17:31
       outReg_bits_addr <= 5'h0;	// src/main/scala/pipeline/exe/ExeStage.scala:17:31, :26:28
       outReg_bits_data <= 32'h0;	// src/main/scala/pipeline/exe/ExeStage.scala:17:31, :27:28
@@ -1198,36 +1187,24 @@ module ExeStage(	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
       stat <= 3'h0;	// src/main/scala/pipeline/exe/ExeStage.scala:41:21, src/main/scala/pipeline/exe/ExeUtils.scala:15:17
     end
     else begin	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
-      automatic logic             _GEN_8;	// src/main/scala/pipeline/exe/ExeStage.scala:45:49
       automatic logic             _GEN_9;	// src/main/scala/pipeline/exe/ExeStage.scala:45:49
       automatic logic             _GEN_10;	// src/main/scala/pipeline/exe/ExeStage.scala:45:49
       automatic logic             _GEN_11;	// src/main/scala/pipeline/exe/ExeStage.scala:45:49
-      automatic logic             _GEN_12;	// src/main/scala/pipeline/exe/ExeStage.scala:26:28, :42:16
+      automatic logic             _GEN_12;	// src/main/scala/pipeline/exe/ExeStage.scala:45:49
       automatic logic             _GEN_13;	// src/main/scala/pipeline/exe/ExeStage.scala:42:16
-      automatic logic             _GEN_14;	// src/main/scala/pipeline/exe/ExeStage.scala:17:31, :42:16
-      automatic logic [7:0]       _GEN_15;	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :17:31, :42:16, :80:24, :86:19, :137:33, :157:32
-      automatic logic [7:0][4:0]  _GEN_16;	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :17:31, :42:16, :81:26, :86:19, :137:33, :157:32, :166:14
-      automatic logic [7:0][31:0] _GEN_17;	// src/main/scala/pipeline/exe/ExeStage.scala:17:31, :42:16, :82:26, :86:19, :137:33, :157:32, :166:14
-      automatic logic [7:0][2:0]  _GEN_18;	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :41:21, :42:16, :44:31, :78:14, :85:12, :129:31, :137:33, :148:31, :157:32, :165:12
-      _GEN_8 =
+      automatic logic [7:0]       _GEN_14;	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :17:31, :42:16, :79:24, :85:19, :139:33, :161:32
+      automatic logic [7:0][4:0]  _GEN_15;	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :17:31, :42:16, :80:26, :85:19, :139:33, :161:32, :170:14
+      automatic logic [7:0][31:0] _GEN_16;	// src/main/scala/pipeline/exe/ExeStage.scala:17:31, :42:16, :81:26, :85:19, :139:33, :161:32, :170:14
+      automatic logic [7:0][2:0]  _GEN_17;	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :41:21, :42:16, :44:31, :78:14, :84:12, :128:31, :139:33, :149:31, :161:32, :169:12
+      _GEN_9 =
         io_in_decode_bits_exeOp_opType == 4'h4 | io_in_decode_bits_exeOp_opType == 4'h5;	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :45:49
-      _GEN_9 = io_in_decode_bits_exeOp_opType == 4'h6;	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :45:49
-      _GEN_10 = io_in_decode_bits_exeOp_opType == 4'h7;	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :45:49
-      _GEN_11 =
+      _GEN_10 = io_in_decode_bits_exeOp_opType == 4'h6;	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :45:49
+      _GEN_11 = io_in_decode_bits_exeOp_opType == 4'h7;	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :45:49
+      _GEN_12 =
         io_in_decode_bits_exeOp_opType == 4'h1 | io_in_decode_bits_exeOp_opType == 4'h3
         | io_in_decode_bits_exeOp_opType == 4'h2;	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :45:49
-      _GEN_12 = _GEN_1 | _GEN_2;	// src/main/scala/pipeline/exe/ExeStage.scala:26:28, :42:16
       _GEN_13 = stat != 3'h7;	// src/main/scala/pipeline/exe/ExeStage.scala:41:21, :42:16, :45:49
-      _GEN_14 = _GEN_5 | stat == 3'h6;	// src/main/scala/pipeline/exe/ExeStage.scala:17:31, :41:21, :42:16, :45:49
-      if (~_GEN)	// src/main/scala/pipeline/exe/ExeStage.scala:42:16
-        outReg_req <=
-          _GEN_0
-          | (_GEN_12
-               ? outReg_req
-               : _GEN_3
-                   ? io_aside_in_rvalid | outReg_req
-                   : (_GEN_14 | _GEN_13) & outReg_req);	// src/main/scala/pipeline/exe/ExeStage.scala:17:31, :26:28, :42:16, :79:20, :137:33, :139:20
-      _GEN_15 =
+      _GEN_14 =
         {{_GEN_13 & outReg_bits_en},
          {io_aside_in_wdone ? srcInfo_wCtrl_en : outReg_bits_en},
          {outReg_bits_en},
@@ -1235,9 +1212,9 @@ module ExeStage(	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
          {outReg_bits_en},
          {srcInfo_wCtrl_en},
          {srcInfo_wCtrl_en},
-         {outReg_bits_en}};	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :17:31, :22:24, :42:16, :80:24, :86:19, :137:33, :140:24, :157:32, :159:24, :166:14
-      outReg_bits_en <= _GEN_15[stat];	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :17:31, :41:21, :42:16, :80:24, :86:19, :137:33, :157:32
-      _GEN_16 =
+         {outReg_bits_en}};	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :17:31, :22:24, :42:16, :79:24, :85:19, :139:33, :141:24, :161:32, :163:24, :170:14
+      outReg_bits_en <= _GEN_14[stat];	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :17:31, :41:21, :42:16, :79:24, :85:19, :139:33, :161:32
+      _GEN_15 =
         {{5'h0},
          {io_aside_in_wdone ? srcInfo_wCtrl_addr : outReg_bits_addr},
          {outReg_bits_addr},
@@ -1245,9 +1222,9 @@ module ExeStage(	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
          {outReg_bits_addr},
          {srcInfo_wCtrl_addr},
          {srcInfo_wCtrl_addr},
-         {outReg_bits_addr}};	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :17:31, :22:24, :26:28, :42:16, :81:26, :86:19, :137:33, :141:26, :157:32, :160:26, :166:14
-      outReg_bits_addr <= _GEN_16[stat];	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :17:31, :41:21, :42:16, :81:26, :86:19, :137:33, :157:32, :166:14
-      _GEN_17 =
+         {outReg_bits_addr}};	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :17:31, :22:24, :26:28, :42:16, :80:26, :85:19, :139:33, :142:26, :161:32, :164:26, :170:14
+      outReg_bits_addr <= _GEN_15[stat];	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :17:31, :41:21, :42:16, :80:26, :85:19, :139:33, :161:32, :170:14
+      _GEN_16 =
         {{32'h0},
          {io_aside_in_wdone ? srcInfo_wCtrl_data : outReg_bits_data},
          {outReg_bits_data},
@@ -1255,53 +1232,53 @@ module ExeStage(	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
          {outReg_bits_data},
          {srcInfo_wCtrl_data},
          {_alu_io_out_res},
-         {outReg_bits_data}};	// src/main/scala/pipeline/exe/ExeStage.scala:17:31, :22:24, :27:28, :29:19, :42:16, :82:26, :86:19, :137:33, :142:26, :157:32, :161:26, :166:14
-      outReg_bits_data <= _GEN_17[stat];	// src/main/scala/pipeline/exe/ExeStage.scala:17:31, :41:21, :42:16, :82:26, :86:19, :137:33, :157:32, :166:14
+         {outReg_bits_data}};	// src/main/scala/pipeline/exe/ExeStage.scala:17:31, :22:24, :27:28, :29:19, :42:16, :81:26, :85:19, :139:33, :143:26, :161:32, :165:26, :170:14
+      outReg_bits_data <= _GEN_16[stat];	// src/main/scala/pipeline/exe/ExeStage.scala:17:31, :41:21, :42:16, :81:26, :85:19, :139:33, :161:32, :170:14
       if (~(_GEN | _GEN_0)) begin	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :42:16
         if (_GEN_1) begin	// src/main/scala/pipeline/exe/ExeStage.scala:42:16
-          automatic logic _GEN_19;	// src/main/scala/pipeline/exe/ExeStage.scala:89:40
-          _GEN_19 = srcInfo_exeOp_opFunc == 3'h1;	// src/main/scala/pipeline/exe/ExeStage.scala:22:24, :59:18, :89:40
-          if (srcInfo_exeOp_opType == 4'h4) begin	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :22:24, :87:37
-            automatic logic             _GEN_20;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :91:{55,94}, :92:42
-            automatic logic             _GEN_21;	// src/main/scala/pipeline/exe/ExeStage.scala:103:55
-            automatic logic [7:0][31:0] _GEN_22;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :89:40, :91:94, :97:94, :103:93, :110:31, :114:31
-            _GEN_20 = srcInfo_operands_regData_1 == srcInfo_operands_regData_2;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :22:24, :91:{55,94}, :92:42
-            _GEN_21 =
-              $signed(srcInfo_operands_regData_1) >= $signed(srcInfo_operands_regData_2);	// src/main/scala/pipeline/exe/ExeStage.scala:22:24, :103:55
-            if (_GEN_19)	// src/main/scala/pipeline/exe/ExeStage.scala:89:40
-              bCtrlOutReg_isMispredict <= ~_GEN_20 | bCtrlOutReg_isMispredict;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :91:{55,94}, :92:42
-            else if (srcInfo_exeOp_opFunc == 3'h2)	// src/main/scala/pipeline/exe/ExeStage.scala:22:24, :47:18, :89:40
-              bCtrlOutReg_isMispredict <= _GEN_20 | bCtrlOutReg_isMispredict;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :91:{55,94}, :92:42, :97:94, :98:42
-            else if (srcInfo_exeOp_opFunc == 3'h3)	// src/main/scala/pipeline/exe/ExeStage.scala:22:24, :51:18, :89:40
-              bCtrlOutReg_isMispredict <= _GEN_21 | bCtrlOutReg_isMispredict;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :103:{55,93}, :104:42
-            else	// src/main/scala/pipeline/exe/ExeStage.scala:89:40
+          automatic logic _GEN_18;	// src/main/scala/pipeline/exe/ExeStage.scala:88:40
+          _GEN_18 = srcInfo_exeOp_opFunc == 3'h1;	// src/main/scala/pipeline/exe/ExeStage.scala:22:24, :59:18, :88:40
+          if (srcInfo_exeOp_opType == 4'h4) begin	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :22:24, :86:37
+            automatic logic             _GEN_19;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :90:{55,94}, :91:42
+            automatic logic             _GEN_20;	// src/main/scala/pipeline/exe/ExeStage.scala:102:55
+            automatic logic [7:0][31:0] _GEN_21;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :88:40, :90:94, :96:94, :102:93, :109:31, :113:31
+            _GEN_19 = srcInfo_operands_regData_1 == srcInfo_operands_regData_2;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :22:24, :90:{55,94}, :91:42
+            _GEN_20 =
+              $signed(srcInfo_operands_regData_1) >= $signed(srcInfo_operands_regData_2);	// src/main/scala/pipeline/exe/ExeStage.scala:22:24, :102:55
+            if (_GEN_18)	// src/main/scala/pipeline/exe/ExeStage.scala:88:40
+              bCtrlOutReg_isMispredict <= ~_GEN_19 | bCtrlOutReg_isMispredict;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :90:{55,94}, :91:42
+            else if (_GEN_2)	// src/main/scala/pipeline/exe/ExeStage.scala:88:40
+              bCtrlOutReg_isMispredict <= _GEN_19 | bCtrlOutReg_isMispredict;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :90:{55,94}, :91:42, :96:94, :97:42
+            else if (srcInfo_exeOp_opFunc == 3'h3)	// src/main/scala/pipeline/exe/ExeStage.scala:22:24, :51:18, :88:40
+              bCtrlOutReg_isMispredict <= _GEN_20 | bCtrlOutReg_isMispredict;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :102:{55,93}, :103:42
+            else	// src/main/scala/pipeline/exe/ExeStage.scala:88:40
               bCtrlOutReg_isMispredict <=
                 srcInfo_exeOp_opFunc == 3'h4 | srcInfo_exeOp_opFunc == 3'h5
-                | bCtrlOutReg_isMispredict;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :22:24, :45:49, :89:40, :109:40, :113:40
-            _GEN_22 =
+                | bCtrlOutReg_isMispredict;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :22:24, :45:49, :88:40, :108:40, :112:40
+            _GEN_21 =
               {{bCtrlOutReg_npc},
                {bCtrlOutReg_npc},
                {fetchInfo_pc + srcInfo_operands_imm},
                {fetchInfo_pc + srcInfo_operands_imm},
-               {_GEN_21 ? fetchInfo_pc + srcInfo_operands_imm : bCtrlOutReg_npc},
                {_GEN_20 ? fetchInfo_pc + srcInfo_operands_imm : bCtrlOutReg_npc},
-               {_GEN_20 ? bCtrlOutReg_npc : fetchInfo_pc + srcInfo_operands_imm},
-               {bCtrlOutReg_npc}};	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :22:24, :23:26, :89:40, :91:{55,94}, :92:42, :93:{33,57}, :97:94, :99:{33,57}, :103:{55,93}, :105:{33,57}, :110:{31,55}, :114:{31,55}
-            bCtrlOutReg_npc <= _GEN_22[srcInfo_exeOp_opFunc];	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :22:24, :89:40, :91:94, :97:94, :103:93, :110:31, :114:31
+               {_GEN_19 ? fetchInfo_pc + srcInfo_operands_imm : bCtrlOutReg_npc},
+               {_GEN_19 ? bCtrlOutReg_npc : fetchInfo_pc + srcInfo_operands_imm},
+               {bCtrlOutReg_npc}};	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :22:24, :23:26, :88:40, :90:{55,94}, :91:42, :92:{33,57}, :96:94, :98:{33,57}, :102:{55,93}, :104:{33,57}, :109:{31,55}, :113:{31,55}
+            bCtrlOutReg_npc <= _GEN_21[srcInfo_exeOp_opFunc];	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :22:24, :88:40, :90:94, :96:94, :102:93, :109:31, :113:31
           end
-          else begin	// src/main/scala/pipeline/exe/ExeStage.scala:87:37
-            automatic logic _GEN_23;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :87:37, :119:40, :121:40
-            _GEN_23 = srcInfo_exeOp_opType == 4'h5 & _GEN_19;	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :19:43, :22:24, :87:37, :89:40, :119:40, :121:40
-            bCtrlOutReg_isMispredict <= _GEN_23 | bCtrlOutReg_isMispredict;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :87:37, :119:40, :121:40
-            if (_GEN_23)	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :87:37, :119:40, :121:40
-              bCtrlOutReg_npc <= fetchInfo_pc + srcInfo_operands_imm;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :22:24, :23:26, :122:55
+          else begin	// src/main/scala/pipeline/exe/ExeStage.scala:86:37
+            automatic logic _GEN_22;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :86:37, :118:40, :120:40
+            _GEN_22 = srcInfo_exeOp_opType == 4'h5 & _GEN_18;	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :19:43, :22:24, :86:37, :88:40, :118:40, :120:40
+            bCtrlOutReg_isMispredict <= _GEN_22 | bCtrlOutReg_isMispredict;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :86:37, :118:40, :120:40
+            if (_GEN_22)	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :86:37, :118:40, :120:40
+              bCtrlOutReg_npc <= fetchInfo_pc + srcInfo_operands_imm;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :22:24, :23:26, :121:55
           end
         end
         else begin	// src/main/scala/pipeline/exe/ExeStage.scala:42:16
-          automatic logic _GEN_24;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :42:16
-          _GEN_24 = _GEN_2 | _GEN_3 | _GEN_14 | _GEN_13;	// src/main/scala/pipeline/exe/ExeStage.scala:17:31, :19:43, :42:16
-          bCtrlOutReg_isMispredict <= _GEN_24 & bCtrlOutReg_isMispredict;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :42:16
-          if (_GEN_24) begin	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :42:16
+          automatic logic _GEN_23;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :42:16
+          _GEN_23 = _GEN_3 | _GEN_4 | _GEN_6 | stat == 3'h6 | _GEN_13;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :41:21, :42:16, :45:49
+          bCtrlOutReg_isMispredict <= _GEN_23 & bCtrlOutReg_isMispredict;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :42:16
+          if (_GEN_23) begin	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :42:16
           end
           else	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :42:16
             bCtrlOutReg_npc <= 32'h0;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :27:28
@@ -1324,15 +1301,15 @@ module ExeStage(	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
             ? preLoadData
             : io_in_decode_bits_operands_regData_2;	// src/main/scala/pipeline/exe/ExeStage.scala:22:24, :25:24, :26:28, :27:28, :64:17, :68:{22,37,75}, :69:38
         fetchInfo_pc <= io_in_decode_fetchInfo_pc;	// src/main/scala/pipeline/exe/ExeStage.scala:23:26
-        preLoad <= ~_GEN_8 & (_GEN_9 | ~(_GEN_10 | _GEN_11) & preLoad);	// src/main/scala/pipeline/exe/ExeStage.scala:25:24, :45:49, :48:21, :52:21, :56:21, :60:21
+        preLoad <= ~_GEN_9 & (_GEN_10 | ~(_GEN_11 | _GEN_12) & preLoad);	// src/main/scala/pipeline/exe/ExeStage.scala:25:24, :45:49, :48:21, :52:21, :56:21, :60:21
       end
-      if (_GEN | _GEN_0 | _GEN_12 | ~(_GEN_3 & io_aside_in_rvalid)) begin	// src/main/scala/pipeline/exe/ExeStage.scala:26:28, :27:28, :42:16, :137:33, :143:21
+      if (_GEN | _GEN_0 | _GEN_1 | _GEN_3 | ~(_GEN_4 & io_aside_in_rvalid)) begin	// src/main/scala/pipeline/exe/ExeStage.scala:26:28, :27:28, :42:16, :139:33, :144:21
       end
       else begin	// src/main/scala/pipeline/exe/ExeStage.scala:27:28, :42:16
         preLoadAddr <= srcInfo_wCtrl_addr;	// src/main/scala/pipeline/exe/ExeStage.scala:22:24, :26:28
         preLoadData <= io_aside_in_rdata;	// src/main/scala/pipeline/exe/ExeStage.scala:27:28
       end
-      _GEN_18 =
+      _GEN_17 =
         {{3'h0},
          {io_aside_in_wdone ? 3'h7 : stat},
          {io_aside_in_wrdy ? 3'h6 : stat},
@@ -1341,9 +1318,9 @@ module ExeStage(	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
          {3'h7},
          {3'h7},
          {io_in_decode_req
-            ? (_GEN_8 ? 3'h2 : _GEN_9 ? 3'h3 : _GEN_10 ? 3'h5 : _GEN_11 ? 3'h1 : stat)
-            : stat}};	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :41:21, :42:16, :44:31, :45:49, :47:18, :51:18, :55:18, :59:18, :78:14, :85:12, :129:31, :132:14, :137:33, :138:14, :148:31, :152:14, :157:32, :158:14, :165:12, src/main/scala/pipeline/exe/ExeUtils.scala:15:17
-      stat <= _GEN_18[stat];	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :41:21, :42:16, :44:31, :78:14, :85:12, :129:31, :137:33, :148:31, :157:32, :165:12
+            ? (_GEN_9 ? 3'h2 : _GEN_10 ? 3'h3 : _GEN_11 ? 3'h5 : _GEN_12 ? 3'h1 : stat)
+            : stat}};	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :41:21, :42:16, :44:31, :45:49, :47:18, :51:18, :55:18, :59:18, :78:14, :84:12, :128:31, :134:14, :139:33, :140:14, :149:31, :156:14, :161:32, :162:14, :169:12, src/main/scala/pipeline/exe/ExeUtils.scala:15:17
+      stat <= _GEN_17[stat];	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :41:21, :42:16, :44:31, :78:14, :84:12, :128:31, :139:33, :149:31, :161:32, :169:12
     end
   end // always @(posedge)
   `ifdef ENABLE_INITIAL_REG_	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
@@ -1359,26 +1336,25 @@ module ExeStage(	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
         for (logic [3:0] i = 4'h0; i < 4'hA; i += 4'h1) begin
           _RANDOM[i] = `RANDOM;	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
         end	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
-        outReg_req = _RANDOM[4'h0][0];	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :17:31
-        outReg_bits_en = _RANDOM[4'h0][1];	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :17:31
-        outReg_bits_addr = _RANDOM[4'h0][6:2];	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :17:31
-        outReg_bits_data = {_RANDOM[4'h0][31:7], _RANDOM[4'h1][6:0]};	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :17:31
-        bCtrlOutReg_isMispredict = _RANDOM[4'h1][7];	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :17:31, :19:43
-        bCtrlOutReg_npc = {_RANDOM[4'h1][31:8], _RANDOM[4'h2][7:0]};	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :17:31, :19:43
-        srcInfo_exeOp_opType = _RANDOM[4'h2][11:8];	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :19:43, :22:24
-        srcInfo_exeOp_opFunc = _RANDOM[4'h2][14:12];	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :19:43, :22:24
-        srcInfo_wCtrl_en = _RANDOM[4'h2][15];	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :19:43, :22:24
-        srcInfo_wCtrl_addr = _RANDOM[4'h2][20:16];	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :19:43, :22:24
-        srcInfo_wCtrl_data = {_RANDOM[4'h2][31:21], _RANDOM[4'h3][20:0]};	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :19:43, :22:24
-        srcInfo_operands_hasImm = _RANDOM[4'h3][21];	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :22:24
-        srcInfo_operands_imm = {_RANDOM[4'h3][31:22], _RANDOM[4'h4][21:0]};	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :22:24
-        srcInfo_operands_regData_1 = {_RANDOM[4'h4][31:22], _RANDOM[4'h5][21:0]};	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :22:24
-        srcInfo_operands_regData_2 = {_RANDOM[4'h5][31:22], _RANDOM[4'h6][21:0]};	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :22:24
-        fetchInfo_pc = {_RANDOM[4'h6][31:22], _RANDOM[4'h7][21:0]};	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :22:24, :23:26
-        preLoad = _RANDOM[4'h8][22];	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :25:24
-        preLoadAddr = _RANDOM[4'h8][27:23];	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :25:24, :26:28
-        preLoadData = {_RANDOM[4'h8][31:28], _RANDOM[4'h9][27:0]};	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :25:24, :27:28
-        stat = _RANDOM[4'h9][30:28];	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :27:28, :41:21
+        outReg_bits_en = _RANDOM[4'h0][0];	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :17:31
+        outReg_bits_addr = _RANDOM[4'h0][5:1];	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :17:31
+        outReg_bits_data = {_RANDOM[4'h0][31:6], _RANDOM[4'h1][5:0]};	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :17:31
+        bCtrlOutReg_isMispredict = _RANDOM[4'h1][6];	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :17:31, :19:43
+        bCtrlOutReg_npc = {_RANDOM[4'h1][31:7], _RANDOM[4'h2][6:0]};	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :17:31, :19:43
+        srcInfo_exeOp_opType = _RANDOM[4'h2][10:7];	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :19:43, :22:24
+        srcInfo_exeOp_opFunc = _RANDOM[4'h2][13:11];	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :19:43, :22:24
+        srcInfo_wCtrl_en = _RANDOM[4'h2][14];	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :19:43, :22:24
+        srcInfo_wCtrl_addr = _RANDOM[4'h2][19:15];	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :19:43, :22:24
+        srcInfo_wCtrl_data = {_RANDOM[4'h2][31:20], _RANDOM[4'h3][19:0]};	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :19:43, :22:24
+        srcInfo_operands_hasImm = _RANDOM[4'h3][20];	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :22:24
+        srcInfo_operands_imm = {_RANDOM[4'h3][31:21], _RANDOM[4'h4][20:0]};	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :22:24
+        srcInfo_operands_regData_1 = {_RANDOM[4'h4][31:21], _RANDOM[4'h5][20:0]};	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :22:24
+        srcInfo_operands_regData_2 = {_RANDOM[4'h5][31:21], _RANDOM[4'h6][20:0]};	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :22:24
+        fetchInfo_pc = {_RANDOM[4'h6][31:21], _RANDOM[4'h7][20:0]};	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :22:24, :23:26
+        preLoad = _RANDOM[4'h8][21];	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :25:24
+        preLoadAddr = _RANDOM[4'h8][26:22];	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :25:24, :26:28
+        preLoadData = {_RANDOM[4'h8][31:27], _RANDOM[4'h9][26:0]};	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :25:24, :27:28
+        stat = _RANDOM[4'h9][29:27];	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :27:28, :41:21
       `endif // RANDOMIZE_REG_INIT
     end // initial
     `ifdef FIRRTL_AFTER_INITIAL	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
@@ -1394,22 +1370,31 @@ module ExeStage(	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
     .io_out_res          (_alu_io_out_res)
   );
   assign io_out_ack = _GEN & io_in_decode_req;	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :12:14, :42:16, :44:31
-  assign io_out_exe_req = outReg_req;	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :17:31
   assign io_out_exe_bits_en = outReg_bits_en;	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :17:31
   assign io_out_exe_bits_addr = outReg_bits_addr;	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :17:31
   assign io_out_exe_bits_data = outReg_bits_data;	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :17:31
-  assign io_aside_out_rreq = ~_GEN_4 & _GEN_2 & io_aside_in_rrdy;	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :14:16, :42:16
-  assign io_aside_out_wreq = ~_GEN_7 & _GEN_5 & io_aside_in_wrdy;	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :14:16, :42:16
+  assign io_aside_out_rreq = ~_GEN_5 & _GEN_3 & io_aside_in_rrdy;	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :14:16, :42:16
+  assign io_aside_out_wreq = ~_GEN_8 & _GEN_6 & io_aside_in_wrdy;	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :14:16, :42:16
+  assign io_aside_out_byteSelN =
+    _GEN_5
+      ? 4'h0
+      : _GEN_3
+          ? (io_aside_in_rrdy & _GEN_2 ? 4'hE : 4'h0)
+          : _GEN_4 | ~(_GEN_6 & io_aside_in_wrdy & _GEN_2) ? 4'h0 : 4'hE;	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :14:16, :42:16, :88:40, :128:31, :129:51, :130:33, :149:31, :150:52, :151:33
   assign io_aside_out_addr =
-    _GEN_4
+    _GEN_5
       ? 32'h0
-      : _GEN_2
+      : _GEN_3
           ? (io_aside_in_rrdy ? _alu_io_out_res : 32'h0)
-          : _GEN_3 | ~_GEN_6 ? 32'h0 : _alu_io_out_res;	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :14:16, :27:28, :29:19, :42:16, :129:31, :131:27, :148:31, :150:27
-  assign io_aside_out_wdata = _GEN_7 | ~_GEN_6 ? 32'h0 : srcInfo_operands_regData_2;	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :14:16, :22:24, :27:28, :42:16, :148:31, :150:27
+          : _GEN_4 | ~_GEN_7 ? 32'h0 : _alu_io_out_res;	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :14:16, :27:28, :29:19, :42:16, :128:31, :133:27, :149:31, :154:27
+  assign io_aside_out_wdata = _GEN_8 | ~_GEN_7 ? 32'h0 : srcInfo_operands_regData_2;	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :14:16, :22:24, :27:28, :42:16, :149:31, :154:27
   assign io_bCtrl_isMispredict = bCtrlOutReg_isMispredict;	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :19:43
   assign io_bCtrl_npc = bCtrlOutReg_npc;	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :19:43
 endmodule
+
+// external module async_transmitter
+
+// external module async_receiver
 
 module BetaBus(	// src/main/scala/bus/BetaBus.scala:17:7
   input         clock,	// src/main/scala/bus/BetaBus.scala:17:7
@@ -1439,330 +1424,377 @@ module BetaBus(	// src/main/scala/bus/BetaBus.scala:17:7
   output [19:0] io_extRam_req_addr,	// src/main/scala/bus/BetaBus.scala:18:14
   output        io_extRam_req_ce,	// src/main/scala/bus/BetaBus.scala:18:14
                 io_extRam_req_oe,	// src/main/scala/bus/BetaBus.scala:18:14
-                io_extRam_req_we	// src/main/scala/bus/BetaBus.scala:18:14
+                io_extRam_req_we,	// src/main/scala/bus/BetaBus.scala:18:14
+                io_uart_txd	// src/main/scala/bus/BetaBus.scala:18:14
 );
 
-  reg [31:0] instReg_inst;	// src/main/scala/bus/BetaBus.scala:26:24
-  reg        instReg_rrdy;	// src/main/scala/bus/BetaBus.scala:26:24
-  reg        instReg_rvalid;	// src/main/scala/bus/BetaBus.scala:26:24
-  reg [31:0] dataReg_rdata;	// src/main/scala/bus/BetaBus.scala:27:24
-  reg        dataReg_rrdy;	// src/main/scala/bus/BetaBus.scala:27:24
-  reg        dataReg_rvalid;	// src/main/scala/bus/BetaBus.scala:27:24
-  reg        dataReg_wrdy;	// src/main/scala/bus/BetaBus.scala:27:24
-  reg        dataReg_wdone;	// src/main/scala/bus/BetaBus.scala:27:24
-  reg [31:0] boutReg_wData;	// src/main/scala/bus/BetaBus.scala:33:24
-  reg [19:0] boutReg_addr;	// src/main/scala/bus/BetaBus.scala:33:24
-  reg        boutReg_ce;	// src/main/scala/bus/BetaBus.scala:33:24
-  reg        boutReg_oe;	// src/main/scala/bus/BetaBus.scala:33:24
-  reg        boutReg_we;	// src/main/scala/bus/BetaBus.scala:33:24
-  reg [31:0] eoutReg_wData;	// src/main/scala/bus/BetaBus.scala:34:24
-  reg [19:0] eoutReg_addr;	// src/main/scala/bus/BetaBus.scala:34:24
-  reg        eoutReg_ce;	// src/main/scala/bus/BetaBus.scala:34:24
-  reg        eoutReg_oe;	// src/main/scala/bus/BetaBus.scala:34:24
-  reg        eoutReg_we;	// src/main/scala/bus/BetaBus.scala:34:24
-  reg [1:0]  istat;	// src/main/scala/bus/BetaBus.scala:48:22
-  reg [31:0] instReqBuf_pc;	// src/main/scala/bus/BetaBus.scala:49:27
-  reg [2:0]  dstat;	// src/main/scala/bus/BetaBus.scala:63:22
-  reg        dataReqBuf_rreq;	// src/main/scala/bus/BetaBus.scala:64:27
-  reg        dataReqBuf_wreq;	// src/main/scala/bus/BetaBus.scala:64:27
-  reg [31:0] dataReqBuf_addr;	// src/main/scala/bus/BetaBus.scala:64:27
-  reg [31:0] dataReqBuf_wdata;	// src/main/scala/bus/BetaBus.scala:64:27
+  wire        _uartReceiver_RxD_data_ready;	// src/main/scala/bus/BetaBus.scala:28:28
+  wire [7:0]  _uartReceiver_RxD_data;	// src/main/scala/bus/BetaBus.scala:28:28
+  wire        _uartTransmitter_TxD_busy;	// src/main/scala/bus/BetaBus.scala:27:31
+  reg  [31:0] instReg_inst;	// src/main/scala/bus/BetaBus.scala:49:24
+  reg         instReg_rrdy;	// src/main/scala/bus/BetaBus.scala:49:24
+  reg         instReg_rvalid;	// src/main/scala/bus/BetaBus.scala:49:24
+  reg  [31:0] dataReg_rdata;	// src/main/scala/bus/BetaBus.scala:50:24
+  reg         dataReg_rrdy;	// src/main/scala/bus/BetaBus.scala:50:24
+  reg         dataReg_rvalid;	// src/main/scala/bus/BetaBus.scala:50:24
+  reg         dataReg_wrdy;	// src/main/scala/bus/BetaBus.scala:50:24
+  reg         dataReg_wdone;	// src/main/scala/bus/BetaBus.scala:50:24
+  reg  [31:0] boutReg_wData;	// src/main/scala/bus/BetaBus.scala:56:24
+  reg  [19:0] boutReg_addr;	// src/main/scala/bus/BetaBus.scala:56:24
+  reg         boutReg_ce;	// src/main/scala/bus/BetaBus.scala:56:24
+  reg         boutReg_oe;	// src/main/scala/bus/BetaBus.scala:56:24
+  reg         boutReg_we;	// src/main/scala/bus/BetaBus.scala:56:24
+  reg  [31:0] eoutReg_wData;	// src/main/scala/bus/BetaBus.scala:57:24
+  reg  [19:0] eoutReg_addr;	// src/main/scala/bus/BetaBus.scala:57:24
+  reg         eoutReg_ce;	// src/main/scala/bus/BetaBus.scala:57:24
+  reg         eoutReg_oe;	// src/main/scala/bus/BetaBus.scala:57:24
+  reg         eoutReg_we;	// src/main/scala/bus/BetaBus.scala:57:24
+  reg  [1:0]  istat;	// src/main/scala/bus/BetaBus.scala:71:22
+  reg  [31:0] instReqBuf_pc;	// src/main/scala/bus/BetaBus.scala:72:27
+  reg  [3:0]  dstat;	// src/main/scala/bus/BetaBus.scala:89:22
+  reg         dataReqBuf_rreq;	// src/main/scala/bus/BetaBus.scala:90:27
+  reg         dataReqBuf_wreq;	// src/main/scala/bus/BetaBus.scala:90:27
+  reg  [31:0] dataReqBuf_addr;	// src/main/scala/bus/BetaBus.scala:90:27
+  reg  [31:0] dataReqBuf_wdata;	// src/main/scala/bus/BetaBus.scala:90:27
+  wire        _GEN = dstat == 4'h1;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22, :130:17
+  wire        _GEN_0 = dstat == 4'h3;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22, :130:17
+  wire        _GEN_1 = dstat == 4'h4;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22, :130:17
+  wire        _GEN_2 = dstat == 4'h2;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22, :130:17
+  wire        _GEN_3 = dstat == 4'h5;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22, :130:17
+  wire        _GEN_4 = dstat == 4'h6;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22, :130:17
+  wire        _GEN_5 = dstat == 4'h7;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22, :130:17
+  wire        _GEN_6 = dstat == 4'h8;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22, :130:17
+  wire        _GEN_7 = _GEN_5 | _GEN_6;	// src/main/scala/bus/BetaBus.scala:50:24, :130:17, :239:22, :244:22
+  wire        _GEN_8 = dstat == 4'h9;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22, :130:17
+  wire        _GEN_9 =
+    ~(|dstat) | _GEN | _GEN_0 | _GEN_1 | _GEN_2 | _GEN_3 | _GEN_4 | _GEN_7;	// src/main/scala/bus/BetaBus.scala:34:10, :50:24, :89:22, :91:25, :130:17, :135:14, :239:22, :244:22
   always @(posedge clock) begin	// src/main/scala/bus/BetaBus.scala:17:7
     if (reset) begin	// src/main/scala/bus/BetaBus.scala:17:7
-      instReg_inst <= 32'h0;	// src/main/scala/bus/BetaBus.scala:26:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
-      instReg_rrdy <= 1'h0;	// src/main/scala/bus/BetaBus.scala:26:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
-      instReg_rvalid <= 1'h0;	// src/main/scala/bus/BetaBus.scala:26:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
-      dataReg_rdata <= 32'h0;	// src/main/scala/bus/BetaBus.scala:27:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
-      dataReg_rrdy <= 1'h0;	// src/main/scala/bus/BetaBus.scala:27:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
-      dataReg_rvalid <= 1'h0;	// src/main/scala/bus/BetaBus.scala:27:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
-      dataReg_wrdy <= 1'h0;	// src/main/scala/bus/BetaBus.scala:27:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
-      dataReg_wdone <= 1'h0;	// src/main/scala/bus/BetaBus.scala:27:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
-      boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:33:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
-      boutReg_addr <= 20'h0;	// src/main/scala/bus/BetaBus.scala:33:24, src/main/scala/bus/sram/SramUtils.scala:12:15
-      boutReg_ce <= 1'h1;	// src/main/scala/bus/BetaBus.scala:33:24, src/main/scala/bus/sram/SramUtils.scala:8:13
-      boutReg_oe <= 1'h1;	// src/main/scala/bus/BetaBus.scala:33:24, src/main/scala/bus/sram/SramUtils.scala:8:13
-      boutReg_we <= 1'h1;	// src/main/scala/bus/BetaBus.scala:33:24, src/main/scala/bus/sram/SramUtils.scala:8:13
-      eoutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:34:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
-      eoutReg_addr <= 20'h0;	// src/main/scala/bus/BetaBus.scala:34:24, src/main/scala/bus/sram/SramUtils.scala:12:15
-      eoutReg_ce <= 1'h1;	// src/main/scala/bus/BetaBus.scala:34:24, src/main/scala/bus/sram/SramUtils.scala:8:13
-      eoutReg_oe <= 1'h1;	// src/main/scala/bus/BetaBus.scala:34:24, src/main/scala/bus/sram/SramUtils.scala:8:13
-      eoutReg_we <= 1'h1;	// src/main/scala/bus/BetaBus.scala:34:24, src/main/scala/bus/sram/SramUtils.scala:8:13
-      istat <= 2'h0;	// src/main/scala/bus/BetaBus.scala:48:22, :98:13
-      instReqBuf_pc <= 32'h0;	// src/main/scala/bus/BetaBus.scala:49:27, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
-      dstat <= 3'h0;	// src/main/scala/bus/BetaBus.scala:63:22, :162:13
-      dataReqBuf_rreq <= 1'h0;	// src/main/scala/bus/BetaBus.scala:64:27, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
-      dataReqBuf_wreq <= 1'h0;	// src/main/scala/bus/BetaBus.scala:64:27, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
-      dataReqBuf_addr <= 32'h0;	// src/main/scala/bus/BetaBus.scala:64:27, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
-      dataReqBuf_wdata <= 32'h0;	// src/main/scala/bus/BetaBus.scala:64:27, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
+      instReg_inst <= 32'h0;	// src/main/scala/bus/BetaBus.scala:49:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
+      instReg_rrdy <= 1'h0;	// src/main/scala/bus/BetaBus.scala:18:14, :28:28, :49:24
+      instReg_rvalid <= 1'h0;	// src/main/scala/bus/BetaBus.scala:18:14, :28:28, :49:24
+      dataReg_rdata <= 32'h0;	// src/main/scala/bus/BetaBus.scala:50:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
+      dataReg_rrdy <= 1'h0;	// src/main/scala/bus/BetaBus.scala:18:14, :28:28, :50:24
+      dataReg_rvalid <= 1'h0;	// src/main/scala/bus/BetaBus.scala:18:14, :28:28, :50:24
+      dataReg_wrdy <= 1'h0;	// src/main/scala/bus/BetaBus.scala:18:14, :28:28, :50:24
+      dataReg_wdone <= 1'h0;	// src/main/scala/bus/BetaBus.scala:18:14, :28:28, :50:24
+      boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
+      boutReg_addr <= 20'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/bus/sram/SramUtils.scala:12:15
+      boutReg_ce <= 1'h1;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/bus/sram/SramUtils.scala:8:13
+      boutReg_oe <= 1'h1;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/bus/sram/SramUtils.scala:8:13
+      boutReg_we <= 1'h1;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/bus/sram/SramUtils.scala:8:13
+      eoutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:57:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
+      eoutReg_addr <= 20'h0;	// src/main/scala/bus/BetaBus.scala:57:24, src/main/scala/bus/sram/SramUtils.scala:12:15
+      eoutReg_ce <= 1'h1;	// src/main/scala/bus/BetaBus.scala:57:24, src/main/scala/bus/sram/SramUtils.scala:8:13
+      eoutReg_oe <= 1'h1;	// src/main/scala/bus/BetaBus.scala:57:24, src/main/scala/bus/sram/SramUtils.scala:8:13
+      eoutReg_we <= 1'h1;	// src/main/scala/bus/BetaBus.scala:57:24, src/main/scala/bus/sram/SramUtils.scala:8:13
+      istat <= 2'h0;	// src/main/scala/bus/BetaBus.scala:71:22, :124:13
+      instReqBuf_pc <= 32'h0;	// src/main/scala/bus/BetaBus.scala:72:27, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
+      dstat <= 4'h0;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
+      dataReqBuf_rreq <= 1'h0;	// src/main/scala/bus/BetaBus.scala:18:14, :28:28, :90:27
+      dataReqBuf_wreq <= 1'h0;	// src/main/scala/bus/BetaBus.scala:18:14, :28:28, :90:27
+      dataReqBuf_addr <= 32'h0;	// src/main/scala/bus/BetaBus.scala:90:27, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
+      dataReqBuf_wdata <= 32'h0;	// src/main/scala/bus/BetaBus.scala:90:27, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
     end
     else begin	// src/main/scala/bus/BetaBus.scala:17:7
-      automatic logic dataHasReq;	// src/main/scala/bus/BetaBus.scala:39:56
-      automatic logic baseRamBusy;	// src/main/scala/bus/BetaBus.scala:70:57
-      automatic logic extRamBusy;	// src/main/scala/bus/BetaBus.scala:71:35
-      automatic logic _GEN;	// src/main/scala/bus/BetaBus.scala:79:59
-      automatic logic _GEN_0;	// src/main/scala/bus/BetaBus.scala:79:25
-      automatic logic _GEN_1;	// src/main/scala/bus/BetaBus.scala:79:89, :80:17, :81:34, :82:17, :84:17
-      automatic logic _GEN_2;	// src/main/scala/bus/BetaBus.scala:33:24, :76:24, :79:89
-      automatic logic _GEN_3;	// src/main/scala/bus/BetaBus.scala:33:24, :76:24, :79:89
-      automatic logic _GEN_4;	// src/main/scala/bus/BetaBus.scala:33:24, :76:24, :79:89
-      automatic logic _GEN_5;	// src/main/scala/bus/BetaBus.scala:74:17
-      automatic logic _GEN_6;	// src/main/scala/bus/BetaBus.scala:33:24, :74:17, :91:26, :93:17
-      automatic logic _GEN_7;	// src/main/scala/bus/BetaBus.scala:74:17, :76:24
-      automatic logic _GEN_8;	// src/main/scala/bus/BetaBus.scala:33:24, :74:17, :91:26, :93:17
-      automatic logic _GEN_9;	// src/main/scala/bus/BetaBus.scala:74:17, :76:24
-      automatic logic _GEN_10;	// src/main/scala/bus/BetaBus.scala:33:24, :74:17, :91:26, :93:17
-      automatic logic _GEN_11;	// src/main/scala/bus/BetaBus.scala:74:17, :76:24
-      automatic logic _GEN_12;	// src/main/scala/bus/BetaBus.scala:74:17
-      automatic logic _GEN_13;	// src/main/scala/bus/BetaBus.scala:104:17
-      automatic logic _GEN_14;	// src/main/scala/bus/BetaBus.scala:104:17
-      automatic logic _GEN_15;	// src/main/scala/bus/BetaBus.scala:104:17
-      automatic logic _GEN_16;	// src/main/scala/bus/BetaBus.scala:104:17
-      automatic logic _GEN_17;	// src/main/scala/bus/BetaBus.scala:104:17
-      automatic logic _GEN_18;	// src/main/scala/bus/BetaBus.scala:27:24, :104:17
-      dataHasReq = io_dataChannel_req_rreq | io_dataChannel_req_wreq;	// src/main/scala/bus/BetaBus.scala:39:56
-      baseRamBusy = istat == 2'h2 | dstat == 3'h3 | dstat == 3'h4;	// src/main/scala/bus/BetaBus.scala:48:22, :63:22, :70:{24,45,57,66}, :115:21
-      extRamBusy = dstat == 3'h5 | dstat == 3'h6;	// src/main/scala/bus/BetaBus.scala:63:22, :71:{23,35,44}
-      _GEN = io_dataChannel_req_addr[31:22] == 10'h200;	// src/main/scala/bus/BetaBus.scala:79:{51,59}
-      _GEN_0 = dataHasReq & _GEN;	// src/main/scala/bus/BetaBus.scala:39:56, :79:{25,59}
-      _GEN_1 = _GEN_0 | baseRamBusy;	// src/main/scala/bus/BetaBus.scala:70:57, :79:{25,89}, :80:17, :81:34, :82:17, :84:17
-      _GEN_2 = ~io_instChannel_req_req | _GEN_1;	// src/main/scala/bus/BetaBus.scala:33:24, :76:24, :79:89, :80:17, :81:34, :82:17, :84:17
-      _GEN_3 = _GEN_2 & boutReg_oe;	// src/main/scala/bus/BetaBus.scala:33:24, :76:24, :79:89
-      _GEN_4 = io_instChannel_req_req & ~_GEN_1 | boutReg_we;	// src/main/scala/bus/BetaBus.scala:33:24, :76:24, :79:89, :80:17, :81:34, :82:17, :84:17, :85:19
-      _GEN_5 = istat == 2'h1;	// src/main/scala/bus/BetaBus.scala:48:22, :74:17, :80:17
-      _GEN_6 = _GEN_5 & ~baseRamBusy;	// src/main/scala/bus/BetaBus.scala:33:24, :70:57, :74:17, :91:{12,26}, :93:17
-      _GEN_7 = (|istat) ? ~_GEN_6 & boutReg_ce : _GEN_2 & boutReg_ce;	// src/main/scala/bus/BetaBus.scala:33:24, :48:22, :50:25, :74:17, :76:24, :79:89, :91:26, :93:17
-      _GEN_8 = ~_GEN_6 & boutReg_oe;	// src/main/scala/bus/BetaBus.scala:33:24, :74:17, :91:26, :93:17
-      _GEN_9 = (|istat) ? _GEN_8 : _GEN_3;	// src/main/scala/bus/BetaBus.scala:33:24, :48:22, :50:25, :74:17, :76:24, :79:89, :91:26, :93:17
-      _GEN_10 = _GEN_6 | boutReg_we;	// src/main/scala/bus/BetaBus.scala:33:24, :74:17, :91:26, :93:17
-      _GEN_11 = (|istat) ? _GEN_10 : _GEN_4;	// src/main/scala/bus/BetaBus.scala:33:24, :48:22, :50:25, :74:17, :76:24, :79:89, :91:26, :93:17
-      _GEN_12 = istat == 2'h2;	// src/main/scala/bus/BetaBus.scala:48:22, :70:24, :74:17
-      _GEN_13 = dstat == 3'h1;	// src/main/scala/bus/BetaBus.scala:63:22, :104:17, :112:19
-      _GEN_14 = dstat == 3'h3;	// src/main/scala/bus/BetaBus.scala:63:22, :104:17, :115:21
-      _GEN_15 = dstat == 3'h4;	// src/main/scala/bus/BetaBus.scala:63:22, :70:66, :104:17
-      _GEN_16 = dstat == 3'h2;	// src/main/scala/bus/BetaBus.scala:63:22, :104:17, :129:19
-      _GEN_17 = dstat == 3'h5;	// src/main/scala/bus/BetaBus.scala:63:22, :71:23, :104:17
-      _GEN_18 = _GEN_15 | _GEN_16;	// src/main/scala/bus/BetaBus.scala:27:24, :104:17
-      if (~(|istat) | _GEN_5 | ~_GEN_12) begin	// src/main/scala/bus/BetaBus.scala:26:24, :48:22, :50:25, :74:17
+      automatic logic dataHasReq;	// src/main/scala/bus/BetaBus.scala:62:56
+      automatic logic baseRamBusy;	// src/main/scala/bus/BetaBus.scala:96:57
+      automatic logic extRamBusy;	// src/main/scala/bus/BetaBus.scala:97:35
+      automatic logic _GEN_10;	// src/main/scala/bus/BetaBus.scala:105:59
+      automatic logic _GEN_11;	// src/main/scala/bus/BetaBus.scala:105:25
+      automatic logic _GEN_12;	// src/main/scala/bus/BetaBus.scala:105:89, :106:17, :107:34, :108:17, :110:17
+      automatic logic _GEN_13;	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
+      automatic logic _GEN_14;	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
+      automatic logic _GEN_15;	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
+      automatic logic _GEN_16;	// src/main/scala/bus/BetaBus.scala:100:17
+      automatic logic _GEN_17;	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :117:26, :119:17
+      automatic logic _GEN_18;	// src/main/scala/bus/BetaBus.scala:100:17, :102:24
+      automatic logic _GEN_19;	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :117:26, :119:17
+      automatic logic _GEN_20;	// src/main/scala/bus/BetaBus.scala:100:17, :102:24
+      automatic logic _GEN_21;	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :117:26, :119:17
+      automatic logic _GEN_22;	// src/main/scala/bus/BetaBus.scala:100:17, :102:24
+      automatic logic _GEN_23;	// src/main/scala/bus/BetaBus.scala:100:17
+      automatic logic _GEN_24;	// src/main/scala/bus/BetaBus.scala:50:24, :130:17
+      dataHasReq = io_dataChannel_req_rreq | io_dataChannel_req_wreq;	// src/main/scala/bus/BetaBus.scala:62:56
+      baseRamBusy = istat == 2'h2 | dstat == 4'h3 | dstat == 4'h4;	// src/main/scala/bus/BetaBus.scala:17:7, :71:22, :89:22, :96:{24,45,57,66}
+      extRamBusy = dstat == 4'h5 | dstat == 4'h6;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22, :97:{23,35,44}
+      _GEN_10 = io_dataChannel_req_addr[31:22] == 10'h200;	// src/main/scala/bus/BetaBus.scala:105:{51,59}
+      _GEN_11 = dataHasReq & _GEN_10;	// src/main/scala/bus/BetaBus.scala:62:56, :105:{25,59}
+      _GEN_12 = _GEN_11 | baseRamBusy;	// src/main/scala/bus/BetaBus.scala:96:57, :105:{25,89}, :106:17, :107:34, :108:17, :110:17
+      _GEN_13 = ~io_instChannel_req_req | _GEN_12;	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89, :106:17, :107:34, :108:17, :110:17
+      _GEN_14 = _GEN_13 & boutReg_oe;	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
+      _GEN_15 = io_instChannel_req_req & ~_GEN_12 | boutReg_we;	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89, :106:17, :107:34, :108:17, :110:17, :111:19
+      _GEN_16 = istat == 2'h1;	// src/main/scala/bus/BetaBus.scala:71:22, :100:17, :106:17
+      _GEN_17 = _GEN_16 & ~baseRamBusy;	// src/main/scala/bus/BetaBus.scala:56:24, :96:57, :100:17, :117:{12,26}, :119:17
+      _GEN_18 = (|istat) ? ~_GEN_17 & boutReg_ce : _GEN_13 & boutReg_ce;	// src/main/scala/bus/BetaBus.scala:56:24, :71:22, :73:25, :100:17, :102:24, :105:89, :117:26, :119:17
+      _GEN_19 = ~_GEN_17 & boutReg_oe;	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :117:26, :119:17
+      _GEN_20 = (|istat) ? _GEN_19 : _GEN_14;	// src/main/scala/bus/BetaBus.scala:56:24, :71:22, :73:25, :100:17, :102:24, :105:89, :117:26, :119:17
+      _GEN_21 = _GEN_17 | boutReg_we;	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :117:26, :119:17
+      _GEN_22 = (|istat) ? _GEN_21 : _GEN_15;	// src/main/scala/bus/BetaBus.scala:56:24, :71:22, :73:25, :100:17, :102:24, :105:89, :117:26, :119:17
+      _GEN_23 = istat == 2'h2;	// src/main/scala/bus/BetaBus.scala:71:22, :96:24, :100:17
+      _GEN_24 = _GEN_1 | _GEN_2;	// src/main/scala/bus/BetaBus.scala:50:24, :130:17
+      if (~(|istat) | _GEN_16 | ~_GEN_23) begin	// src/main/scala/bus/BetaBus.scala:49:24, :71:22, :73:25, :100:17
       end
-      else	// src/main/scala/bus/BetaBus.scala:26:24, :74:17
-        instReg_inst <= io_baseRam_rspns_rData;	// src/main/scala/bus/BetaBus.scala:26:24
-      instReg_rrdy <= ~(|istat);	// src/main/scala/bus/BetaBus.scala:26:24, :48:22, :50:25
-      instReg_rvalid <= (|istat) & (~_GEN_5 & _GEN_12 | instReg_rvalid);	// src/main/scala/bus/BetaBus.scala:26:24, :48:22, :50:25, :74:17, :88:22
-      if (~(~(|dstat) | _GEN_13)) begin	// src/main/scala/bus/BetaBus.scala:27:24, :63:22, :65:25, :104:17
-        if (_GEN_14)	// src/main/scala/bus/BetaBus.scala:104:17
-          dataReg_rdata <= io_baseRam_rspns_rData;	// src/main/scala/bus/BetaBus.scala:27:24
-        else if (_GEN_18 | ~_GEN_17) begin	// src/main/scala/bus/BetaBus.scala:27:24, :104:17
+      else	// src/main/scala/bus/BetaBus.scala:49:24, :100:17
+        instReg_inst <= io_baseRam_rspns_rData;	// src/main/scala/bus/BetaBus.scala:49:24
+      instReg_rrdy <= ~(|istat);	// src/main/scala/bus/BetaBus.scala:49:24, :71:22, :73:25
+      instReg_rvalid <= (|istat) & (~_GEN_16 & _GEN_23 | instReg_rvalid);	// src/main/scala/bus/BetaBus.scala:49:24, :71:22, :73:25, :100:17, :114:22
+      if (~(~(|dstat) | _GEN)) begin	// src/main/scala/bus/BetaBus.scala:50:24, :89:22, :91:25, :130:17
+        if (_GEN_0)	// src/main/scala/bus/BetaBus.scala:130:17
+          dataReg_rdata <= io_baseRam_rspns_rData;	// src/main/scala/bus/BetaBus.scala:50:24
+        else if (~_GEN_24) begin	// src/main/scala/bus/BetaBus.scala:50:24, :130:17
+          if (_GEN_3)	// src/main/scala/bus/BetaBus.scala:130:17
+            dataReg_rdata <= io_extRam_rspns_rData;	// src/main/scala/bus/BetaBus.scala:50:24
+          else if (~_GEN_4) begin	// src/main/scala/bus/BetaBus.scala:50:24, :130:17
+            if (_GEN_5)	// src/main/scala/bus/BetaBus.scala:130:17
+              dataReg_rdata <=
+                {30'h0, _uartReceiver_RxD_data_ready, ~_uartTransmitter_TxD_busy};	// src/main/scala/bus/BetaBus.scala:27:31, :28:28, :36:48, :50:24, :240:34
+            else if (_GEN_6)	// src/main/scala/bus/BetaBus.scala:130:17
+              dataReg_rdata <= {24'h0, _uartReceiver_RxD_data};	// src/main/scala/bus/BetaBus.scala:28:28, :50:24, :245:34
+          end
         end
-        else	// src/main/scala/bus/BetaBus.scala:27:24, :104:17
-          dataReg_rdata <= io_extRam_rspns_rData;	// src/main/scala/bus/BetaBus.scala:27:24
       end
-      dataReg_rrdy <= ~(|dstat);	// src/main/scala/bus/BetaBus.scala:27:24, :63:22, :65:25
+      dataReg_rrdy <= ~(|dstat);	// src/main/scala/bus/BetaBus.scala:50:24, :89:22, :91:25
       dataReg_rvalid <=
-        (|dstat) & (~_GEN_13 & (_GEN_14 | ~_GEN_18 & _GEN_17) | dataReg_rvalid);	// src/main/scala/bus/BetaBus.scala:27:24, :63:22, :65:25, :104:17, :106:22, :163:22
-      dataReg_wrdy <= ~(|dstat);	// src/main/scala/bus/BetaBus.scala:27:24, :63:22, :65:25
+        (|dstat)
+        & (~_GEN & (_GEN_0 | ~_GEN_24 & (_GEN_3 | ~_GEN_4 & _GEN_7)) | dataReg_rvalid);	// src/main/scala/bus/BetaBus.scala:50:24, :89:22, :91:25, :130:17, :132:22, :205:22, :230:22, :239:22, :244:22
+      dataReg_wrdy <= ~(|dstat);	// src/main/scala/bus/BetaBus.scala:50:24, :89:22, :91:25
       dataReg_wdone <=
         (|dstat)
-        & (~(_GEN_13 | _GEN_14) & (_GEN_15 | ~(_GEN_16 | _GEN_17) & dstat == 3'h6)
-           | dataReg_wdone);	// src/main/scala/bus/BetaBus.scala:27:24, :63:22, :65:25, :71:44, :104:17, :107:21, :168:21
-      if (|dstat) begin	// src/main/scala/bus/BetaBus.scala:63:22, :65:25
-        automatic logic            _GEN_19;	// src/main/scala/bus/BetaBus.scala:74:17, :148:31, :150:19, :152:31, :154:19
-        automatic logic            _GEN_20;	// src/main/scala/bus/BetaBus.scala:34:24, :104:17
-        automatic logic            _GEN_21;	// src/main/scala/bus/BetaBus.scala:34:24, :104:17
-        automatic logic [7:0][2:0] _GEN_22;	// src/main/scala/bus/BetaBus.scala:34:24, :63:22, :104:17, :147:25, :162:13, :167:13, :171:24, :186:13, :191:13
-        _GEN_19 = dataReqBuf_wreq | dataReqBuf_rreq;	// src/main/scala/bus/BetaBus.scala:64:27, :74:17, :148:31, :150:19, :152:31, :154:19
-        _GEN_20 = _GEN_13 | _GEN_14 | _GEN_15;	// src/main/scala/bus/BetaBus.scala:34:24, :104:17
-        _GEN_21 = _GEN_20 | ~(_GEN_16 & ~extRamBusy);	// src/main/scala/bus/BetaBus.scala:34:24, :71:35, :104:17, :171:{12,24}, :176:31
-        if (_GEN_13 & ~baseRamBusy) begin	// src/main/scala/bus/BetaBus.scala:70:57, :74:17, :91:12, :104:17, :147:25, :152:31
-          if (dataReqBuf_wreq) begin	// src/main/scala/bus/BetaBus.scala:64:27
-            boutReg_wData <= dataReqBuf_wdata;	// src/main/scala/bus/BetaBus.scala:33:24, :64:27
-            boutReg_addr <= dataReqBuf_addr[21:2];	// src/main/scala/bus/BetaBus.scala:33:24, :64:27, :155:28
+        & (~(_GEN | _GEN_0) & (_GEN_1 | ~(_GEN_2 | _GEN_3) & (_GEN_4 | ~_GEN_7 & _GEN_8))
+           | dataReg_wdone);	// src/main/scala/bus/BetaBus.scala:50:24, :89:22, :91:25, :130:17, :133:21, :210:21, :235:21, :239:22, :244:22
+      if (|dstat) begin	// src/main/scala/bus/BetaBus.scala:89:22, :91:25
+        automatic logic _GEN_25;	// src/main/scala/bus/BetaBus.scala:100:17, :189:31, :191:19, :193:31, :195:19
+        automatic logic _GEN_26;	// src/main/scala/bus/BetaBus.scala:57:24, :130:17
+        automatic logic _GEN_27;	// src/main/scala/bus/BetaBus.scala:57:24, :130:17
+        automatic logic _GEN_28;	// src/main/scala/bus/BetaBus.scala:57:24, :130:17
+        _GEN_25 = dataReqBuf_wreq | dataReqBuf_rreq;	// src/main/scala/bus/BetaBus.scala:90:27, :100:17, :189:31, :191:19, :193:31, :195:19
+        _GEN_26 = _GEN_0 | _GEN_1;	// src/main/scala/bus/BetaBus.scala:57:24, :130:17
+        _GEN_27 = _GEN | _GEN_26;	// src/main/scala/bus/BetaBus.scala:57:24, :130:17
+        _GEN_28 = _GEN_27 | ~(_GEN_2 & ~extRamBusy);	// src/main/scala/bus/BetaBus.scala:57:24, :97:35, :130:17, :213:{12,24}, :218:31
+        if (_GEN & ~baseRamBusy) begin	// src/main/scala/bus/BetaBus.scala:96:57, :100:17, :117:12, :130:17, :188:25, :193:31
+          if (dataReqBuf_wreq) begin	// src/main/scala/bus/BetaBus.scala:90:27
+            boutReg_wData <= dataReqBuf_wdata;	// src/main/scala/bus/BetaBus.scala:56:24, :90:27
+            boutReg_addr <= dataReqBuf_addr[21:2];	// src/main/scala/bus/BetaBus.scala:56:24, :90:27, :196:28
           end
-          else if (dataReqBuf_rreq) begin	// src/main/scala/bus/BetaBus.scala:64:27
-            boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:33:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
-            boutReg_addr <= dataReqBuf_addr[21:2];	// src/main/scala/bus/BetaBus.scala:33:24, :64:27, :150:50
+          else if (dataReqBuf_rreq) begin	// src/main/scala/bus/BetaBus.scala:90:27
+            boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
+            boutReg_addr <= dataReqBuf_addr[21:2];	// src/main/scala/bus/BetaBus.scala:56:24, :90:27, :191:46
           end
-          else if (|istat) begin	// src/main/scala/bus/BetaBus.scala:48:22, :50:25
-            if (_GEN_6) begin	// src/main/scala/bus/BetaBus.scala:33:24, :74:17, :91:26, :93:17
-              boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:33:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
-              boutReg_addr <= instReqBuf_pc[21:2];	// src/main/scala/bus/BetaBus.scala:33:24, :49:27, :93:46
+          else if (|istat) begin	// src/main/scala/bus/BetaBus.scala:71:22, :73:25
+            if (_GEN_17) begin	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :117:26, :119:17
+              boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
+              boutReg_addr <= instReqBuf_pc[21:2];	// src/main/scala/bus/BetaBus.scala:56:24, :72:27, :119:46
             end
           end
-          else if (_GEN_2) begin	// src/main/scala/bus/BetaBus.scala:33:24, :76:24, :79:89
+          else if (_GEN_13) begin	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
           end
-          else begin	// src/main/scala/bus/BetaBus.scala:33:24, :76:24, :79:89
-            boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:33:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
-            boutReg_addr <= io_instChannel_req_pc[21:2];	// src/main/scala/bus/BetaBus.scala:33:24, :85:56
+          else begin	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
+            boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
+            boutReg_addr <= io_instChannel_req_pc[21:2];	// src/main/scala/bus/BetaBus.scala:56:24, :111:56
           end
-          boutReg_oe <= dataReqBuf_wreq | ~dataReqBuf_rreq & _GEN_9;	// src/main/scala/bus/BetaBus.scala:33:24, :64:27, :74:17, :76:24, :148:31, :150:19, :152:31, :154:19
-          boutReg_we <= ~dataReqBuf_wreq & (dataReqBuf_rreq | _GEN_11);	// src/main/scala/bus/BetaBus.scala:33:24, :64:27, :74:17, :76:24, :148:31, :150:19, :152:31, :154:19
+          boutReg_oe <= dataReqBuf_wreq | ~dataReqBuf_rreq & _GEN_20;	// src/main/scala/bus/BetaBus.scala:56:24, :90:27, :100:17, :102:24, :189:31, :191:19, :193:31, :195:19
+          boutReg_we <= ~dataReqBuf_wreq & (dataReqBuf_rreq | _GEN_22);	// src/main/scala/bus/BetaBus.scala:56:24, :90:27, :100:17, :102:24, :189:31, :191:19, :193:31, :195:19
         end
-        else if (|istat) begin	// src/main/scala/bus/BetaBus.scala:48:22, :50:25
-          if (_GEN_6) begin	// src/main/scala/bus/BetaBus.scala:33:24, :74:17, :91:26, :93:17
-            boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:33:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
-            boutReg_addr <= instReqBuf_pc[21:2];	// src/main/scala/bus/BetaBus.scala:33:24, :49:27, :93:46
+        else if (|istat) begin	// src/main/scala/bus/BetaBus.scala:71:22, :73:25
+          if (_GEN_17) begin	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :117:26, :119:17
+            boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
+            boutReg_addr <= instReqBuf_pc[21:2];	// src/main/scala/bus/BetaBus.scala:56:24, :72:27, :119:46
           end
-          boutReg_oe <= _GEN_8;	// src/main/scala/bus/BetaBus.scala:33:24, :74:17, :91:26, :93:17
-          boutReg_we <= _GEN_10;	// src/main/scala/bus/BetaBus.scala:33:24, :74:17, :91:26, :93:17
+          boutReg_oe <= _GEN_19;	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :117:26, :119:17
+          boutReg_we <= _GEN_21;	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :117:26, :119:17
         end
-        else begin	// src/main/scala/bus/BetaBus.scala:50:25
-          if (_GEN_2) begin	// src/main/scala/bus/BetaBus.scala:33:24, :76:24, :79:89
+        else begin	// src/main/scala/bus/BetaBus.scala:73:25
+          if (_GEN_13) begin	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
           end
-          else begin	// src/main/scala/bus/BetaBus.scala:33:24, :76:24, :79:89
-            boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:33:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
-            boutReg_addr <= io_instChannel_req_pc[21:2];	// src/main/scala/bus/BetaBus.scala:33:24, :85:56
+          else begin	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
+            boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
+            boutReg_addr <= io_instChannel_req_pc[21:2];	// src/main/scala/bus/BetaBus.scala:56:24, :111:56
           end
-          boutReg_oe <= _GEN_3;	// src/main/scala/bus/BetaBus.scala:33:24, :76:24, :79:89
-          boutReg_we <= _GEN_4;	// src/main/scala/bus/BetaBus.scala:33:24, :76:24, :79:89
+          boutReg_oe <= _GEN_14;	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
+          boutReg_we <= _GEN_15;	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
         end
-        boutReg_ce <= ~(_GEN_13 & ~baseRamBusy & _GEN_19) & _GEN_7;	// src/main/scala/bus/BetaBus.scala:33:24, :70:57, :74:17, :76:24, :91:12, :104:17, :147:25, :148:31, :150:19, :152:31, :154:19
-        if (_GEN_21) begin	// src/main/scala/bus/BetaBus.scala:34:24, :104:17
+        boutReg_ce <= ~(_GEN & ~baseRamBusy & _GEN_25) & _GEN_18;	// src/main/scala/bus/BetaBus.scala:56:24, :96:57, :100:17, :102:24, :117:12, :130:17, :188:25, :189:31, :191:19, :193:31, :195:19
+        if (_GEN_28) begin	// src/main/scala/bus/BetaBus.scala:57:24, :130:17
         end
-        else if (dataReqBuf_wreq) begin	// src/main/scala/bus/BetaBus.scala:64:27
-          eoutReg_wData <= dataReqBuf_wdata;	// src/main/scala/bus/BetaBus.scala:34:24, :64:27
-          eoutReg_addr <= dataReqBuf_addr[21:2];	// src/main/scala/bus/BetaBus.scala:34:24, :64:27, :179:28
+        else if (dataReqBuf_wreq) begin	// src/main/scala/bus/BetaBus.scala:90:27
+          eoutReg_wData <= dataReqBuf_wdata;	// src/main/scala/bus/BetaBus.scala:57:24, :90:27
+          eoutReg_addr <= dataReqBuf_addr[21:2];	// src/main/scala/bus/BetaBus.scala:57:24, :90:27, :221:28
         end
-        else if (dataReqBuf_rreq) begin	// src/main/scala/bus/BetaBus.scala:64:27
-          eoutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:34:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
-          eoutReg_addr <= dataReqBuf_addr[21:2];	// src/main/scala/bus/BetaBus.scala:34:24, :64:27, :174:50
+        else if (dataReqBuf_rreq) begin	// src/main/scala/bus/BetaBus.scala:90:27
+          eoutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:57:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
+          eoutReg_addr <= dataReqBuf_addr[21:2];	// src/main/scala/bus/BetaBus.scala:57:24, :90:27, :216:46
         end
-        eoutReg_ce <= (_GEN_20 | ~(_GEN_16 & ~extRamBusy & _GEN_19)) & eoutReg_ce;	// src/main/scala/bus/BetaBus.scala:34:24, :71:35, :74:17, :104:17, :148:31, :150:19, :152:31, :154:19, :171:{12,24}, :172:31, :174:19, :176:31, :178:19
-        if (_GEN_21) begin	// src/main/scala/bus/BetaBus.scala:34:24, :104:17
+        eoutReg_ce <= (_GEN_27 | ~(_GEN_2 & ~extRamBusy & _GEN_25)) & eoutReg_ce;	// src/main/scala/bus/BetaBus.scala:57:24, :97:35, :100:17, :130:17, :189:31, :191:19, :193:31, :195:19, :213:{12,24}, :214:31, :216:19, :218:31, :220:19
+        if (_GEN_28) begin	// src/main/scala/bus/BetaBus.scala:57:24, :130:17
         end
-        else begin	// src/main/scala/bus/BetaBus.scala:34:24, :104:17
-          eoutReg_oe <= dataReqBuf_wreq | ~dataReqBuf_rreq & eoutReg_oe;	// src/main/scala/bus/BetaBus.scala:34:24, :64:27, :74:17, :148:31, :150:19, :172:31, :174:19, :176:31, :178:19
-          eoutReg_we <= ~dataReqBuf_wreq & (dataReqBuf_rreq | eoutReg_we);	// src/main/scala/bus/BetaBus.scala:34:24, :64:27, :148:31, :152:31, :154:19, :172:31, :174:19, :176:31, :178:19
+        else begin	// src/main/scala/bus/BetaBus.scala:57:24, :130:17
+          eoutReg_oe <= dataReqBuf_wreq | ~dataReqBuf_rreq & eoutReg_oe;	// src/main/scala/bus/BetaBus.scala:57:24, :90:27, :100:17, :189:31, :191:19, :214:31, :216:19, :218:31, :220:19
+          eoutReg_we <= ~dataReqBuf_wreq & (dataReqBuf_rreq | eoutReg_we);	// src/main/scala/bus/BetaBus.scala:57:24, :90:27, :189:31, :193:31, :195:19, :214:31, :216:19, :218:31, :220:19
         end
-        _GEN_22 =
-          {{dstat},
-           {3'h0},
-           {3'h0},
-           {3'h0},
-           {3'h0},
-           {extRamBusy ? dstat : dataReqBuf_wreq ? 3'h6 : dataReqBuf_rreq ? 3'h5 : dstat},
-           {baseRamBusy
-              ? dstat
-              : dataReqBuf_wreq ? 3'h4 : dataReqBuf_rreq ? 3'h3 : dstat},
-           {dstat}};	// src/main/scala/bus/BetaBus.scala:34:24, :63:22, :64:27, :70:{57,66}, :71:{23,35,44}, :104:17, :115:21, :147:25, :148:31, :149:17, :152:31, :153:17, :162:13, :167:13, :171:24, :172:31, :173:17, :176:31, :177:17, :186:13, :191:13
-        dstat <= _GEN_22[dstat];	// src/main/scala/bus/BetaBus.scala:34:24, :63:22, :104:17, :147:25, :162:13, :167:13, :171:24, :186:13, :191:13
+        if (_GEN) begin	// src/main/scala/bus/BetaBus.scala:130:17
+          if (~baseRamBusy) begin	// src/main/scala/bus/BetaBus.scala:96:57
+            if (dataReqBuf_wreq)	// src/main/scala/bus/BetaBus.scala:90:27
+              dstat <= 4'h4;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
+            else if (dataReqBuf_rreq)	// src/main/scala/bus/BetaBus.scala:90:27
+              dstat <= 4'h3;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
+          end
+        end
+        else if (_GEN_26)	// src/main/scala/bus/BetaBus.scala:57:24, :130:17
+          dstat <= 4'h0;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
+        else if (_GEN_2) begin	// src/main/scala/bus/BetaBus.scala:130:17
+          if (~extRamBusy) begin	// src/main/scala/bus/BetaBus.scala:97:35
+            if (dataReqBuf_wreq)	// src/main/scala/bus/BetaBus.scala:90:27
+              dstat <= 4'h6;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
+            else if (dataReqBuf_rreq)	// src/main/scala/bus/BetaBus.scala:90:27
+              dstat <= 4'h5;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
+          end
+        end
+        else if (_GEN_3 | _GEN_4 | _GEN_5 | _GEN_6 | _GEN_8)	// src/main/scala/bus/BetaBus.scala:89:22, :130:17, :229:13, :234:13, :238:13, :243:13, :249:13
+          dstat <= 4'h0;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
       end
-      else begin	// src/main/scala/bus/BetaBus.scala:65:25
-        automatic logic _GEN_23;	// src/main/scala/bus/BetaBus.scala:74:17, :108:24, :110:75, :111:29
-        automatic logic _GEN_24 = io_dataChannel_req_wreq | io_dataChannel_req_rreq;	// src/main/scala/bus/BetaBus.scala:74:17, :114:43, :116:23, :118:43, :120:23
-        automatic logic _GEN_25;	// src/main/scala/bus/BetaBus.scala:127:45
-        automatic logic _GEN_26;	// src/main/scala/bus/BetaBus.scala:34:24, :108:24, :127:74, :128:28
-        automatic logic _GEN_27;	// src/main/scala/bus/BetaBus.scala:34:24, :108:24, :127:74, :128:28
-        _GEN_23 = ~_GEN_0 | baseRamBusy;	// src/main/scala/bus/BetaBus.scala:70:57, :74:17, :79:25, :108:24, :110:75, :111:29
-        _GEN_25 = io_dataChannel_req_addr[31:22] == 10'h201;	// src/main/scala/bus/BetaBus.scala:79:51, :127:45
-        _GEN_26 = dataHasReq & _GEN_25;	// src/main/scala/bus/BetaBus.scala:34:24, :39:56, :108:24, :127:{45,74}, :128:28
-        _GEN_27 = ~_GEN_26 | extRamBusy;	// src/main/scala/bus/BetaBus.scala:34:24, :71:35, :108:24, :127:74, :128:28
-        if (_GEN_23) begin	// src/main/scala/bus/BetaBus.scala:74:17, :108:24, :110:75, :111:29
-          if (|istat) begin	// src/main/scala/bus/BetaBus.scala:48:22, :50:25
-            if (_GEN_6) begin	// src/main/scala/bus/BetaBus.scala:33:24, :74:17, :91:26, :93:17
-              boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:33:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
-              boutReg_addr <= instReqBuf_pc[21:2];	// src/main/scala/bus/BetaBus.scala:33:24, :49:27, :93:46
+      else begin	// src/main/scala/bus/BetaBus.scala:91:25
+        automatic logic _GEN_29;	// src/main/scala/bus/BetaBus.scala:100:17, :136:24, :149:75, :150:29
+        automatic logic _GEN_30 = io_dataChannel_req_wreq | io_dataChannel_req_rreq;	// src/main/scala/bus/BetaBus.scala:100:17, :153:43, :155:23, :157:43, :159:23
+        automatic logic _GEN_31;	// src/main/scala/bus/BetaBus.scala:167:45
+        automatic logic _GEN_32;	// src/main/scala/bus/BetaBus.scala:57:24, :136:24, :167:74, :168:28
+        automatic logic _GEN_33;	// src/main/scala/bus/BetaBus.scala:57:24, :136:24, :167:74, :168:28
+        _GEN_29 = ~_GEN_11 | baseRamBusy;	// src/main/scala/bus/BetaBus.scala:96:57, :100:17, :105:25, :136:24, :149:75, :150:29
+        _GEN_31 = io_dataChannel_req_addr[31:22] == 10'h201;	// src/main/scala/bus/BetaBus.scala:105:51, :167:45
+        _GEN_32 = dataHasReq & _GEN_31;	// src/main/scala/bus/BetaBus.scala:57:24, :62:56, :136:24, :167:{45,74}, :168:28
+        _GEN_33 = ~_GEN_32 | extRamBusy;	// src/main/scala/bus/BetaBus.scala:57:24, :97:35, :136:24, :167:74, :168:28
+        if (_GEN_29) begin	// src/main/scala/bus/BetaBus.scala:100:17, :136:24, :149:75, :150:29
+          if (|istat) begin	// src/main/scala/bus/BetaBus.scala:71:22, :73:25
+            if (_GEN_17) begin	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :117:26, :119:17
+              boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
+              boutReg_addr <= instReqBuf_pc[21:2];	// src/main/scala/bus/BetaBus.scala:56:24, :72:27, :119:46
             end
           end
-          else if (_GEN_2) begin	// src/main/scala/bus/BetaBus.scala:33:24, :76:24, :79:89
+          else if (_GEN_13) begin	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
           end
-          else begin	// src/main/scala/bus/BetaBus.scala:33:24, :76:24, :79:89
-            boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:33:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
-            boutReg_addr <= io_instChannel_req_pc[21:2];	// src/main/scala/bus/BetaBus.scala:33:24, :85:56
+          else begin	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
+            boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
+            boutReg_addr <= io_instChannel_req_pc[21:2];	// src/main/scala/bus/BetaBus.scala:56:24, :111:56
           end
         end
         else if (io_dataChannel_req_wreq) begin	// src/main/scala/bus/BetaBus.scala:18:14
-          boutReg_wData <= io_dataChannel_req_wdata;	// src/main/scala/bus/BetaBus.scala:33:24
-          boutReg_addr <= io_dataChannel_req_addr[21:2];	// src/main/scala/bus/BetaBus.scala:33:24, :121:40
+          boutReg_wData <= io_dataChannel_req_wdata;	// src/main/scala/bus/BetaBus.scala:56:24
+          boutReg_addr <= io_dataChannel_req_addr[21:2];	// src/main/scala/bus/BetaBus.scala:56:24, :160:40
         end
         else if (io_dataChannel_req_rreq) begin	// src/main/scala/bus/BetaBus.scala:18:14
-          boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:33:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
-          boutReg_addr <= io_dataChannel_req_addr[21:2];	// src/main/scala/bus/BetaBus.scala:33:24, :116:62
+          boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
+          boutReg_addr <= io_dataChannel_req_addr[21:2];	// src/main/scala/bus/BetaBus.scala:56:24, :155:58
         end
-        else if (|istat) begin	// src/main/scala/bus/BetaBus.scala:48:22, :50:25
-          if (_GEN_6) begin	// src/main/scala/bus/BetaBus.scala:33:24, :74:17, :91:26, :93:17
-            boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:33:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
-            boutReg_addr <= instReqBuf_pc[21:2];	// src/main/scala/bus/BetaBus.scala:33:24, :49:27, :93:46
+        else if (|istat) begin	// src/main/scala/bus/BetaBus.scala:71:22, :73:25
+          if (_GEN_17) begin	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :117:26, :119:17
+            boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
+            boutReg_addr <= instReqBuf_pc[21:2];	// src/main/scala/bus/BetaBus.scala:56:24, :72:27, :119:46
           end
         end
-        else if (_GEN_2) begin	// src/main/scala/bus/BetaBus.scala:33:24, :76:24, :79:89
+        else if (_GEN_13) begin	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
         end
-        else begin	// src/main/scala/bus/BetaBus.scala:33:24, :76:24, :79:89
-          boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:33:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
-          boutReg_addr <= io_instChannel_req_pc[21:2];	// src/main/scala/bus/BetaBus.scala:33:24, :85:56
+        else begin	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
+          boutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:56:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
+          boutReg_addr <= io_instChannel_req_pc[21:2];	// src/main/scala/bus/BetaBus.scala:56:24, :111:56
         end
-        boutReg_ce <= (~_GEN_0 | baseRamBusy | ~_GEN_24) & _GEN_7;	// src/main/scala/bus/BetaBus.scala:33:24, :70:57, :74:17, :76:24, :79:25, :108:24, :110:75, :111:29, :114:43, :116:23, :118:43, :120:23
-        if (_GEN_23) begin	// src/main/scala/bus/BetaBus.scala:74:17, :108:24, :110:75, :111:29
-          if (|istat) begin	// src/main/scala/bus/BetaBus.scala:48:22, :50:25
-            boutReg_oe <= _GEN_8;	// src/main/scala/bus/BetaBus.scala:33:24, :74:17, :91:26, :93:17
-            boutReg_we <= _GEN_10;	// src/main/scala/bus/BetaBus.scala:33:24, :74:17, :91:26, :93:17
+        boutReg_ce <= (~_GEN_11 | baseRamBusy | ~_GEN_30) & _GEN_18;	// src/main/scala/bus/BetaBus.scala:56:24, :96:57, :100:17, :102:24, :105:25, :136:24, :149:75, :150:29, :153:43, :155:23, :157:43, :159:23
+        if (_GEN_29) begin	// src/main/scala/bus/BetaBus.scala:100:17, :136:24, :149:75, :150:29
+          if (|istat) begin	// src/main/scala/bus/BetaBus.scala:71:22, :73:25
+            boutReg_oe <= _GEN_19;	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :117:26, :119:17
+            boutReg_we <= _GEN_21;	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :117:26, :119:17
           end
-          else begin	// src/main/scala/bus/BetaBus.scala:50:25
-            boutReg_oe <= _GEN_3;	// src/main/scala/bus/BetaBus.scala:33:24, :76:24, :79:89
-            boutReg_we <= _GEN_4;	// src/main/scala/bus/BetaBus.scala:33:24, :76:24, :79:89
+          else begin	// src/main/scala/bus/BetaBus.scala:73:25
+            boutReg_oe <= _GEN_14;	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
+            boutReg_we <= _GEN_15;	// src/main/scala/bus/BetaBus.scala:56:24, :102:24, :105:89
           end
         end
-        else begin	// src/main/scala/bus/BetaBus.scala:74:17, :108:24, :110:75, :111:29
-          boutReg_oe <= io_dataChannel_req_wreq | ~io_dataChannel_req_rreq & _GEN_9;	// src/main/scala/bus/BetaBus.scala:33:24, :74:17, :76:24, :114:43, :116:23, :118:43, :120:23
-          boutReg_we <= ~io_dataChannel_req_wreq & (io_dataChannel_req_rreq | _GEN_11);	// src/main/scala/bus/BetaBus.scala:33:24, :74:17, :76:24, :114:43, :116:23, :118:43, :120:23
+        else begin	// src/main/scala/bus/BetaBus.scala:100:17, :136:24, :149:75, :150:29
+          boutReg_oe <= io_dataChannel_req_wreq | ~io_dataChannel_req_rreq & _GEN_20;	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :102:24, :153:43, :155:23, :157:43, :159:23
+          boutReg_we <= ~io_dataChannel_req_wreq & (io_dataChannel_req_rreq | _GEN_22);	// src/main/scala/bus/BetaBus.scala:56:24, :100:17, :102:24, :153:43, :155:23, :157:43, :159:23
         end
-        if (_GEN_27) begin	// src/main/scala/bus/BetaBus.scala:34:24, :108:24, :127:74, :128:28
+        if (_GEN_33) begin	// src/main/scala/bus/BetaBus.scala:57:24, :136:24, :167:74, :168:28
         end
         else if (io_dataChannel_req_wreq) begin	// src/main/scala/bus/BetaBus.scala:18:14
-          eoutReg_wData <= io_dataChannel_req_wdata;	// src/main/scala/bus/BetaBus.scala:34:24
-          eoutReg_addr <= io_dataChannel_req_addr[21:2];	// src/main/scala/bus/BetaBus.scala:34:24, :138:40
+          eoutReg_wData <= io_dataChannel_req_wdata;	// src/main/scala/bus/BetaBus.scala:57:24
+          eoutReg_addr <= io_dataChannel_req_addr[21:2];	// src/main/scala/bus/BetaBus.scala:57:24, :178:40
         end
         else if (io_dataChannel_req_rreq) begin	// src/main/scala/bus/BetaBus.scala:18:14
-          eoutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:34:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
-          eoutReg_addr <= io_dataChannel_req_addr[21:2];	// src/main/scala/bus/BetaBus.scala:34:24, :133:62
+          eoutReg_wData <= 32'h0;	// src/main/scala/bus/BetaBus.scala:57:24, src/main/scala/pipeline/fetch/FetchUtils.scala:14:15
+          eoutReg_addr <= io_dataChannel_req_addr[21:2];	// src/main/scala/bus/BetaBus.scala:57:24, :173:58
         end
-        eoutReg_ce <= (~_GEN_26 | extRamBusy | ~_GEN_24) & eoutReg_ce;	// src/main/scala/bus/BetaBus.scala:34:24, :71:35, :74:17, :108:24, :114:43, :116:23, :118:43, :120:23, :127:74, :128:28
-        if (_GEN_27) begin	// src/main/scala/bus/BetaBus.scala:34:24, :108:24, :127:74, :128:28
+        eoutReg_ce <= (~_GEN_32 | extRamBusy | ~_GEN_30) & eoutReg_ce;	// src/main/scala/bus/BetaBus.scala:57:24, :97:35, :100:17, :136:24, :153:43, :155:23, :157:43, :159:23, :167:74, :168:28
+        if (_GEN_33) begin	// src/main/scala/bus/BetaBus.scala:57:24, :136:24, :167:74, :168:28
         end
-        else begin	// src/main/scala/bus/BetaBus.scala:34:24, :108:24, :127:74, :128:28
-          eoutReg_oe <= io_dataChannel_req_wreq | ~io_dataChannel_req_rreq & eoutReg_oe;	// src/main/scala/bus/BetaBus.scala:34:24, :74:17, :114:43, :116:23, :131:43, :133:23, :135:43, :137:23
-          eoutReg_we <= ~io_dataChannel_req_wreq & (io_dataChannel_req_rreq | eoutReg_we);	// src/main/scala/bus/BetaBus.scala:34:24, :114:43, :118:43, :120:23, :131:43, :133:23, :135:43, :137:23
+        else begin	// src/main/scala/bus/BetaBus.scala:57:24, :136:24, :167:74, :168:28
+          eoutReg_oe <= io_dataChannel_req_wreq | ~io_dataChannel_req_rreq & eoutReg_oe;	// src/main/scala/bus/BetaBus.scala:57:24, :100:17, :153:43, :155:23, :171:43, :173:23, :175:43, :177:23
+          eoutReg_we <= ~io_dataChannel_req_wreq & (io_dataChannel_req_rreq | eoutReg_we);	// src/main/scala/bus/BetaBus.scala:57:24, :153:43, :157:43, :159:23, :171:43, :173:23, :175:43, :177:23
         end
-        if (dataHasReq) begin	// src/main/scala/bus/BetaBus.scala:39:56
-          if (_GEN_25) begin	// src/main/scala/bus/BetaBus.scala:127:45
-            if (extRamBusy)	// src/main/scala/bus/BetaBus.scala:71:35
-              dstat <= 3'h2;	// src/main/scala/bus/BetaBus.scala:63:22, :129:19
+        if (dataHasReq) begin	// src/main/scala/bus/BetaBus.scala:62:56
+          automatic logic _GEN_34;	// src/main/scala/bus/BetaBus.scala:138:38
+          automatic logic _GEN_35;	// src/main/scala/bus/BetaBus.scala:141:38
+          automatic logic _GEN_36;	// src/main/scala/bus/BetaBus.scala:138:67, :141:65, :142:41, :145:41, :146:19
+          _GEN_34 = io_dataChannel_req_addr == 32'hBFD003FC;	// src/main/scala/bus/BetaBus.scala:138:38
+          _GEN_35 = io_dataChannel_req_addr == 32'hBFD003F8;	// src/main/scala/bus/BetaBus.scala:141:38
+          _GEN_36 = _GEN_35 & io_dataChannel_req_wreq;	// src/main/scala/bus/BetaBus.scala:138:67, :141:{38,65}, :142:41, :145:41, :146:19
+          if (_GEN_31) begin	// src/main/scala/bus/BetaBus.scala:167:45
+            if (extRamBusy)	// src/main/scala/bus/BetaBus.scala:97:35
+              dstat <= 4'h2;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
             else if (io_dataChannel_req_wreq)	// src/main/scala/bus/BetaBus.scala:18:14
-              dstat <= 3'h6;	// src/main/scala/bus/BetaBus.scala:63:22, :71:44
+              dstat <= 4'h6;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
             else if (io_dataChannel_req_rreq)	// src/main/scala/bus/BetaBus.scala:18:14
-              dstat <= 3'h5;	// src/main/scala/bus/BetaBus.scala:63:22, :71:23
-            else if (_GEN & baseRamBusy)	// src/main/scala/bus/BetaBus.scala:63:22, :70:57, :79:59, :110:75, :111:29, :112:19, :118:43
-              dstat <= 3'h1;	// src/main/scala/bus/BetaBus.scala:63:22, :112:19
+              dstat <= 4'h5;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
+            else if (_GEN_10 & baseRamBusy)	// src/main/scala/bus/BetaBus.scala:96:57, :105:59, :141:65, :149:75, :150:29
+              dstat <= 4'h1;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
+            else if (_GEN_36)	// src/main/scala/bus/BetaBus.scala:138:67, :141:65, :142:41, :145:41, :146:19
+              dstat <= 4'h9;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
+            else if (_GEN_34)	// src/main/scala/bus/BetaBus.scala:138:38
+              dstat <= 4'h7;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
           end
-          else if (_GEN) begin	// src/main/scala/bus/BetaBus.scala:79:59
-            if (baseRamBusy)	// src/main/scala/bus/BetaBus.scala:70:57
-              dstat <= 3'h1;	// src/main/scala/bus/BetaBus.scala:63:22, :112:19
+          else if (_GEN_10) begin	// src/main/scala/bus/BetaBus.scala:105:59
+            if (baseRamBusy)	// src/main/scala/bus/BetaBus.scala:96:57
+              dstat <= 4'h1;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
             else if (io_dataChannel_req_wreq)	// src/main/scala/bus/BetaBus.scala:18:14
-              dstat <= 3'h4;	// src/main/scala/bus/BetaBus.scala:63:22, :70:66
+              dstat <= 4'h4;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
             else if (io_dataChannel_req_rreq)	// src/main/scala/bus/BetaBus.scala:18:14
-              dstat <= 3'h3;	// src/main/scala/bus/BetaBus.scala:63:22, :115:21
+              dstat <= 4'h3;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
+            else if (_GEN_36)	// src/main/scala/bus/BetaBus.scala:138:67, :141:65, :142:41, :145:41, :146:19
+              dstat <= 4'h9;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
+            else if (_GEN_34)	// src/main/scala/bus/BetaBus.scala:138:38
+              dstat <= 4'h7;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
           end
+          else if (_GEN_35) begin	// src/main/scala/bus/BetaBus.scala:141:38
+            if (io_dataChannel_req_wreq)	// src/main/scala/bus/BetaBus.scala:18:14
+              dstat <= 4'h9;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
+            else if (io_dataChannel_req_rreq)	// src/main/scala/bus/BetaBus.scala:18:14
+              dstat <= 4'h8;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
+            else if (_GEN_34)	// src/main/scala/bus/BetaBus.scala:138:38
+              dstat <= 4'h7;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
+          end
+          else if (_GEN_34)	// src/main/scala/bus/BetaBus.scala:138:38
+            dstat <= 4'h7;	// src/main/scala/bus/BetaBus.scala:17:7, :89:22
         end
       end
-      if (|istat) begin	// src/main/scala/bus/BetaBus.scala:48:22, :50:25
-        if (_GEN_5) begin	// src/main/scala/bus/BetaBus.scala:74:17
-          if (~baseRamBusy)	// src/main/scala/bus/BetaBus.scala:70:57
-            istat <= 2'h2;	// src/main/scala/bus/BetaBus.scala:48:22, :70:24
+      if (|istat) begin	// src/main/scala/bus/BetaBus.scala:71:22, :73:25
+        if (_GEN_16) begin	// src/main/scala/bus/BetaBus.scala:100:17
+          if (~baseRamBusy)	// src/main/scala/bus/BetaBus.scala:96:57
+            istat <= 2'h2;	// src/main/scala/bus/BetaBus.scala:71:22, :96:24
         end
-        else if (_GEN_12)	// src/main/scala/bus/BetaBus.scala:74:17
-          istat <= 2'h0;	// src/main/scala/bus/BetaBus.scala:48:22, :98:13
+        else if (_GEN_23)	// src/main/scala/bus/BetaBus.scala:100:17
+          istat <= 2'h0;	// src/main/scala/bus/BetaBus.scala:71:22, :124:13
       end
       else if (io_instChannel_req_req) begin	// src/main/scala/bus/BetaBus.scala:18:14
-        if (_GEN_1)	// src/main/scala/bus/BetaBus.scala:79:89, :80:17, :81:34, :82:17, :84:17
-          istat <= 2'h1;	// src/main/scala/bus/BetaBus.scala:48:22, :80:17
-        else	// src/main/scala/bus/BetaBus.scala:79:89, :80:17, :81:34, :82:17, :84:17
-          istat <= 2'h2;	// src/main/scala/bus/BetaBus.scala:48:22, :70:24
+        if (_GEN_12)	// src/main/scala/bus/BetaBus.scala:105:89, :106:17, :107:34, :108:17, :110:17
+          istat <= 2'h1;	// src/main/scala/bus/BetaBus.scala:71:22, :106:17
+        else	// src/main/scala/bus/BetaBus.scala:105:89, :106:17, :107:34, :108:17, :110:17
+          istat <= 2'h2;	// src/main/scala/bus/BetaBus.scala:71:22, :96:24
       end
-      if (~(|istat) & io_instChannel_req_req)	// src/main/scala/bus/BetaBus.scala:48:22, :49:27, :50:25, :74:17, :76:24, :78:20
-        instReqBuf_pc <= io_instChannel_req_pc;	// src/main/scala/bus/BetaBus.scala:49:27
-      if (~(|dstat) & dataHasReq) begin	// src/main/scala/bus/BetaBus.scala:39:56, :63:22, :64:27, :65:25, :104:17, :108:24, :109:20
-        dataReqBuf_rreq <= io_dataChannel_req_rreq;	// src/main/scala/bus/BetaBus.scala:64:27
-        dataReqBuf_wreq <= io_dataChannel_req_wreq;	// src/main/scala/bus/BetaBus.scala:64:27
-        dataReqBuf_addr <= io_dataChannel_req_addr;	// src/main/scala/bus/BetaBus.scala:64:27
-        dataReqBuf_wdata <= io_dataChannel_req_wdata;	// src/main/scala/bus/BetaBus.scala:64:27
+      if (~(|istat) & io_instChannel_req_req)	// src/main/scala/bus/BetaBus.scala:71:22, :72:27, :73:25, :100:17, :102:24, :104:20
+        instReqBuf_pc <= io_instChannel_req_pc;	// src/main/scala/bus/BetaBus.scala:72:27
+      if (~(|dstat) & dataHasReq) begin	// src/main/scala/bus/BetaBus.scala:62:56, :89:22, :90:27, :91:25, :130:17, :136:24, :137:20
+        dataReqBuf_rreq <= io_dataChannel_req_rreq;	// src/main/scala/bus/BetaBus.scala:90:27
+        dataReqBuf_wreq <= io_dataChannel_req_wreq;	// src/main/scala/bus/BetaBus.scala:90:27
+        dataReqBuf_addr <= io_dataChannel_req_addr;	// src/main/scala/bus/BetaBus.scala:90:27
+        dataReqBuf_wdata <= io_dataChannel_req_wdata;	// src/main/scala/bus/BetaBus.scala:90:27
       end
     end
   end // always @(posedge)
@@ -1779,55 +1811,71 @@ module BetaBus(	// src/main/scala/bus/BetaBus.scala:17:7
         for (logic [3:0] i = 4'h0; i < 4'hA; i += 4'h1) begin
           _RANDOM[i] = `RANDOM;	// src/main/scala/bus/BetaBus.scala:17:7
         end	// src/main/scala/bus/BetaBus.scala:17:7
-        instReg_inst = _RANDOM[4'h0];	// src/main/scala/bus/BetaBus.scala:17:7, :26:24
-        instReg_rrdy = _RANDOM[4'h1][0];	// src/main/scala/bus/BetaBus.scala:17:7, :26:24
-        instReg_rvalid = _RANDOM[4'h1][1];	// src/main/scala/bus/BetaBus.scala:17:7, :26:24
-        dataReg_rdata = {_RANDOM[4'h1][31:2], _RANDOM[4'h2][1:0]};	// src/main/scala/bus/BetaBus.scala:17:7, :26:24, :27:24
-        dataReg_rrdy = _RANDOM[4'h2][2];	// src/main/scala/bus/BetaBus.scala:17:7, :27:24
-        dataReg_rvalid = _RANDOM[4'h2][3];	// src/main/scala/bus/BetaBus.scala:17:7, :27:24
-        dataReg_wrdy = _RANDOM[4'h2][4];	// src/main/scala/bus/BetaBus.scala:17:7, :27:24
-        dataReg_wdone = _RANDOM[4'h2][5];	// src/main/scala/bus/BetaBus.scala:17:7, :27:24
-        boutReg_wData = {_RANDOM[4'h2][31:6], _RANDOM[4'h3][5:0]};	// src/main/scala/bus/BetaBus.scala:17:7, :27:24, :33:24
-        boutReg_addr = _RANDOM[4'h3][25:6];	// src/main/scala/bus/BetaBus.scala:17:7, :33:24
-        boutReg_ce = _RANDOM[4'h3][30];	// src/main/scala/bus/BetaBus.scala:17:7, :33:24
-        boutReg_oe = _RANDOM[4'h3][31];	// src/main/scala/bus/BetaBus.scala:17:7, :33:24
-        boutReg_we = _RANDOM[4'h4][0];	// src/main/scala/bus/BetaBus.scala:17:7, :33:24
-        eoutReg_wData = {_RANDOM[4'h4][31:1], _RANDOM[4'h5][0]};	// src/main/scala/bus/BetaBus.scala:17:7, :33:24, :34:24
-        eoutReg_addr = _RANDOM[4'h5][20:1];	// src/main/scala/bus/BetaBus.scala:17:7, :34:24
-        eoutReg_ce = _RANDOM[4'h5][25];	// src/main/scala/bus/BetaBus.scala:17:7, :34:24
-        eoutReg_oe = _RANDOM[4'h5][26];	// src/main/scala/bus/BetaBus.scala:17:7, :34:24
-        eoutReg_we = _RANDOM[4'h5][27];	// src/main/scala/bus/BetaBus.scala:17:7, :34:24
-        istat = _RANDOM[4'h5][29:28];	// src/main/scala/bus/BetaBus.scala:17:7, :34:24, :48:22
-        instReqBuf_pc = {_RANDOM[4'h5][31], _RANDOM[4'h6][30:0]};	// src/main/scala/bus/BetaBus.scala:17:7, :34:24, :49:27
-        dstat = {_RANDOM[4'h6][31], _RANDOM[4'h7][1:0]};	// src/main/scala/bus/BetaBus.scala:17:7, :49:27, :63:22
-        dataReqBuf_rreq = _RANDOM[4'h7][2];	// src/main/scala/bus/BetaBus.scala:17:7, :63:22, :64:27
-        dataReqBuf_wreq = _RANDOM[4'h7][3];	// src/main/scala/bus/BetaBus.scala:17:7, :63:22, :64:27
-        dataReqBuf_addr = {_RANDOM[4'h7][31:4], _RANDOM[4'h8][3:0]};	// src/main/scala/bus/BetaBus.scala:17:7, :63:22, :64:27
-        dataReqBuf_wdata = {_RANDOM[4'h8][31:4], _RANDOM[4'h9][3:0]};	// src/main/scala/bus/BetaBus.scala:17:7, :64:27
+        instReg_inst = _RANDOM[4'h0];	// src/main/scala/bus/BetaBus.scala:17:7, :49:24
+        instReg_rrdy = _RANDOM[4'h1][0];	// src/main/scala/bus/BetaBus.scala:17:7, :49:24
+        instReg_rvalid = _RANDOM[4'h1][1];	// src/main/scala/bus/BetaBus.scala:17:7, :49:24
+        dataReg_rdata = {_RANDOM[4'h1][31:2], _RANDOM[4'h2][1:0]};	// src/main/scala/bus/BetaBus.scala:17:7, :49:24, :50:24
+        dataReg_rrdy = _RANDOM[4'h2][2];	// src/main/scala/bus/BetaBus.scala:17:7, :50:24
+        dataReg_rvalid = _RANDOM[4'h2][3];	// src/main/scala/bus/BetaBus.scala:17:7, :50:24
+        dataReg_wrdy = _RANDOM[4'h2][4];	// src/main/scala/bus/BetaBus.scala:17:7, :50:24
+        dataReg_wdone = _RANDOM[4'h2][5];	// src/main/scala/bus/BetaBus.scala:17:7, :50:24
+        boutReg_wData = {_RANDOM[4'h2][31:6], _RANDOM[4'h3][5:0]};	// src/main/scala/bus/BetaBus.scala:17:7, :50:24, :56:24
+        boutReg_addr = _RANDOM[4'h3][25:6];	// src/main/scala/bus/BetaBus.scala:17:7, :56:24
+        boutReg_ce = _RANDOM[4'h3][30];	// src/main/scala/bus/BetaBus.scala:17:7, :56:24
+        boutReg_oe = _RANDOM[4'h3][31];	// src/main/scala/bus/BetaBus.scala:17:7, :56:24
+        boutReg_we = _RANDOM[4'h4][0];	// src/main/scala/bus/BetaBus.scala:17:7, :56:24
+        eoutReg_wData = {_RANDOM[4'h4][31:1], _RANDOM[4'h5][0]};	// src/main/scala/bus/BetaBus.scala:17:7, :56:24, :57:24
+        eoutReg_addr = _RANDOM[4'h5][20:1];	// src/main/scala/bus/BetaBus.scala:17:7, :57:24
+        eoutReg_ce = _RANDOM[4'h5][25];	// src/main/scala/bus/BetaBus.scala:17:7, :57:24
+        eoutReg_oe = _RANDOM[4'h5][26];	// src/main/scala/bus/BetaBus.scala:17:7, :57:24
+        eoutReg_we = _RANDOM[4'h5][27];	// src/main/scala/bus/BetaBus.scala:17:7, :57:24
+        istat = _RANDOM[4'h5][29:28];	// src/main/scala/bus/BetaBus.scala:17:7, :57:24, :71:22
+        instReqBuf_pc = {_RANDOM[4'h5][31], _RANDOM[4'h6][30:0]};	// src/main/scala/bus/BetaBus.scala:17:7, :57:24, :72:27
+        dstat = {_RANDOM[4'h6][31], _RANDOM[4'h7][2:0]};	// src/main/scala/bus/BetaBus.scala:17:7, :72:27, :89:22
+        dataReqBuf_rreq = _RANDOM[4'h7][3];	// src/main/scala/bus/BetaBus.scala:17:7, :89:22, :90:27
+        dataReqBuf_wreq = _RANDOM[4'h7][4];	// src/main/scala/bus/BetaBus.scala:17:7, :89:22, :90:27
+        dataReqBuf_addr = {_RANDOM[4'h7][31:9], _RANDOM[4'h8][8:0]};	// src/main/scala/bus/BetaBus.scala:17:7, :89:22, :90:27
+        dataReqBuf_wdata = {_RANDOM[4'h8][31:9], _RANDOM[4'h9][8:0]};	// src/main/scala/bus/BetaBus.scala:17:7, :90:27
       `endif // RANDOMIZE_REG_INIT
     end // initial
     `ifdef FIRRTL_AFTER_INITIAL	// src/main/scala/bus/BetaBus.scala:17:7
       `FIRRTL_AFTER_INITIAL	// src/main/scala/bus/BetaBus.scala:17:7
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
-  assign io_instChannel_rspns_inst = instReg_inst;	// src/main/scala/bus/BetaBus.scala:17:7, :26:24
-  assign io_instChannel_rspns_rrdy = instReg_rrdy;	// src/main/scala/bus/BetaBus.scala:17:7, :26:24
-  assign io_instChannel_rspns_rvalid = instReg_rvalid;	// src/main/scala/bus/BetaBus.scala:17:7, :26:24
-  assign io_dataChannel_rspns_rdata = dataReg_rdata;	// src/main/scala/bus/BetaBus.scala:17:7, :27:24
-  assign io_dataChannel_rspns_rrdy = dataReg_rrdy;	// src/main/scala/bus/BetaBus.scala:17:7, :27:24
-  assign io_dataChannel_rspns_rvalid = dataReg_rvalid;	// src/main/scala/bus/BetaBus.scala:17:7, :27:24
-  assign io_dataChannel_rspns_wrdy = dataReg_wrdy;	// src/main/scala/bus/BetaBus.scala:17:7, :27:24
-  assign io_dataChannel_rspns_wdone = dataReg_wdone;	// src/main/scala/bus/BetaBus.scala:17:7, :27:24
-  assign io_baseRam_req_wData = boutReg_wData;	// src/main/scala/bus/BetaBus.scala:17:7, :33:24
-  assign io_baseRam_req_addr = boutReg_addr;	// src/main/scala/bus/BetaBus.scala:17:7, :33:24
-  assign io_baseRam_req_ce = boutReg_ce;	// src/main/scala/bus/BetaBus.scala:17:7, :33:24
-  assign io_baseRam_req_oe = boutReg_oe;	// src/main/scala/bus/BetaBus.scala:17:7, :33:24
-  assign io_baseRam_req_we = boutReg_we;	// src/main/scala/bus/BetaBus.scala:17:7, :33:24
-  assign io_extRam_req_wData = eoutReg_wData;	// src/main/scala/bus/BetaBus.scala:17:7, :34:24
-  assign io_extRam_req_addr = eoutReg_addr;	// src/main/scala/bus/BetaBus.scala:17:7, :34:24
-  assign io_extRam_req_ce = eoutReg_ce;	// src/main/scala/bus/BetaBus.scala:17:7, :34:24
-  assign io_extRam_req_oe = eoutReg_oe;	// src/main/scala/bus/BetaBus.scala:17:7, :34:24
-  assign io_extRam_req_we = eoutReg_we;	// src/main/scala/bus/BetaBus.scala:17:7, :34:24
+  async_transmitter uartTransmitter (	// src/main/scala/bus/BetaBus.scala:27:31
+    .clk       (clock),
+    .TxD_start (~_GEN_9 & _GEN_8),	// src/main/scala/bus/BetaBus.scala:34:10, :130:17, :135:14
+    .TxD_data  (_GEN_9 | ~_GEN_8 ? 8'h0 : dataReqBuf_wdata[7:0]),	// src/main/scala/bus/BetaBus.scala:33:9, :34:10, :90:27, :130:17, :135:14, :252:32
+    .TxD       (io_uart_txd),
+    .TxD_busy  (_uartTransmitter_TxD_busy)
+  );
+  async_receiver uartReceiver (	// src/main/scala/bus/BetaBus.scala:28:28
+    .clk            (clock),
+    .RxD            (1'h0),	// src/main/scala/bus/BetaBus.scala:18:14, :28:28
+    .RxD_data_ready (_uartReceiver_RxD_data_ready),
+    .RxD_clear
+      (~(~(|dstat) | _GEN | _GEN_0 | _GEN_1 | _GEN_2 | _GEN_3 | _GEN_4 | _GEN_5)
+       & _GEN_6),	// src/main/scala/bus/BetaBus.scala:35:10, :89:22, :91:25, :130:17, :134:14
+    .RxD_data       (_uartReceiver_RxD_data)
+  );
+  assign io_instChannel_rspns_inst = instReg_inst;	// src/main/scala/bus/BetaBus.scala:17:7, :49:24
+  assign io_instChannel_rspns_rrdy = instReg_rrdy;	// src/main/scala/bus/BetaBus.scala:17:7, :49:24
+  assign io_instChannel_rspns_rvalid = instReg_rvalid;	// src/main/scala/bus/BetaBus.scala:17:7, :49:24
+  assign io_dataChannel_rspns_rdata = dataReg_rdata;	// src/main/scala/bus/BetaBus.scala:17:7, :50:24
+  assign io_dataChannel_rspns_rrdy = dataReg_rrdy;	// src/main/scala/bus/BetaBus.scala:17:7, :50:24
+  assign io_dataChannel_rspns_rvalid = dataReg_rvalid;	// src/main/scala/bus/BetaBus.scala:17:7, :50:24
+  assign io_dataChannel_rspns_wrdy = dataReg_wrdy;	// src/main/scala/bus/BetaBus.scala:17:7, :50:24
+  assign io_dataChannel_rspns_wdone = dataReg_wdone;	// src/main/scala/bus/BetaBus.scala:17:7, :50:24
+  assign io_baseRam_req_wData = boutReg_wData;	// src/main/scala/bus/BetaBus.scala:17:7, :56:24
+  assign io_baseRam_req_addr = boutReg_addr;	// src/main/scala/bus/BetaBus.scala:17:7, :56:24
+  assign io_baseRam_req_ce = boutReg_ce;	// src/main/scala/bus/BetaBus.scala:17:7, :56:24
+  assign io_baseRam_req_oe = boutReg_oe;	// src/main/scala/bus/BetaBus.scala:17:7, :56:24
+  assign io_baseRam_req_we = boutReg_we;	// src/main/scala/bus/BetaBus.scala:17:7, :56:24
+  assign io_extRam_req_wData = eoutReg_wData;	// src/main/scala/bus/BetaBus.scala:17:7, :57:24
+  assign io_extRam_req_addr = eoutReg_addr;	// src/main/scala/bus/BetaBus.scala:17:7, :57:24
+  assign io_extRam_req_ce = eoutReg_ce;	// src/main/scala/bus/BetaBus.scala:17:7, :57:24
+  assign io_extRam_req_oe = eoutReg_oe;	// src/main/scala/bus/BetaBus.scala:17:7, :57:24
+  assign io_extRam_req_we = eoutReg_we;	// src/main/scala/bus/BetaBus.scala:17:7, :57:24
 endmodule
 
 // VCS coverage exclude_file
@@ -1954,106 +2002,107 @@ module F2D2E(	// src/main/scala/elaborate/F2D2E.scala:12:7
                 io_in_exeAside_wdone,	// src/main/scala/elaborate/F2D2E.scala:13:14
   output        io_out_exeBctrl_isMispredict,	// src/main/scala/elaborate/F2D2E.scala:13:14
   output [31:0] io_out_exeBctrl_npc,	// src/main/scala/elaborate/F2D2E.scala:13:14
-  output        io_out_exeOut_req,	// src/main/scala/elaborate/F2D2E.scala:13:14
-                io_out_exeOut_bits_en,	// src/main/scala/elaborate/F2D2E.scala:13:14
+  output        io_out_exeOut_bits_en,	// src/main/scala/elaborate/F2D2E.scala:13:14
   output [4:0]  io_out_exeOut_bits_addr,	// src/main/scala/elaborate/F2D2E.scala:13:14
   output [31:0] io_out_exeOut_bits_data,	// src/main/scala/elaborate/F2D2E.scala:13:14
   output        io_out_exeAside_rreq,	// src/main/scala/elaborate/F2D2E.scala:13:14
                 io_out_exeAside_wreq,	// src/main/scala/elaborate/F2D2E.scala:13:14
+  output [3:0]  io_out_exeAside_byteSelN,	// src/main/scala/elaborate/F2D2E.scala:13:14
   output [31:0] io_out_exeAside_addr,	// src/main/scala/elaborate/F2D2E.scala:13:14
-                io_out_exeAside_wdata	// src/main/scala/elaborate/F2D2E.scala:13:14
+                io_out_exeAside_wdata,	// src/main/scala/elaborate/F2D2E.scala:13:14
+  output        io_out_txd	// src/main/scala/elaborate/F2D2E.scala:13:14
 );
 
-  wire [31:0] _dRam_io_out_rData;	// src/main/scala/elaborate/F2D2E.scala:31:20
-  wire [31:0] _iRom_io_out_rData;	// src/main/scala/elaborate/F2D2E.scala:30:20
-  wire [31:0] _bus_io_instChannel_rspns_inst;	// src/main/scala/elaborate/F2D2E.scala:28:19
-  wire        _bus_io_instChannel_rspns_rrdy;	// src/main/scala/elaborate/F2D2E.scala:28:19
-  wire        _bus_io_instChannel_rspns_rvalid;	// src/main/scala/elaborate/F2D2E.scala:28:19
-  wire [31:0] _bus_io_dataChannel_rspns_rdata;	// src/main/scala/elaborate/F2D2E.scala:28:19
-  wire        _bus_io_dataChannel_rspns_rrdy;	// src/main/scala/elaborate/F2D2E.scala:28:19
-  wire        _bus_io_dataChannel_rspns_rvalid;	// src/main/scala/elaborate/F2D2E.scala:28:19
-  wire        _bus_io_dataChannel_rspns_wrdy;	// src/main/scala/elaborate/F2D2E.scala:28:19
-  wire        _bus_io_dataChannel_rspns_wdone;	// src/main/scala/elaborate/F2D2E.scala:28:19
-  wire [31:0] _bus_io_baseRam_req_wData;	// src/main/scala/elaborate/F2D2E.scala:28:19
-  wire [19:0] _bus_io_baseRam_req_addr;	// src/main/scala/elaborate/F2D2E.scala:28:19
-  wire        _bus_io_baseRam_req_ce;	// src/main/scala/elaborate/F2D2E.scala:28:19
-  wire        _bus_io_baseRam_req_oe;	// src/main/scala/elaborate/F2D2E.scala:28:19
-  wire        _bus_io_baseRam_req_we;	// src/main/scala/elaborate/F2D2E.scala:28:19
-  wire [31:0] _bus_io_extRam_req_wData;	// src/main/scala/elaborate/F2D2E.scala:28:19
-  wire [19:0] _bus_io_extRam_req_addr;	// src/main/scala/elaborate/F2D2E.scala:28:19
-  wire        _bus_io_extRam_req_ce;	// src/main/scala/elaborate/F2D2E.scala:28:19
-  wire        _bus_io_extRam_req_oe;	// src/main/scala/elaborate/F2D2E.scala:28:19
-  wire        _bus_io_extRam_req_we;	// src/main/scala/elaborate/F2D2E.scala:28:19
-  wire        _exe_io_out_ack;	// src/main/scala/elaborate/F2D2E.scala:27:19
-  wire        _exe_io_out_exe_bits_en;	// src/main/scala/elaborate/F2D2E.scala:27:19
-  wire [4:0]  _exe_io_out_exe_bits_addr;	// src/main/scala/elaborate/F2D2E.scala:27:19
-  wire [31:0] _exe_io_out_exe_bits_data;	// src/main/scala/elaborate/F2D2E.scala:27:19
-  wire        _exe_io_aside_out_rreq;	// src/main/scala/elaborate/F2D2E.scala:27:19
-  wire        _exe_io_aside_out_wreq;	// src/main/scala/elaborate/F2D2E.scala:27:19
-  wire [31:0] _exe_io_aside_out_addr;	// src/main/scala/elaborate/F2D2E.scala:27:19
-  wire [31:0] _exe_io_aside_out_wdata;	// src/main/scala/elaborate/F2D2E.scala:27:19
-  wire        _exe_io_bCtrl_isMispredict;	// src/main/scala/elaborate/F2D2E.scala:27:19
-  wire [31:0] _exe_io_bCtrl_npc;	// src/main/scala/elaborate/F2D2E.scala:27:19
-  wire [3:0]  _decode_io_out_decode_bits_exeOp_opType;	// src/main/scala/elaborate/F2D2E.scala:26:22
-  wire [2:0]  _decode_io_out_decode_bits_exeOp_opFunc;	// src/main/scala/elaborate/F2D2E.scala:26:22
-  wire        _decode_io_out_decode_bits_wCtrl_en;	// src/main/scala/elaborate/F2D2E.scala:26:22
-  wire [4:0]  _decode_io_out_decode_bits_wCtrl_addr;	// src/main/scala/elaborate/F2D2E.scala:26:22
-  wire [31:0] _decode_io_out_decode_bits_wCtrl_data;	// src/main/scala/elaborate/F2D2E.scala:26:22
-  wire        _decode_io_out_decode_bits_operands_hasImm;	// src/main/scala/elaborate/F2D2E.scala:26:22
-  wire [31:0] _decode_io_out_decode_bits_operands_imm;	// src/main/scala/elaborate/F2D2E.scala:26:22
-  wire [31:0] _decode_io_out_decode_bits_operands_regData_1;	// src/main/scala/elaborate/F2D2E.scala:26:22
-  wire [31:0] _decode_io_out_decode_bits_operands_regData_2;	// src/main/scala/elaborate/F2D2E.scala:26:22
-  wire [4:0]  _decode_io_out_decode_readInfo_reg_1_addr;	// src/main/scala/elaborate/F2D2E.scala:26:22
-  wire [4:0]  _decode_io_out_decode_readInfo_reg_2_addr;	// src/main/scala/elaborate/F2D2E.scala:26:22
-  wire [31:0] _decode_io_out_decode_fetchInfo_pc;	// src/main/scala/elaborate/F2D2E.scala:26:22
-  wire        _decode_io_out_decode_req;	// src/main/scala/elaborate/F2D2E.scala:26:22
-  wire        _decode_io_out_ack;	// src/main/scala/elaborate/F2D2E.scala:26:22
-  wire        _decode_io_aside_out_reg_1_en;	// src/main/scala/elaborate/F2D2E.scala:26:22
-  wire [4:0]  _decode_io_aside_out_reg_1_addr;	// src/main/scala/elaborate/F2D2E.scala:26:22
-  wire        _decode_io_aside_out_reg_2_en;	// src/main/scala/elaborate/F2D2E.scala:26:22
-  wire [4:0]  _decode_io_aside_out_reg_2_addr;	// src/main/scala/elaborate/F2D2E.scala:26:22
-  wire        _fetch_io_out_req;	// src/main/scala/elaborate/F2D2E.scala:25:21
-  wire [31:0] _fetch_io_out_bits_pc;	// src/main/scala/elaborate/F2D2E.scala:25:21
-  wire [31:0] _fetch_io_out_bits_inst;	// src/main/scala/elaborate/F2D2E.scala:25:21
-  wire        _fetch_io_aside_out_req;	// src/main/scala/elaborate/F2D2E.scala:25:21
-  wire [31:0] _fetch_io_aside_out_pc;	// src/main/scala/elaborate/F2D2E.scala:25:21
-  wire [31:0] _regfile_io_rChannel_1_out;	// src/main/scala/elaborate/F2D2E.scala:24:23
-  wire [31:0] _regfile_io_rChannel_2_out;	// src/main/scala/elaborate/F2D2E.scala:24:23
-  Regfile regfile (	// src/main/scala/elaborate/F2D2E.scala:24:23
+  wire [31:0] _dRam_io_out_rData;	// src/main/scala/elaborate/F2D2E.scala:32:20
+  wire [31:0] _iRom_io_out_rData;	// src/main/scala/elaborate/F2D2E.scala:31:20
+  wire [31:0] _bus_io_instChannel_rspns_inst;	// src/main/scala/elaborate/F2D2E.scala:29:19
+  wire        _bus_io_instChannel_rspns_rrdy;	// src/main/scala/elaborate/F2D2E.scala:29:19
+  wire        _bus_io_instChannel_rspns_rvalid;	// src/main/scala/elaborate/F2D2E.scala:29:19
+  wire [31:0] _bus_io_dataChannel_rspns_rdata;	// src/main/scala/elaborate/F2D2E.scala:29:19
+  wire        _bus_io_dataChannel_rspns_rrdy;	// src/main/scala/elaborate/F2D2E.scala:29:19
+  wire        _bus_io_dataChannel_rspns_rvalid;	// src/main/scala/elaborate/F2D2E.scala:29:19
+  wire        _bus_io_dataChannel_rspns_wrdy;	// src/main/scala/elaborate/F2D2E.scala:29:19
+  wire        _bus_io_dataChannel_rspns_wdone;	// src/main/scala/elaborate/F2D2E.scala:29:19
+  wire [31:0] _bus_io_baseRam_req_wData;	// src/main/scala/elaborate/F2D2E.scala:29:19
+  wire [19:0] _bus_io_baseRam_req_addr;	// src/main/scala/elaborate/F2D2E.scala:29:19
+  wire        _bus_io_baseRam_req_ce;	// src/main/scala/elaborate/F2D2E.scala:29:19
+  wire        _bus_io_baseRam_req_oe;	// src/main/scala/elaborate/F2D2E.scala:29:19
+  wire        _bus_io_baseRam_req_we;	// src/main/scala/elaborate/F2D2E.scala:29:19
+  wire [31:0] _bus_io_extRam_req_wData;	// src/main/scala/elaborate/F2D2E.scala:29:19
+  wire [19:0] _bus_io_extRam_req_addr;	// src/main/scala/elaborate/F2D2E.scala:29:19
+  wire        _bus_io_extRam_req_ce;	// src/main/scala/elaborate/F2D2E.scala:29:19
+  wire        _bus_io_extRam_req_oe;	// src/main/scala/elaborate/F2D2E.scala:29:19
+  wire        _bus_io_extRam_req_we;	// src/main/scala/elaborate/F2D2E.scala:29:19
+  wire        _exe_io_out_ack;	// src/main/scala/elaborate/F2D2E.scala:28:19
+  wire        _exe_io_out_exe_bits_en;	// src/main/scala/elaborate/F2D2E.scala:28:19
+  wire [4:0]  _exe_io_out_exe_bits_addr;	// src/main/scala/elaborate/F2D2E.scala:28:19
+  wire [31:0] _exe_io_out_exe_bits_data;	// src/main/scala/elaborate/F2D2E.scala:28:19
+  wire        _exe_io_aside_out_rreq;	// src/main/scala/elaborate/F2D2E.scala:28:19
+  wire        _exe_io_aside_out_wreq;	// src/main/scala/elaborate/F2D2E.scala:28:19
+  wire [31:0] _exe_io_aside_out_addr;	// src/main/scala/elaborate/F2D2E.scala:28:19
+  wire [31:0] _exe_io_aside_out_wdata;	// src/main/scala/elaborate/F2D2E.scala:28:19
+  wire        _exe_io_bCtrl_isMispredict;	// src/main/scala/elaborate/F2D2E.scala:28:19
+  wire [31:0] _exe_io_bCtrl_npc;	// src/main/scala/elaborate/F2D2E.scala:28:19
+  wire [3:0]  _decode_io_out_decode_bits_exeOp_opType;	// src/main/scala/elaborate/F2D2E.scala:27:22
+  wire [2:0]  _decode_io_out_decode_bits_exeOp_opFunc;	// src/main/scala/elaborate/F2D2E.scala:27:22
+  wire        _decode_io_out_decode_bits_wCtrl_en;	// src/main/scala/elaborate/F2D2E.scala:27:22
+  wire [4:0]  _decode_io_out_decode_bits_wCtrl_addr;	// src/main/scala/elaborate/F2D2E.scala:27:22
+  wire [31:0] _decode_io_out_decode_bits_wCtrl_data;	// src/main/scala/elaborate/F2D2E.scala:27:22
+  wire        _decode_io_out_decode_bits_operands_hasImm;	// src/main/scala/elaborate/F2D2E.scala:27:22
+  wire [31:0] _decode_io_out_decode_bits_operands_imm;	// src/main/scala/elaborate/F2D2E.scala:27:22
+  wire [31:0] _decode_io_out_decode_bits_operands_regData_1;	// src/main/scala/elaborate/F2D2E.scala:27:22
+  wire [31:0] _decode_io_out_decode_bits_operands_regData_2;	// src/main/scala/elaborate/F2D2E.scala:27:22
+  wire [4:0]  _decode_io_out_decode_readInfo_reg_1_addr;	// src/main/scala/elaborate/F2D2E.scala:27:22
+  wire [4:0]  _decode_io_out_decode_readInfo_reg_2_addr;	// src/main/scala/elaborate/F2D2E.scala:27:22
+  wire [31:0] _decode_io_out_decode_fetchInfo_pc;	// src/main/scala/elaborate/F2D2E.scala:27:22
+  wire        _decode_io_out_decode_req;	// src/main/scala/elaborate/F2D2E.scala:27:22
+  wire        _decode_io_out_ack;	// src/main/scala/elaborate/F2D2E.scala:27:22
+  wire        _decode_io_aside_out_reg_1_en;	// src/main/scala/elaborate/F2D2E.scala:27:22
+  wire [4:0]  _decode_io_aside_out_reg_1_addr;	// src/main/scala/elaborate/F2D2E.scala:27:22
+  wire        _decode_io_aside_out_reg_2_en;	// src/main/scala/elaborate/F2D2E.scala:27:22
+  wire [4:0]  _decode_io_aside_out_reg_2_addr;	// src/main/scala/elaborate/F2D2E.scala:27:22
+  wire        _fetch_io_out_req;	// src/main/scala/elaborate/F2D2E.scala:26:21
+  wire [31:0] _fetch_io_out_bits_pc;	// src/main/scala/elaborate/F2D2E.scala:26:21
+  wire [31:0] _fetch_io_out_bits_inst;	// src/main/scala/elaborate/F2D2E.scala:26:21
+  wire        _fetch_io_aside_out_req;	// src/main/scala/elaborate/F2D2E.scala:26:21
+  wire [31:0] _fetch_io_aside_out_pc;	// src/main/scala/elaborate/F2D2E.scala:26:21
+  wire [31:0] _regfile_io_rChannel_1_out;	// src/main/scala/elaborate/F2D2E.scala:25:23
+  wire [31:0] _regfile_io_rChannel_2_out;	// src/main/scala/elaborate/F2D2E.scala:25:23
+  Regfile regfile (	// src/main/scala/elaborate/F2D2E.scala:25:23
     .clock                 (clock),
     .reset                 (reset),
-    .io_rChannel_1_in_en   (_decode_io_aside_out_reg_1_en),	// src/main/scala/elaborate/F2D2E.scala:26:22
-    .io_rChannel_1_in_addr (_decode_io_aside_out_reg_1_addr),	// src/main/scala/elaborate/F2D2E.scala:26:22
+    .io_rChannel_1_in_en   (_decode_io_aside_out_reg_1_en),	// src/main/scala/elaborate/F2D2E.scala:27:22
+    .io_rChannel_1_in_addr (_decode_io_aside_out_reg_1_addr),	// src/main/scala/elaborate/F2D2E.scala:27:22
     .io_rChannel_1_out     (_regfile_io_rChannel_1_out),
-    .io_rChannel_2_in_en   (_decode_io_aside_out_reg_2_en),	// src/main/scala/elaborate/F2D2E.scala:26:22
-    .io_rChannel_2_in_addr (_decode_io_aside_out_reg_2_addr),	// src/main/scala/elaborate/F2D2E.scala:26:22
+    .io_rChannel_2_in_en   (_decode_io_aside_out_reg_2_en),	// src/main/scala/elaborate/F2D2E.scala:27:22
+    .io_rChannel_2_in_addr (_decode_io_aside_out_reg_2_addr),	// src/main/scala/elaborate/F2D2E.scala:27:22
     .io_rChannel_2_out     (_regfile_io_rChannel_2_out),
-    .io_wChannel_en        (_exe_io_out_exe_bits_en),	// src/main/scala/elaborate/F2D2E.scala:27:19
-    .io_wChannel_addr      (_exe_io_out_exe_bits_addr),	// src/main/scala/elaborate/F2D2E.scala:27:19
-    .io_wChannel_data      (_exe_io_out_exe_bits_data)	// src/main/scala/elaborate/F2D2E.scala:27:19
+    .io_wChannel_en        (_exe_io_out_exe_bits_en),	// src/main/scala/elaborate/F2D2E.scala:28:19
+    .io_wChannel_addr      (_exe_io_out_exe_bits_addr),	// src/main/scala/elaborate/F2D2E.scala:28:19
+    .io_wChannel_data      (_exe_io_out_exe_bits_data)	// src/main/scala/elaborate/F2D2E.scala:28:19
   );
-  FetchStage fetch (	// src/main/scala/elaborate/F2D2E.scala:25:21
+  FetchStage fetch (	// src/main/scala/elaborate/F2D2E.scala:26:21
     .clock                 (clock),
     .reset                 (reset),
-    .io_in_ack             (_decode_io_out_ack),	// src/main/scala/elaborate/F2D2E.scala:26:22
+    .io_in_ack             (_decode_io_out_ack),	// src/main/scala/elaborate/F2D2E.scala:27:22
     .io_out_req            (_fetch_io_out_req),
     .io_out_bits_pc        (_fetch_io_out_bits_pc),
     .io_out_bits_inst      (_fetch_io_out_bits_inst),
-    .io_aside_in_inst      (_bus_io_instChannel_rspns_inst),	// src/main/scala/elaborate/F2D2E.scala:28:19
-    .io_aside_in_rrdy      (_bus_io_instChannel_rspns_rrdy),	// src/main/scala/elaborate/F2D2E.scala:28:19
-    .io_aside_in_rvalid    (_bus_io_instChannel_rspns_rvalid),	// src/main/scala/elaborate/F2D2E.scala:28:19
+    .io_aside_in_inst      (_bus_io_instChannel_rspns_inst),	// src/main/scala/elaborate/F2D2E.scala:29:19
+    .io_aside_in_rrdy      (_bus_io_instChannel_rspns_rrdy),	// src/main/scala/elaborate/F2D2E.scala:29:19
+    .io_aside_in_rvalid    (_bus_io_instChannel_rspns_rvalid),	// src/main/scala/elaborate/F2D2E.scala:29:19
     .io_aside_out_req      (_fetch_io_aside_out_req),
     .io_aside_out_pc       (_fetch_io_aside_out_pc),
-    .io_bCtrl_isMispredict (_exe_io_bCtrl_isMispredict),	// src/main/scala/elaborate/F2D2E.scala:27:19
-    .io_bCtrl_npc          (_exe_io_bCtrl_npc)	// src/main/scala/elaborate/F2D2E.scala:27:19
+    .io_bCtrl_isMispredict (_exe_io_bCtrl_isMispredict),	// src/main/scala/elaborate/F2D2E.scala:28:19
+    .io_bCtrl_npc          (_exe_io_bCtrl_npc)	// src/main/scala/elaborate/F2D2E.scala:28:19
   );
-  DecodeStage decode (	// src/main/scala/elaborate/F2D2E.scala:26:22
+  DecodeStage decode (	// src/main/scala/elaborate/F2D2E.scala:27:22
     .clock                                 (clock),
     .reset                                 (reset),
-    .io_in_fetch_req                       (_fetch_io_out_req),	// src/main/scala/elaborate/F2D2E.scala:25:21
-    .io_in_fetch_bits_pc                   (_fetch_io_out_bits_pc),	// src/main/scala/elaborate/F2D2E.scala:25:21
-    .io_in_fetch_bits_inst                 (_fetch_io_out_bits_inst),	// src/main/scala/elaborate/F2D2E.scala:25:21
-    .io_in_ack                             (_exe_io_out_ack),	// src/main/scala/elaborate/F2D2E.scala:27:19
+    .io_in_fetch_req                       (_fetch_io_out_req),	// src/main/scala/elaborate/F2D2E.scala:26:21
+    .io_in_fetch_bits_pc                   (_fetch_io_out_bits_pc),	// src/main/scala/elaborate/F2D2E.scala:26:21
+    .io_in_fetch_bits_inst                 (_fetch_io_out_bits_inst),	// src/main/scala/elaborate/F2D2E.scala:26:21
+    .io_in_ack                             (_exe_io_out_ack),	// src/main/scala/elaborate/F2D2E.scala:28:19
     .io_out_decode_bits_exeOp_opType       (_decode_io_out_decode_bits_exeOp_opType),
     .io_out_decode_bits_exeOp_opFunc       (_decode_io_out_decode_bits_exeOp_opFunc),
     .io_out_decode_bits_wCtrl_en           (_decode_io_out_decode_bits_wCtrl_en),
@@ -2070,103 +2119,320 @@ module F2D2E(	// src/main/scala/elaborate/F2D2E.scala:12:7
     .io_out_decode_fetchInfo_pc            (_decode_io_out_decode_fetchInfo_pc),
     .io_out_decode_req                     (_decode_io_out_decode_req),
     .io_out_ack                            (_decode_io_out_ack),
-    .io_aside_in_regLeft                   (_regfile_io_rChannel_1_out),	// src/main/scala/elaborate/F2D2E.scala:24:23
-    .io_aside_in_regRight                  (_regfile_io_rChannel_2_out),	// src/main/scala/elaborate/F2D2E.scala:24:23
+    .io_aside_in_regLeft                   (_regfile_io_rChannel_1_out),	// src/main/scala/elaborate/F2D2E.scala:25:23
+    .io_aside_in_regRight                  (_regfile_io_rChannel_2_out),	// src/main/scala/elaborate/F2D2E.scala:25:23
     .io_aside_out_reg_1_en                 (_decode_io_aside_out_reg_1_en),
     .io_aside_out_reg_1_addr               (_decode_io_aside_out_reg_1_addr),
     .io_aside_out_reg_2_en                 (_decode_io_aside_out_reg_2_en),
     .io_aside_out_reg_2_addr               (_decode_io_aside_out_reg_2_addr),
-    .io_bCtrl_isMispredict                 (_exe_io_bCtrl_isMispredict)	// src/main/scala/elaborate/F2D2E.scala:27:19
+    .io_bCtrl_isMispredict                 (_exe_io_bCtrl_isMispredict)	// src/main/scala/elaborate/F2D2E.scala:28:19
   );
-  ExeStage exe (	// src/main/scala/elaborate/F2D2E.scala:27:19
+  ExeStage exe (	// src/main/scala/elaborate/F2D2E.scala:28:19
     .clock                                (clock),
     .reset                                (reset),
-    .io_in_decode_bits_exeOp_opType       (_decode_io_out_decode_bits_exeOp_opType),	// src/main/scala/elaborate/F2D2E.scala:26:22
-    .io_in_decode_bits_exeOp_opFunc       (_decode_io_out_decode_bits_exeOp_opFunc),	// src/main/scala/elaborate/F2D2E.scala:26:22
-    .io_in_decode_bits_wCtrl_en           (_decode_io_out_decode_bits_wCtrl_en),	// src/main/scala/elaborate/F2D2E.scala:26:22
-    .io_in_decode_bits_wCtrl_addr         (_decode_io_out_decode_bits_wCtrl_addr),	// src/main/scala/elaborate/F2D2E.scala:26:22
-    .io_in_decode_bits_wCtrl_data         (_decode_io_out_decode_bits_wCtrl_data),	// src/main/scala/elaborate/F2D2E.scala:26:22
-    .io_in_decode_bits_operands_hasImm    (_decode_io_out_decode_bits_operands_hasImm),	// src/main/scala/elaborate/F2D2E.scala:26:22
-    .io_in_decode_bits_operands_imm       (_decode_io_out_decode_bits_operands_imm),	// src/main/scala/elaborate/F2D2E.scala:26:22
-    .io_in_decode_bits_operands_regData_1 (_decode_io_out_decode_bits_operands_regData_1),	// src/main/scala/elaborate/F2D2E.scala:26:22
-    .io_in_decode_bits_operands_regData_2 (_decode_io_out_decode_bits_operands_regData_2),	// src/main/scala/elaborate/F2D2E.scala:26:22
-    .io_in_decode_readInfo_reg_1_addr     (_decode_io_out_decode_readInfo_reg_1_addr),	// src/main/scala/elaborate/F2D2E.scala:26:22
-    .io_in_decode_readInfo_reg_2_addr     (_decode_io_out_decode_readInfo_reg_2_addr),	// src/main/scala/elaborate/F2D2E.scala:26:22
-    .io_in_decode_fetchInfo_pc            (_decode_io_out_decode_fetchInfo_pc),	// src/main/scala/elaborate/F2D2E.scala:26:22
-    .io_in_decode_req                     (_decode_io_out_decode_req),	// src/main/scala/elaborate/F2D2E.scala:26:22
+    .io_in_decode_bits_exeOp_opType       (_decode_io_out_decode_bits_exeOp_opType),	// src/main/scala/elaborate/F2D2E.scala:27:22
+    .io_in_decode_bits_exeOp_opFunc       (_decode_io_out_decode_bits_exeOp_opFunc),	// src/main/scala/elaborate/F2D2E.scala:27:22
+    .io_in_decode_bits_wCtrl_en           (_decode_io_out_decode_bits_wCtrl_en),	// src/main/scala/elaborate/F2D2E.scala:27:22
+    .io_in_decode_bits_wCtrl_addr         (_decode_io_out_decode_bits_wCtrl_addr),	// src/main/scala/elaborate/F2D2E.scala:27:22
+    .io_in_decode_bits_wCtrl_data         (_decode_io_out_decode_bits_wCtrl_data),	// src/main/scala/elaborate/F2D2E.scala:27:22
+    .io_in_decode_bits_operands_hasImm    (_decode_io_out_decode_bits_operands_hasImm),	// src/main/scala/elaborate/F2D2E.scala:27:22
+    .io_in_decode_bits_operands_imm       (_decode_io_out_decode_bits_operands_imm),	// src/main/scala/elaborate/F2D2E.scala:27:22
+    .io_in_decode_bits_operands_regData_1 (_decode_io_out_decode_bits_operands_regData_1),	// src/main/scala/elaborate/F2D2E.scala:27:22
+    .io_in_decode_bits_operands_regData_2 (_decode_io_out_decode_bits_operands_regData_2),	// src/main/scala/elaborate/F2D2E.scala:27:22
+    .io_in_decode_readInfo_reg_1_addr     (_decode_io_out_decode_readInfo_reg_1_addr),	// src/main/scala/elaborate/F2D2E.scala:27:22
+    .io_in_decode_readInfo_reg_2_addr     (_decode_io_out_decode_readInfo_reg_2_addr),	// src/main/scala/elaborate/F2D2E.scala:27:22
+    .io_in_decode_fetchInfo_pc            (_decode_io_out_decode_fetchInfo_pc),	// src/main/scala/elaborate/F2D2E.scala:27:22
+    .io_in_decode_req                     (_decode_io_out_decode_req),	// src/main/scala/elaborate/F2D2E.scala:27:22
     .io_out_ack                           (_exe_io_out_ack),
-    .io_out_exe_req                       (io_out_exeOut_req),
     .io_out_exe_bits_en                   (_exe_io_out_exe_bits_en),
     .io_out_exe_bits_addr                 (_exe_io_out_exe_bits_addr),
     .io_out_exe_bits_data                 (_exe_io_out_exe_bits_data),
-    .io_aside_in_rdata                    (_bus_io_dataChannel_rspns_rdata),	// src/main/scala/elaborate/F2D2E.scala:28:19
-    .io_aside_in_rrdy                     (_bus_io_dataChannel_rspns_rrdy),	// src/main/scala/elaborate/F2D2E.scala:28:19
-    .io_aside_in_rvalid                   (_bus_io_dataChannel_rspns_rvalid),	// src/main/scala/elaborate/F2D2E.scala:28:19
-    .io_aside_in_wrdy                     (_bus_io_dataChannel_rspns_wrdy),	// src/main/scala/elaborate/F2D2E.scala:28:19
-    .io_aside_in_wdone                    (_bus_io_dataChannel_rspns_wdone),	// src/main/scala/elaborate/F2D2E.scala:28:19
+    .io_aside_in_rdata                    (_bus_io_dataChannel_rspns_rdata),	// src/main/scala/elaborate/F2D2E.scala:29:19
+    .io_aside_in_rrdy                     (_bus_io_dataChannel_rspns_rrdy),	// src/main/scala/elaborate/F2D2E.scala:29:19
+    .io_aside_in_rvalid                   (_bus_io_dataChannel_rspns_rvalid),	// src/main/scala/elaborate/F2D2E.scala:29:19
+    .io_aside_in_wrdy                     (_bus_io_dataChannel_rspns_wrdy),	// src/main/scala/elaborate/F2D2E.scala:29:19
+    .io_aside_in_wdone                    (_bus_io_dataChannel_rspns_wdone),	// src/main/scala/elaborate/F2D2E.scala:29:19
     .io_aside_out_rreq                    (_exe_io_aside_out_rreq),
     .io_aside_out_wreq                    (_exe_io_aside_out_wreq),
+    .io_aside_out_byteSelN                (io_out_exeAside_byteSelN),
     .io_aside_out_addr                    (_exe_io_aside_out_addr),
     .io_aside_out_wdata                   (_exe_io_aside_out_wdata),
     .io_bCtrl_isMispredict                (_exe_io_bCtrl_isMispredict),
     .io_bCtrl_npc                         (_exe_io_bCtrl_npc)
   );
-  BetaBus bus (	// src/main/scala/elaborate/F2D2E.scala:28:19
+  BetaBus bus (	// src/main/scala/elaborate/F2D2E.scala:29:19
     .clock                       (clock),
     .reset                       (reset),
-    .io_instChannel_req_req      (_fetch_io_aside_out_req),	// src/main/scala/elaborate/F2D2E.scala:25:21
-    .io_instChannel_req_pc       (_fetch_io_aside_out_pc),	// src/main/scala/elaborate/F2D2E.scala:25:21
+    .io_instChannel_req_req      (_fetch_io_aside_out_req),	// src/main/scala/elaborate/F2D2E.scala:26:21
+    .io_instChannel_req_pc       (_fetch_io_aside_out_pc),	// src/main/scala/elaborate/F2D2E.scala:26:21
     .io_instChannel_rspns_inst   (_bus_io_instChannel_rspns_inst),
     .io_instChannel_rspns_rrdy   (_bus_io_instChannel_rspns_rrdy),
     .io_instChannel_rspns_rvalid (_bus_io_instChannel_rspns_rvalid),
-    .io_dataChannel_req_rreq     (_exe_io_aside_out_rreq),	// src/main/scala/elaborate/F2D2E.scala:27:19
-    .io_dataChannel_req_wreq     (_exe_io_aside_out_wreq),	// src/main/scala/elaborate/F2D2E.scala:27:19
-    .io_dataChannel_req_addr     (_exe_io_aside_out_addr),	// src/main/scala/elaborate/F2D2E.scala:27:19
-    .io_dataChannel_req_wdata    (_exe_io_aside_out_wdata),	// src/main/scala/elaborate/F2D2E.scala:27:19
+    .io_dataChannel_req_rreq     (_exe_io_aside_out_rreq),	// src/main/scala/elaborate/F2D2E.scala:28:19
+    .io_dataChannel_req_wreq     (_exe_io_aside_out_wreq),	// src/main/scala/elaborate/F2D2E.scala:28:19
+    .io_dataChannel_req_addr     (_exe_io_aside_out_addr),	// src/main/scala/elaborate/F2D2E.scala:28:19
+    .io_dataChannel_req_wdata    (_exe_io_aside_out_wdata),	// src/main/scala/elaborate/F2D2E.scala:28:19
     .io_dataChannel_rspns_rdata  (_bus_io_dataChannel_rspns_rdata),
     .io_dataChannel_rspns_rrdy   (_bus_io_dataChannel_rspns_rrdy),
     .io_dataChannel_rspns_rvalid (_bus_io_dataChannel_rspns_rvalid),
     .io_dataChannel_rspns_wrdy   (_bus_io_dataChannel_rspns_wrdy),
     .io_dataChannel_rspns_wdone  (_bus_io_dataChannel_rspns_wdone),
-    .io_baseRam_rspns_rData      (_iRom_io_out_rData),	// src/main/scala/elaborate/F2D2E.scala:30:20
+    .io_baseRam_rspns_rData      (_iRom_io_out_rData),	// src/main/scala/elaborate/F2D2E.scala:31:20
     .io_baseRam_req_wData        (_bus_io_baseRam_req_wData),
     .io_baseRam_req_addr         (_bus_io_baseRam_req_addr),
     .io_baseRam_req_ce           (_bus_io_baseRam_req_ce),
     .io_baseRam_req_oe           (_bus_io_baseRam_req_oe),
     .io_baseRam_req_we           (_bus_io_baseRam_req_we),
-    .io_extRam_rspns_rData       (_dRam_io_out_rData),	// src/main/scala/elaborate/F2D2E.scala:31:20
+    .io_extRam_rspns_rData       (_dRam_io_out_rData),	// src/main/scala/elaborate/F2D2E.scala:32:20
     .io_extRam_req_wData         (_bus_io_extRam_req_wData),
     .io_extRam_req_addr          (_bus_io_extRam_req_addr),
     .io_extRam_req_ce            (_bus_io_extRam_req_ce),
     .io_extRam_req_oe            (_bus_io_extRam_req_oe),
-    .io_extRam_req_we            (_bus_io_extRam_req_we)
+    .io_extRam_req_we            (_bus_io_extRam_req_we),
+    .io_uart_txd                 (io_out_txd)
   );
-  BaseSram iRom (	// src/main/scala/elaborate/F2D2E.scala:30:20
+  BaseSram iRom (	// src/main/scala/elaborate/F2D2E.scala:31:20
     .clock        (clock),
-    .io_in_wData  (_bus_io_baseRam_req_wData),	// src/main/scala/elaborate/F2D2E.scala:28:19
-    .io_in_addr   (_bus_io_baseRam_req_addr),	// src/main/scala/elaborate/F2D2E.scala:28:19
-    .io_in_ce     (_bus_io_baseRam_req_ce),	// src/main/scala/elaborate/F2D2E.scala:28:19
-    .io_in_oe     (_bus_io_baseRam_req_oe),	// src/main/scala/elaborate/F2D2E.scala:28:19
-    .io_in_we     (_bus_io_baseRam_req_we),	// src/main/scala/elaborate/F2D2E.scala:28:19
+    .io_in_wData  (_bus_io_baseRam_req_wData),	// src/main/scala/elaborate/F2D2E.scala:29:19
+    .io_in_addr   (_bus_io_baseRam_req_addr),	// src/main/scala/elaborate/F2D2E.scala:29:19
+    .io_in_ce     (_bus_io_baseRam_req_ce),	// src/main/scala/elaborate/F2D2E.scala:29:19
+    .io_in_oe     (_bus_io_baseRam_req_oe),	// src/main/scala/elaborate/F2D2E.scala:29:19
+    .io_in_we     (_bus_io_baseRam_req_we),	// src/main/scala/elaborate/F2D2E.scala:29:19
     .io_out_rData (_iRom_io_out_rData)
   );
-  SramSim dRam (	// src/main/scala/elaborate/F2D2E.scala:31:20
+  SramSim dRam (	// src/main/scala/elaborate/F2D2E.scala:32:20
     .clock        (clock),
-    .io_in_wData  (_bus_io_extRam_req_wData),	// src/main/scala/elaborate/F2D2E.scala:28:19
-    .io_in_addr   (_bus_io_extRam_req_addr),	// src/main/scala/elaborate/F2D2E.scala:28:19
-    .io_in_ce     (_bus_io_extRam_req_ce),	// src/main/scala/elaborate/F2D2E.scala:28:19
-    .io_in_oe     (_bus_io_extRam_req_oe),	// src/main/scala/elaborate/F2D2E.scala:28:19
-    .io_in_we     (_bus_io_extRam_req_we),	// src/main/scala/elaborate/F2D2E.scala:28:19
+    .io_in_wData  (_bus_io_extRam_req_wData),	// src/main/scala/elaborate/F2D2E.scala:29:19
+    .io_in_addr   (_bus_io_extRam_req_addr),	// src/main/scala/elaborate/F2D2E.scala:29:19
+    .io_in_ce     (_bus_io_extRam_req_ce),	// src/main/scala/elaborate/F2D2E.scala:29:19
+    .io_in_oe     (_bus_io_extRam_req_oe),	// src/main/scala/elaborate/F2D2E.scala:29:19
+    .io_in_we     (_bus_io_extRam_req_we),	// src/main/scala/elaborate/F2D2E.scala:29:19
     .io_out_rData (_dRam_io_out_rData)
   );
-  assign io_out_exeBctrl_isMispredict = _exe_io_bCtrl_isMispredict;	// src/main/scala/elaborate/F2D2E.scala:12:7, :27:19
-  assign io_out_exeBctrl_npc = _exe_io_bCtrl_npc;	// src/main/scala/elaborate/F2D2E.scala:12:7, :27:19
-  assign io_out_exeOut_bits_en = _exe_io_out_exe_bits_en;	// src/main/scala/elaborate/F2D2E.scala:12:7, :27:19
-  assign io_out_exeOut_bits_addr = _exe_io_out_exe_bits_addr;	// src/main/scala/elaborate/F2D2E.scala:12:7, :27:19
-  assign io_out_exeOut_bits_data = _exe_io_out_exe_bits_data;	// src/main/scala/elaborate/F2D2E.scala:12:7, :27:19
-  assign io_out_exeAside_rreq = _exe_io_aside_out_rreq;	// src/main/scala/elaborate/F2D2E.scala:12:7, :27:19
-  assign io_out_exeAside_wreq = _exe_io_aside_out_wreq;	// src/main/scala/elaborate/F2D2E.scala:12:7, :27:19
-  assign io_out_exeAside_addr = _exe_io_aside_out_addr;	// src/main/scala/elaborate/F2D2E.scala:12:7, :27:19
-  assign io_out_exeAside_wdata = _exe_io_aside_out_wdata;	// src/main/scala/elaborate/F2D2E.scala:12:7, :27:19
+  assign io_out_exeBctrl_isMispredict = _exe_io_bCtrl_isMispredict;	// src/main/scala/elaborate/F2D2E.scala:12:7, :28:19
+  assign io_out_exeBctrl_npc = _exe_io_bCtrl_npc;	// src/main/scala/elaborate/F2D2E.scala:12:7, :28:19
+  assign io_out_exeOut_bits_en = _exe_io_out_exe_bits_en;	// src/main/scala/elaborate/F2D2E.scala:12:7, :28:19
+  assign io_out_exeOut_bits_addr = _exe_io_out_exe_bits_addr;	// src/main/scala/elaborate/F2D2E.scala:12:7, :28:19
+  assign io_out_exeOut_bits_data = _exe_io_out_exe_bits_data;	// src/main/scala/elaborate/F2D2E.scala:12:7, :28:19
+  assign io_out_exeAside_rreq = _exe_io_aside_out_rreq;	// src/main/scala/elaborate/F2D2E.scala:12:7, :28:19
+  assign io_out_exeAside_wreq = _exe_io_aside_out_wreq;	// src/main/scala/elaborate/F2D2E.scala:12:7, :28:19
+  assign io_out_exeAside_addr = _exe_io_aside_out_addr;	// src/main/scala/elaborate/F2D2E.scala:12:7, :28:19
+  assign io_out_exeAside_wdata = _exe_io_aside_out_wdata;	// src/main/scala/elaborate/F2D2E.scala:12:7, :28:19
 endmodule
 
+
+// ----- 8< ----- FILE "./async.v" ----- 8< -----
+
+////////////////////////////////////////////////////////
+// RS-232 RX and TX module
+// (c) fpga4fun.com & KNJN LLC - 2003 to 2016
+
+// The RS-232 settings are fixed
+// TX: 8-bit data, 2 stop, no-parity
+// RX: 8-bit data, 1 stop, no-parity (the receiver can accept more stop bits of course)
+
+`define SIMULATION   // in this mode, TX outputs one bit per clock cycle
+                       // and RX receives one bit per clock cycle (for fast simulations)
+
+////////////////////////////////////////////////////////
+
+module async_transmitter(
+	input wire clk,
+	(*mark_debug="true"*)input wire TxD_start,
+	(*mark_debug="true"*)input wire [7:0] TxD_data,
+	output wire TxD,
+	output wire TxD_busy
+);
+
+// Assert TxD_start for (at least) one clock cycle to start transmission of TxD_data
+// TxD_data is latched so that it doesn't have to stay valid while it is being sent
+
+parameter ClkFrequency = 10000000;//25000000;	// 25MHz
+parameter Baud = 115200;
+
+// generate
+// 	if(ClkFrequency<Baud*8 && (ClkFrequency % Baud!=0)) ASSERTION_ERROR PARAMETER_OUT_OF_RANGE("Frequency incompatible with requested Baud rate");
+// endgenerate
+
+////////////////////////////////
+`ifdef SIMULATION
+wire BitTick = 1'b1;  // output one bit per clock cycle
+`else
+wire BitTick;
+BaudTickGen #(ClkFrequency, Baud) tickgen(.clk(clk), .enable(TxD_busy), .tick(BitTick));
+`endif
+
+reg [3:0] TxD_state = 0;
+wire TxD_ready = (TxD_state==0);
+assign TxD_busy = ~TxD_ready;
+
+reg [7:0] TxD_shift = 0;
+always @(posedge clk)
+begin
+	if(TxD_ready & TxD_start)
+		TxD_shift <= TxD_data;
+	else
+	if(TxD_state[3] & BitTick)
+		TxD_shift <= (TxD_shift >> 1);
+
+	case(TxD_state)
+		4'b0000: if(TxD_start) TxD_state <= 4'b0100;
+		4'b0100: if(BitTick) TxD_state <= 4'b1000;  // start bit
+		4'b1000: if(BitTick) TxD_state <= 4'b1001;  // bit 0
+		4'b1001: if(BitTick) TxD_state <= 4'b1010;  // bit 1
+		4'b1010: if(BitTick) TxD_state <= 4'b1011;  // bit 2
+		4'b1011: if(BitTick) TxD_state <= 4'b1100;  // bit 3
+		4'b1100: if(BitTick) TxD_state <= 4'b1101;  // bit 4
+		4'b1101: if(BitTick) TxD_state <= 4'b1110;  // bit 5
+		4'b1110: if(BitTick) TxD_state <= 4'b1111;  // bit 6
+		4'b1111: if(BitTick) TxD_state <= 4'b0010;  // bit 7
+		4'b0010: if(BitTick) TxD_state <= 4'b0000;  // stop1
+		//4'b0011: if(BitTick) TxD_state <= 4'b0000;  // stop2
+		default: if(BitTick) TxD_state <= 4'b0000;
+	endcase
+end
+
+assign TxD = (TxD_state<4) | (TxD_state[3] & TxD_shift[0]);  // put together the start, data and stop bits
+endmodule
+
+
+////////////////////////////////////////////////////////
+module async_receiver(
+	input wire clk,
+	input wire RxD,
+	output reg RxD_data_ready,
+	input wire RxD_clear,
+	output reg [7:0] RxD_data  // data received, valid only (for one clock cycle) when RxD_data_ready is asserted
+);
+
+parameter ClkFrequency = 25000000; // 25MHz
+parameter Baud = 115200;
+
+parameter Oversampling = 8;  // needs to be a power of 2
+// we oversample the RxD line at a fixed rate to capture each RxD data bit at the "right" time
+// 8 times oversampling by default, use 16 for higher quality reception
+
+// generate
+// 	if(ClkFrequency<Baud*Oversampling) ASSERTION_ERROR PARAMETER_OUT_OF_RANGE("Frequency too low for current Baud rate and oversampling");
+// 	if(Oversampling<8 || ((Oversampling & (Oversampling-1))!=0)) ASSERTION_ERROR PARAMETER_OUT_OF_RANGE("Invalid oversampling value");
+// endgenerate
+
+////////////////////////////////
+
+// We also detect if a gap occurs in the received stream of characters
+// That can be useful if multiple characters are sent in burst
+//  so that multiple characters can be treated as a "packet"
+wire RxD_idle;  // asserted when no data has been received for a while
+reg RxD_endofpacket; // asserted for one clock cycle when a packet has been detected (i.e. RxD_idle is going high)
+
+
+reg [3:0] RxD_state = 0;
+
+`ifdef SIMULATION
+wire RxD_bit = RxD;
+wire sampleNow = 1'b1;  // receive one bit per clock cycle
+
+`else
+wire OversamplingTick;
+BaudTickGen #(ClkFrequency, Baud, Oversampling) tickgen(.clk(clk), .enable(1'b1), .tick(OversamplingTick));
+
+// synchronize RxD to our clk domain
+reg [1:0] RxD_sync = 2'b11;
+always @(posedge clk) if(OversamplingTick) RxD_sync <= {RxD_sync[0], RxD};
+
+// and filter it
+reg [1:0] Filter_cnt = 2'b11;
+reg RxD_bit = 1'b1;
+
+always @(posedge clk)
+if(OversamplingTick)
+begin
+	if(RxD_sync[1]==1'b1 && Filter_cnt!=2'b11) Filter_cnt <= Filter_cnt + 1'd1;
+	else
+	if(RxD_sync[1]==1'b0 && Filter_cnt!=2'b00) Filter_cnt <= Filter_cnt - 1'd1;
+
+	if(Filter_cnt==2'b11) RxD_bit <= 1'b1;
+	else
+	if(Filter_cnt==2'b00) RxD_bit <= 1'b0;
+end
+
+// and decide when is the good time to sample the RxD line
+function integer log2(input integer v); begin log2=0; while(v>>log2) log2=log2+1; end endfunction
+localparam l2o = log2(Oversampling);
+reg [l2o-2:0] OversamplingCnt = 0;
+always @(posedge clk) if(OversamplingTick) OversamplingCnt <= (RxD_state==0) ? 1'd0 : OversamplingCnt + 1'd1;
+wire sampleNow = OversamplingTick && (OversamplingCnt==Oversampling/2-1);
+`endif
+
+// now we can accumulate the RxD bits in a shift-register
+always @(posedge clk)
+case(RxD_state)
+	4'b0000: if(~RxD_bit) RxD_state <= `ifdef SIMULATION 4'b1000 `else 4'b0001 `endif;  // start bit found?
+	4'b0001: if(sampleNow) RxD_state <= 4'b1000;  // sync start bit to sampleNow
+	4'b1000: if(sampleNow) RxD_state <= 4'b1001;  // bit 0
+	4'b1001: if(sampleNow) RxD_state <= 4'b1010;  // bit 1
+	4'b1010: if(sampleNow) RxD_state <= 4'b1011;  // bit 2
+	4'b1011: if(sampleNow) RxD_state <= 4'b1100;  // bit 3
+	4'b1100: if(sampleNow) RxD_state <= 4'b1101;  // bit 4
+	4'b1101: if(sampleNow) RxD_state <= 4'b1110;  // bit 5
+	4'b1110: if(sampleNow) RxD_state <= 4'b1111;  // bit 6
+	4'b1111: if(sampleNow) RxD_state <= 4'b0010;  // bit 7
+	4'b0010: if(sampleNow) RxD_state <= 4'b0000;  // stop bit
+	default: RxD_state <= 4'b0000;
+endcase
+
+always @(posedge clk)
+if(sampleNow && RxD_state[3]) RxD_data <= {RxD_bit, RxD_data[7:1]};
+
+//reg RxD_data_error = 0;
+always @(posedge clk)
+begin
+	if(RxD_clear)
+		RxD_data_ready <= 0;
+	else
+		RxD_data_ready <= RxD_data_ready | (sampleNow && RxD_state==4'b0010 && RxD_bit);  // make sure a stop bit is received
+	//RxD_data_error <= (sampleNow && RxD_state==4'b0010 && ~RxD_bit);  // error if a stop bit is not received
+end
+
+`ifdef SIMULATION
+assign RxD_idle = 0;
+`else
+reg [l2o+1:0] GapCnt = 0;
+always @(posedge clk) if (RxD_state!=0) GapCnt<=0; else if(OversamplingTick & ~GapCnt[log2(Oversampling)+1]) GapCnt <= GapCnt + 1'h1;
+assign RxD_idle = GapCnt[l2o+1];
+always @(posedge clk) RxD_endofpacket <= OversamplingTick & ~GapCnt[l2o+1] & &GapCnt[l2o:0];
+`endif
+
+endmodule
+
+
+////////////////////////////////////////////////////////
+// dummy module used to be able to raise an assertion in Verilog
+module ASSERTION_ERROR();
+endmodule
+
+
+////////////////////////////////////////////////////////
+module BaudTickGen(
+	input  wire clk, enable,
+	output wire tick  // generate a tick at the specified baud rate * oversampling
+);
+parameter ClkFrequency = 25000000;
+parameter Baud = 115200;
+parameter Oversampling = 1;
+
+function integer log2(input integer v); begin log2=0; while(v>>log2) log2=log2+1; end endfunction
+localparam AccWidth = log2(ClkFrequency/Baud)+8;  // +/- 2% max timing error over a byte
+reg [AccWidth:0] Acc = 0;
+localparam ShiftLimiter = log2(Baud*Oversampling >> (31-AccWidth));  // this makes sure Inc calculation doesn't overflow
+localparam Inc = ((Baud*Oversampling << (AccWidth-ShiftLimiter))+(ClkFrequency>>(ShiftLimiter+1)))/(ClkFrequency>>ShiftLimiter);
+always @(posedge clk) if(enable) Acc <= Acc[AccWidth-1:0] + Inc[AccWidth:0]; else Acc <= Inc[AccWidth:0];
+assign tick = Acc[AccWidth];
+endmodule
+
+
+////////////////////////////////////////////////////////
+
+// ----- 8< ----- FILE "firrtl_black_box_resource_files.f" ----- 8< -----
+
+async.v

@@ -29,7 +29,6 @@ object ExeUtils {
   def initExeOut:ExeOut = {
     val init = Wire(new ExeOut)
     init.bits := initWctrl
-    init.req := false.B
     init
   }
   def initExeAsideIn:ExeAsideIn = {
@@ -47,6 +46,7 @@ object ExeUtils {
     init.wdata := 0.U
     init.rreq := false.B
     init.wreq := false.B
+    init.byteSelN := "b0000".U
     init
   }
   def initExeBranchInfo:ExeBranchInfo = {

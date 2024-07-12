@@ -76,7 +76,6 @@ class ExeStage extends Module {
     }
     is (ALUEXE) {
         stat := DONE
-        outReg.req := true.B
         outReg.bits.en := srcInfo.wCtrl.en
         outReg.bits.addr := srcInfo.wCtrl.addr
         outReg.bits.data := alu.io.out.res
@@ -127,6 +126,9 @@ class ExeStage extends Module {
     }
     is (RD) {
       when (io.aside.in.rrdy) {
+        when (srcInfo.exeOp.opFunc === Load.ld_b) {
+          io.aside.out.byteSelN := "b1110".U
+        }
         io.aside.out.rreq := true.B
         io.aside.out.addr := alu.io.out.res
         stat := RDWAIT
@@ -136,7 +138,6 @@ class ExeStage extends Module {
       io.aside.out.rreq := false.B
       when (io.aside.in.rvalid) {
         stat := DONE
-        outReg.req := true.B
         outReg.bits.en := srcInfo.wCtrl.en
         outReg.bits.addr := srcInfo.wCtrl.addr
         outReg.bits.data := io.aside.in.rdata
@@ -146,6 +147,9 @@ class ExeStage extends Module {
     }
     is (WR) {
       when (io.aside.in.wrdy) {
+        when (srcInfo.exeOp.opFunc === Store.st_b) {
+          io.aside.out.byteSelN := "b1110".U
+        }
         io.aside.out.wreq := true.B
         io.aside.out.addr := alu.io.out.res
         io.aside.out.wdata := srcInfo.operands.regData_2

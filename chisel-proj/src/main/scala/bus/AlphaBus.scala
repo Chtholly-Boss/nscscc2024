@@ -102,7 +102,7 @@ class AlphaBus extends Module {
 
       when (dataReq.wreq) {
         estat := ES.WRITE
-        eoutReg := sramWrite(dataReq.addr(21,2),dataReq.wdata)
+        eoutReg := sramWrite(dataReq.addr(21,2),dataReq.wdata,dataReq.byteSelN)
         dataReg.wdone := false.B
       }
     }

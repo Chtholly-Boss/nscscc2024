@@ -1,10 +1,10 @@
 import chisel3._
 import chiseltest._
 import org.scalatest.flatspec.AnyFlatSpec
-import elaborate.F2D2E
+import elaborate.Soc
 class SocSpec extends AnyFlatSpec with ChiselScalatestTester {
   "Fetch2Decode2Exe" should "Pass" in {
-    test (new F2D2E()) { core =>
+    test (new Soc()) { core =>
       core.clock.setTimeout(0)
       step(4000)
     }

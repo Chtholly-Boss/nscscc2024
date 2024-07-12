@@ -152,13 +152,14 @@ class BetaBus extends Module {
           }.otherwise {
             when(io.dataChannel.req.rreq) {
               dstat := DS.B_RD
-              boutReg := sramReadWord(io.dataChannel.req.addr(21,2))
+              boutReg := sramRead(io.dataChannel.req.addr(21,2),io.dataChannel.req.byteSelN)
             }
             when(io.dataChannel.req.wreq) {
               dstat := DS.B_WR
               boutReg := sramWrite(
                 io.dataChannel.req.addr(21,2),
-                io.dataChannel.req.wdata
+                io.dataChannel.req.wdata,
+                io.dataChannel.req.byteSelN
               )
             }
           }
@@ -169,13 +170,14 @@ class BetaBus extends Module {
           }.otherwise {
             when(io.dataChannel.req.rreq) {
               dstat := DS.E_RD
-              eoutReg := sramReadWord(io.dataChannel.req.addr(21,2))
+              eoutReg := sramRead(io.dataChannel.req.addr(21,2),io.dataChannel.req.byteSelN)
             }
             when(io.dataChannel.req.wreq) {
               dstat := DS.E_WR
               eoutReg := sramWrite(
                 io.dataChannel.req.addr(21,2),
-                io.dataChannel.req.wdata
+                io.dataChannel.req.wdata,
+                io.dataChannel.req.byteSelN
               )
             }
           }
@@ -186,13 +188,14 @@ class BetaBus extends Module {
       when(!baseRamBusy){
         when(dataReqBuf.rreq) {
           dstat := DS.B_RD
-          boutReg := sramReadWord(dataReqBuf.addr(21,2))
+          boutReg := sramRead(dataReqBuf.addr(21,2),dataReqBuf.byteSelN)
         }
         when(dataReqBuf.wreq) {
           dstat := DS.B_WR
           boutReg := sramWrite(
             dataReqBuf.addr(21,2),
-            dataReqBuf.wdata
+            dataReqBuf.wdata,
+            dataReqBuf.byteSelN
           )
         }
       }
@@ -210,13 +213,14 @@ class BetaBus extends Module {
       when(!extRamBusy){
         when(dataReqBuf.rreq) {
           dstat := DS.E_RD
-          eoutReg := sramReadWord(dataReqBuf.addr(21,2))
+          eoutReg := sramRead(dataReqBuf.addr(21,2),dataReqBuf.byteSelN)
         }
         when(dataReqBuf.wreq) {
           dstat := DS.E_WR
           eoutReg := sramWrite(
             dataReqBuf.addr(21,2),
-            dataReqBuf.wdata
+            dataReqBuf.wdata,
+            dataReqBuf.byteSelN
           )
         }
       }

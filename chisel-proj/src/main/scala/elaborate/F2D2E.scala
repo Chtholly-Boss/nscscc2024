@@ -61,6 +61,3 @@ class F2D2E extends Module {
   io.out.txd := bus.io.uart.txd
   bus.io.uart.rxd := DontCare
 }
-object F2D2E extends App {
-  emitVerilog(new F2D2E)
-}

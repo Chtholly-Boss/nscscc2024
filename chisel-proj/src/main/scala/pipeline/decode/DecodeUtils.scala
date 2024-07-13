@@ -32,6 +32,7 @@ object DecodeUtils {
     val init = Wire(new DecodeSrcInfo)
     init.pc := 0.U
     init.inst := 0.U
+    init.predictTaken := false.B
     init
   }
   def initDecodeOut:DecodeOut = {

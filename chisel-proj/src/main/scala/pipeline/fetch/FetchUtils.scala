@@ -1,12 +1,12 @@
 package pipeline.fetch
 import chisel3._
 import FetchPorts._
+import pipeline.decode.DecodeUtils._
 object FetchUtils {
   def initFetchOut:FetchOut = {
     val init = Wire(new FetchOut)
     init.req := false.B
-    init.bits.pc := 0.U
-    init.bits.inst := 0.U
+    init.bits := initDecodeSrcInfo
     init
   }
   def initFetchAsideIn:FetchAsideIn = {

@@ -100,30 +100,42 @@ class ExeStage extends Module {
           switch(srcInfo.exeOp.opFunc) {
             is (Branch.bne) {
               when (srcInfo.operands.regData_1.asSInt =/= srcInfo.operands.regData_2.asSInt) {
-                bCtrlOutReg.isMispredict := true.B
+                //bCtrlOutReg.isMispredict := true.B
+                bCtrlOutReg.isMispredict := !fetchInfo.predictTaken
                 bCtrlOutReg.npc := (fetchInfo.pc.asSInt + srcInfo.operands.imm.asSInt).asUInt
+              } .otherwise {
+                bCtrlOutReg.isMispredict := fetchInfo.predictTaken
+                bCtrlOutReg.npc := fetchInfo.pc + 4.U
               }
             }
             is (Branch.beq) {
               when (srcInfo.operands.regData_1.asSInt === srcInfo.operands.regData_2.asSInt) {
-                bCtrlOutReg.isMispredict := true.B
+                //bCtrlOutReg.isMispredict := true.B
+                bCtrlOutReg.isMispredict := !fetchInfo.predictTaken
                 bCtrlOutReg.npc := (fetchInfo.pc.asSInt + srcInfo.operands.imm.asSInt).asUInt
+              }.otherwise {
+                bCtrlOutReg.isMispredict := fetchInfo.predictTaken
+                bCtrlOutReg.npc := fetchInfo.pc + 4.U
               }
             }
             is (Branch.bge) {
               when (srcInfo.operands.regData_1.asSInt >= srcInfo.operands.regData_2.asSInt) {
-                bCtrlOutReg.isMispredict := true.B
+                //bCtrlOutReg.isMispredict := true.B
+                bCtrlOutReg.isMispredict := !fetchInfo.predictTaken
                 bCtrlOutReg.npc := (fetchInfo.pc.asSInt + srcInfo.operands.imm.asSInt).asUInt
+              }.otherwise {
+                bCtrlOutReg.isMispredict := fetchInfo.predictTaken
+                bCtrlOutReg.npc := fetchInfo.pc + 4.U
               }
             }
-            is (Branch.b_) {
-              bCtrlOutReg.isMispredict := true.B
-              bCtrlOutReg.npc := (fetchInfo.pc.asSInt + srcInfo.operands.imm.asSInt).asUInt
-            }
-            is (Branch.bl) {
-              bCtrlOutReg.isMispredict := true.B
-              bCtrlOutReg.npc := (fetchInfo.pc.asSInt + srcInfo.operands.imm.asSInt).asUInt
-            }
+           // is (Branch.b_) {
+           //   bCtrlOutReg.isMispredict := true.B
+           //   bCtrlOutReg.npc := (fetchInfo.pc.asSInt + srcInfo.operands.imm.asSInt).asUInt
+           // }
+           // is (Branch.bl) {
+           //   bCtrlOutReg.isMispredict := true.B
+           //   bCtrlOutReg.npc := (fetchInfo.pc.asSInt + srcInfo.operands.imm.asSInt).asUInt
+           // }
           }
         }
         is (tp.jump) {

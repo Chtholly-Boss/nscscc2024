@@ -296,109 +296,134 @@ module Regfile(	// src/main/scala/pipeline/regfile/Regfile.scala:7:7
           : _GEN[io_rChannel_2_in_addr];	// src/main/scala/pipeline/regfile/Regfile.scala:7:7, :10:21, :11:29, :22:25, :25:30, :26:{33,42}, :29:29, :30:9, :31:7, :32:25, :34:25
 endmodule
 
-module FetchStage(	// src/main/scala/pipeline/fetch/FetchStage.scala:7:7
-  input         clock,	// src/main/scala/pipeline/fetch/FetchStage.scala:7:7
-                reset,	// src/main/scala/pipeline/fetch/FetchStage.scala:7:7
-                io_in_ack,	// src/main/scala/pipeline/fetch/FetchStage.scala:8:14
-  output        io_out_req,	// src/main/scala/pipeline/fetch/FetchStage.scala:8:14
-  output [31:0] io_out_bits_pc,	// src/main/scala/pipeline/fetch/FetchStage.scala:8:14
-                io_out_bits_inst,	// src/main/scala/pipeline/fetch/FetchStage.scala:8:14
-  input  [31:0] io_aside_in_inst,	// src/main/scala/pipeline/fetch/FetchStage.scala:8:14
-  input         io_aside_in_rrdy,	// src/main/scala/pipeline/fetch/FetchStage.scala:8:14
-                io_aside_in_rvalid,	// src/main/scala/pipeline/fetch/FetchStage.scala:8:14
-  output        io_aside_out_req,	// src/main/scala/pipeline/fetch/FetchStage.scala:8:14
-  output [31:0] io_aside_out_pc,	// src/main/scala/pipeline/fetch/FetchStage.scala:8:14
-  input         io_bCtrl_isMispredict,	// src/main/scala/pipeline/fetch/FetchStage.scala:8:14
-  input  [31:0] io_bCtrl_npc	// src/main/scala/pipeline/fetch/FetchStage.scala:8:14
+module FetchStageAlpha(	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7
+  input         clock,	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7
+                reset,	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7
+                io_in_ack,	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:9:14
+  output        io_out_req,	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:9:14
+  output [31:0] io_out_bits_pc,	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:9:14
+                io_out_bits_inst,	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:9:14
+  output        io_out_bits_predictTaken,	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:9:14
+  input  [31:0] io_aside_in_inst,	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:9:14
+  input         io_aside_in_rrdy,	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:9:14
+                io_aside_in_rvalid,	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:9:14
+  output        io_aside_out_req,	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:9:14
+  output [31:0] io_aside_out_pc,	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:9:14
+  input         io_bCtrl_isMispredict,	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:9:14
+  input  [31:0] io_bCtrl_npc	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:9:14
 );
 
-  reg         outReg_req;	// src/main/scala/pipeline/fetch/FetchStage.scala:12:23
-  reg  [31:0] outReg_bits_pc;	// src/main/scala/pipeline/fetch/FetchStage.scala:12:23
-  reg  [31:0] outReg_bits_inst;	// src/main/scala/pipeline/fetch/FetchStage.scala:12:23
-  reg  [2:0]  stat;	// src/main/scala/pipeline/fetch/FetchStage.scala:26:21
-  wire        _GEN = stat == 3'h0;	// src/main/scala/pipeline/fetch/FetchStage.scala:26:21, :33:19
-  wire        _GEN_0 = stat == 3'h1;	// src/main/scala/pipeline/fetch/FetchStage.scala:26:21, :29:10, :33:19
-  wire        _GEN_1 = io_bCtrl_isMispredict | _GEN;	// src/main/scala/pipeline/fetch/FetchStage.scala:9:16, :28:31, :33:19
-  always @(posedge clock) begin	// src/main/scala/pipeline/fetch/FetchStage.scala:7:7
-    if (reset) begin	// src/main/scala/pipeline/fetch/FetchStage.scala:7:7
-      outReg_req <= 1'h0;	// src/main/scala/pipeline/fetch/FetchStage.scala:12:23, src/main/scala/pipeline/fetch/FetchUtils.scala:21:14
-      outReg_bits_pc <= 32'h0;	// src/main/scala/pipeline/fetch/FetchStage.scala:12:23, src/main/scala/pipeline/fetch/FetchUtils.scala:22:13
-      outReg_bits_inst <= 32'h0;	// src/main/scala/pipeline/fetch/FetchStage.scala:12:23, src/main/scala/pipeline/fetch/FetchUtils.scala:22:13
-      stat <= 3'h0;	// src/main/scala/pipeline/fetch/FetchStage.scala:26:21, :33:19
+  reg         outReg_req;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:13:23
+  reg  [31:0] outReg_bits_pc;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:13:23
+  reg  [31:0] outReg_bits_inst;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:13:23
+  reg         outReg_bits_predictTaken;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:13:23
+  reg  [31:0] npc;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:15:20
+  reg  [1:0]  stat;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:27:21
+  wire        _GEN = stat == 2'h0;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7, :27:21, :34:19
+  wire        _GEN_0 = stat == 2'h1;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7, :27:21, :34:19
+  wire        _GEN_1 = io_bCtrl_isMispredict | _GEN;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:10:16, :29:31, :34:19
+  always @(posedge clock) begin	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7
+    if (reset) begin	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7
+      outReg_req <= 1'h0;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:13:23, src/main/scala/pipeline/fetch/FetchUtils.scala:21:14
+      outReg_bits_pc <= 32'h0;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:13:23, :15:20
+      outReg_bits_inst <= 32'h0;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:13:23, :15:20
+      outReg_bits_predictTaken <= 1'h0;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:13:23, src/main/scala/pipeline/fetch/FetchUtils.scala:21:14
+      npc <= 32'h0;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:15:20
+      stat <= 2'h0;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7, :27:21
     end
-    else begin	// src/main/scala/pipeline/fetch/FetchStage.scala:7:7
-      automatic logic _GEN_2;	// src/main/scala/pipeline/fetch/FetchStage.scala:33:19
-      automatic logic _GEN_3 = _GEN | _GEN_0;	// src/main/scala/pipeline/fetch/FetchStage.scala:12:23, :33:19
-      automatic logic _GEN_4;	// src/main/scala/pipeline/fetch/FetchStage.scala:33:19
-      automatic logic _GEN_5;	// src/main/scala/pipeline/fetch/FetchStage.scala:33:19
-      _GEN_2 = stat == 3'h2;	// src/main/scala/pipeline/fetch/FetchStage.scala:26:21, :33:19, :40:16
-      _GEN_4 = stat == 3'h3;	// src/main/scala/pipeline/fetch/FetchStage.scala:26:21, :33:19, :46:16
-      _GEN_5 = stat == 3'h4;	// src/main/scala/pipeline/fetch/FetchStage.scala:26:21, :33:19, :53:16
+    else begin	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7
+      automatic logic _GEN_2;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:34:19
+      automatic logic _GEN_3 = _GEN | _GEN_0;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:13:23, :34:19
+      automatic logic _GEN_4;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:13:23, :34:19, :73:26, :74:22
+      _GEN_2 = stat == 2'h2;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7, :27:21, :34:19
+      _GEN_4 = (&stat) & io_in_ack;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:13:23, :27:21, :34:19, :73:26, :74:22
       outReg_req <=
         ~io_bCtrl_isMispredict
         & (_GEN_3
              ? outReg_req
-             : _GEN_2
-                 ? io_aside_in_rvalid | outReg_req
-                 : ~(_GEN_4 & io_in_ack) & outReg_req);	// src/main/scala/pipeline/fetch/FetchStage.scala:12:23, :28:31, :30:16, :33:19, :45:35, :48:22, :52:26, :54:22
-      if (io_bCtrl_isMispredict)	// src/main/scala/pipeline/fetch/FetchStage.scala:8:14
-        outReg_bits_pc <= io_bCtrl_npc;	// src/main/scala/pipeline/fetch/FetchStage.scala:12:23
-      else if (_GEN)	// src/main/scala/pipeline/fetch/FetchStage.scala:33:19
-        outReg_bits_pc <= 32'h80000000;	// src/main/scala/pipeline/fetch/FetchStage.scala:12:23, :35:24
-      else if (_GEN_0 | _GEN_2 | _GEN_4 | ~_GEN_5) begin	// src/main/scala/pipeline/fetch/FetchStage.scala:12:23, :33:19
+             : _GEN_2 ? io_aside_in_rvalid | outReg_req : ~_GEN_4 & outReg_req);	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:13:23, :29:31, :31:16, :34:19, :46:35, :49:22, :73:26, :74:22
+      if (io_bCtrl_isMispredict)	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:9:14
+        outReg_bits_pc <= io_bCtrl_npc;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:13:23
+      else begin	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:9:14
+        automatic logic [3:0][31:0] _GEN_5;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:13:23, :34:19, :36:24
+        _GEN_5 =
+          {{_GEN_0 | _GEN_2 | ~_GEN_4 ? outReg_bits_pc : npc},
+           {outReg_bits_pc},
+           {outReg_bits_pc},
+           {32'h80000000}};	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:13:23, :15:20, :34:19, :36:24, :73:26, :74:22
+        outReg_bits_pc <= _GEN_5[stat];	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:13:23, :27:21, :34:19, :36:24
       end
-      else	// src/main/scala/pipeline/fetch/FetchStage.scala:12:23, :33:19
-        outReg_bits_pc <= outReg_bits_pc + 32'h4;	// src/main/scala/pipeline/fetch/FetchStage.scala:12:23, :60:42
-      if (io_bCtrl_isMispredict | _GEN_3 | ~(_GEN_2 & io_aside_in_rvalid)) begin	// src/main/scala/pipeline/fetch/FetchStage.scala:12:23, :28:31, :33:19, :45:35, :47:28
+      if (io_bCtrl_isMispredict | _GEN_3 | ~(_GEN_2 & io_aside_in_rvalid)) begin	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:13:23, :15:20, :29:31, :34:19, :46:35, :48:28
       end
-      else	// src/main/scala/pipeline/fetch/FetchStage.scala:12:23, :28:31, :33:19
-        outReg_bits_inst <= io_aside_in_inst;	// src/main/scala/pipeline/fetch/FetchStage.scala:12:23
-      if (_GEN_1)	// src/main/scala/pipeline/fetch/FetchStage.scala:9:16, :28:31, :33:19
-        stat <= 3'h1;	// src/main/scala/pipeline/fetch/FetchStage.scala:26:21, :29:10
-      else if (_GEN_0) begin	// src/main/scala/pipeline/fetch/FetchStage.scala:33:19
-        if (io_aside_in_rrdy)	// src/main/scala/pipeline/fetch/FetchStage.scala:8:14
-          stat <= 3'h2;	// src/main/scala/pipeline/fetch/FetchStage.scala:26:21, :40:16
+      else begin	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:15:20, :29:31, :34:19
+        automatic logic [31:0] _npc_T;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:52:33
+        automatic logic        _GEN_6 =
+          io_aside_in_inst[31:26] == 6'h16 | io_aside_in_inst[31:26] == 6'h19
+          | io_aside_in_inst[31:26] == 6'h17;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:53:{35,44}
+        automatic logic        _GEN_7 =
+          io_aside_in_inst[31:26] == 6'h15 | io_aside_in_inst[31:26] == 6'h14;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:53:{35,44}
+        _npc_T = outReg_bits_pc + 32'h4;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:13:23, :52:33
+        outReg_bits_inst <= io_aside_in_inst;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:13:23
+        outReg_bits_predictTaken <= _GEN_6 ? io_aside_in_inst[25] : _GEN_7;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:13:23, :53:44, :55:{37,51}
+        npc <=
+          _GEN_6
+            ? (io_aside_in_inst[25]
+                 ? outReg_bits_pc
+                   + {{14{io_aside_in_inst[25]}}, io_aside_in_inst[25:10], 2'h0}
+                 : _npc_T)
+            : _GEN_7
+                ? outReg_bits_pc
+                  + {{4{io_aside_in_inst[9]}},
+                     io_aside_in_inst[9:0],
+                     io_aside_in_inst[25:10],
+                     2'h0}
+                : _npc_T;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7, :13:23, :15:20, :52:{15,33}, :53:44, :55:{37,51}, :57:{21,47}, :58:36, :64:{19,45}, :65:{34,59}
       end
-      else if (_GEN_2) begin	// src/main/scala/pipeline/fetch/FetchStage.scala:33:19
-        if (io_aside_in_rvalid)	// src/main/scala/pipeline/fetch/FetchStage.scala:8:14
-          stat <= 3'h3;	// src/main/scala/pipeline/fetch/FetchStage.scala:26:21, :46:16
+      if (_GEN_1)	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:10:16, :29:31, :34:19
+        stat <= 2'h1;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7, :27:21
+      else if (_GEN_0) begin	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:34:19
+        if (io_aside_in_rrdy)	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:9:14
+          stat <= 2'h2;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7, :27:21
       end
-      else if (_GEN_4) begin	// src/main/scala/pipeline/fetch/FetchStage.scala:33:19
-        if (io_in_ack)	// src/main/scala/pipeline/fetch/FetchStage.scala:8:14
-          stat <= 3'h4;	// src/main/scala/pipeline/fetch/FetchStage.scala:26:21, :53:16
+      else if (_GEN_2) begin	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:34:19
+        if (io_aside_in_rvalid)	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:9:14
+          stat <= 2'h3;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7, :27:21
       end
-      else if (_GEN_5)	// src/main/scala/pipeline/fetch/FetchStage.scala:33:19
-        stat <= 3'h1;	// src/main/scala/pipeline/fetch/FetchStage.scala:26:21, :29:10
+      else if (_GEN_4)	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:13:23, :34:19, :73:26, :74:22
+        stat <= 2'h1;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7, :27:21
     end
   end // always @(posedge)
-  `ifdef ENABLE_INITIAL_REG_	// src/main/scala/pipeline/fetch/FetchStage.scala:7:7
-    `ifdef FIRRTL_BEFORE_INITIAL	// src/main/scala/pipeline/fetch/FetchStage.scala:7:7
-      `FIRRTL_BEFORE_INITIAL	// src/main/scala/pipeline/fetch/FetchStage.scala:7:7
+  `ifdef ENABLE_INITIAL_REG_	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7
+    `ifdef FIRRTL_BEFORE_INITIAL	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7
+      `FIRRTL_BEFORE_INITIAL	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7
     `endif // FIRRTL_BEFORE_INITIAL
-    initial begin	// src/main/scala/pipeline/fetch/FetchStage.scala:7:7
-      automatic logic [31:0] _RANDOM[0:2];	// src/main/scala/pipeline/fetch/FetchStage.scala:7:7
-      `ifdef INIT_RANDOM_PROLOG_	// src/main/scala/pipeline/fetch/FetchStage.scala:7:7
-        `INIT_RANDOM_PROLOG_	// src/main/scala/pipeline/fetch/FetchStage.scala:7:7
+    initial begin	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7
+      automatic logic [31:0] _RANDOM[0:3];	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7
+      `ifdef INIT_RANDOM_PROLOG_	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7
+        `INIT_RANDOM_PROLOG_	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7
       `endif // INIT_RANDOM_PROLOG_
-      `ifdef RANDOMIZE_REG_INIT	// src/main/scala/pipeline/fetch/FetchStage.scala:7:7
-        for (logic [1:0] i = 2'h0; i < 2'h3; i += 2'h1) begin
-          _RANDOM[i] = `RANDOM;	// src/main/scala/pipeline/fetch/FetchStage.scala:7:7
-        end	// src/main/scala/pipeline/fetch/FetchStage.scala:7:7
-        outReg_req = _RANDOM[2'h0][0];	// src/main/scala/pipeline/fetch/FetchStage.scala:7:7, :12:23
-        outReg_bits_pc = {_RANDOM[2'h0][31:1], _RANDOM[2'h1][0]};	// src/main/scala/pipeline/fetch/FetchStage.scala:7:7, :12:23
-        outReg_bits_inst = {_RANDOM[2'h1][31:1], _RANDOM[2'h2][0]};	// src/main/scala/pipeline/fetch/FetchStage.scala:7:7, :12:23
-        stat = _RANDOM[2'h2][3:1];	// src/main/scala/pipeline/fetch/FetchStage.scala:7:7, :12:23, :26:21
+      `ifdef RANDOMIZE_REG_INIT	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7
+        for (logic [2:0] i = 3'h0; i < 3'h4; i += 3'h1) begin
+          _RANDOM[i[1:0]] = `RANDOM;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7
+        end	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7
+        outReg_req = _RANDOM[2'h0][0];	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7, :13:23
+        outReg_bits_pc = {_RANDOM[2'h0][31:1], _RANDOM[2'h1][0]};	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7, :13:23
+        outReg_bits_inst = {_RANDOM[2'h1][31:1], _RANDOM[2'h2][0]};	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7, :13:23
+        outReg_bits_predictTaken = _RANDOM[2'h2][1];	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7, :13:23
+        npc = {_RANDOM[2'h2][31:2], _RANDOM[2'h3][1:0]};	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7, :13:23, :15:20
+        stat = _RANDOM[2'h3][3:2];	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7, :15:20, :27:21
       `endif // RANDOMIZE_REG_INIT
     end // initial
-    `ifdef FIRRTL_AFTER_INITIAL	// src/main/scala/pipeline/fetch/FetchStage.scala:7:7
-      `FIRRTL_AFTER_INITIAL	// src/main/scala/pipeline/fetch/FetchStage.scala:7:7
+    `ifdef FIRRTL_AFTER_INITIAL	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7
+      `FIRRTL_AFTER_INITIAL	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
-  assign io_out_req = outReg_req;	// src/main/scala/pipeline/fetch/FetchStage.scala:7:7, :12:23
-  assign io_out_bits_pc = outReg_bits_pc;	// src/main/scala/pipeline/fetch/FetchStage.scala:7:7, :12:23
-  assign io_out_bits_inst = outReg_bits_inst;	// src/main/scala/pipeline/fetch/FetchStage.scala:7:7, :12:23
-  assign io_aside_out_req = ~_GEN_1 & _GEN_0 & io_aside_in_rrdy;	// src/main/scala/pipeline/fetch/FetchStage.scala:7:7, :9:16, :28:31, :33:19
-  assign io_aside_out_pc = _GEN_1 | ~(_GEN_0 & io_aside_in_rrdy) ? 32'h0 : outReg_bits_pc;	// src/main/scala/pipeline/fetch/FetchStage.scala:7:7, :9:16, :12:23, :28:31, :33:19, :39:33, :41:24, src/main/scala/pipeline/fetch/FetchUtils.scala:22:13
+  assign io_out_req = outReg_req;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7, :13:23
+  assign io_out_bits_pc = outReg_bits_pc;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7, :13:23
+  assign io_out_bits_inst = outReg_bits_inst;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7, :13:23
+  assign io_out_bits_predictTaken = outReg_bits_predictTaken;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7, :13:23
+  assign io_aside_out_req = ~_GEN_1 & _GEN_0 & io_aside_in_rrdy;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7, :10:16, :29:31, :34:19
+  assign io_aside_out_pc = _GEN_1 | ~(_GEN_0 & io_aside_in_rrdy) ? 32'h0 : outReg_bits_pc;	// src/main/scala/pipeline/fetch/FetchStageAlpha.scala:8:7, :10:16, :13:23, :15:20, :29:31, :34:19, :40:33, :42:24
 endmodule
 
 module Decoder_2RI12(	// src/main/scala/pipeline/decode/decoders/Decoder_2RI12.scala:6:7
@@ -803,7 +828,8 @@ module DecodeStage(	// src/main/scala/pipeline/decode/DecodeStage.scala:7:7
                 io_in_fetch_req,	// src/main/scala/pipeline/decode/DecodeStage.scala:8:14
   input  [31:0] io_in_fetch_bits_pc,	// src/main/scala/pipeline/decode/DecodeStage.scala:8:14
                 io_in_fetch_bits_inst,	// src/main/scala/pipeline/decode/DecodeStage.scala:8:14
-  input         io_in_ack,	// src/main/scala/pipeline/decode/DecodeStage.scala:8:14
+  input         io_in_fetch_bits_predictTaken,	// src/main/scala/pipeline/decode/DecodeStage.scala:8:14
+                io_in_ack,	// src/main/scala/pipeline/decode/DecodeStage.scala:8:14
   output [3:0]  io_out_decode_bits_exeOp_opType,	// src/main/scala/pipeline/decode/DecodeStage.scala:8:14
   output [2:0]  io_out_decode_bits_exeOp_opFunc,	// src/main/scala/pipeline/decode/DecodeStage.scala:8:14
   output        io_out_decode_bits_wCtrl_en,	// src/main/scala/pipeline/decode/DecodeStage.scala:8:14
@@ -816,7 +842,8 @@ module DecodeStage(	// src/main/scala/pipeline/decode/DecodeStage.scala:7:7
   output [4:0]  io_out_decode_readInfo_reg_1_addr,	// src/main/scala/pipeline/decode/DecodeStage.scala:8:14
                 io_out_decode_readInfo_reg_2_addr,	// src/main/scala/pipeline/decode/DecodeStage.scala:8:14
   output [31:0] io_out_decode_fetchInfo_pc,	// src/main/scala/pipeline/decode/DecodeStage.scala:8:14
-  output        io_out_decode_req,	// src/main/scala/pipeline/decode/DecodeStage.scala:8:14
+  output        io_out_decode_fetchInfo_predictTaken,	// src/main/scala/pipeline/decode/DecodeStage.scala:8:14
+                io_out_decode_req,	// src/main/scala/pipeline/decode/DecodeStage.scala:8:14
                 io_out_ack,	// src/main/scala/pipeline/decode/DecodeStage.scala:8:14
   input  [31:0] io_aside_in_regLeft,	// src/main/scala/pipeline/decode/DecodeStage.scala:8:14
                 io_aside_in_regRight,	// src/main/scala/pipeline/decode/DecodeStage.scala:8:14
@@ -855,9 +882,11 @@ module DecodeStage(	// src/main/scala/pipeline/decode/DecodeStage.scala:7:7
   reg  [4:0]  decodeOut_readInfo_reg_1_addr;	// src/main/scala/pipeline/decode/DecodeStage.scala:13:26
   reg  [4:0]  decodeOut_readInfo_reg_2_addr;	// src/main/scala/pipeline/decode/DecodeStage.scala:13:26
   reg  [31:0] decodeOut_fetchInfo_pc;	// src/main/scala/pipeline/decode/DecodeStage.scala:13:26
+  reg         decodeOut_fetchInfo_predictTaken;	// src/main/scala/pipeline/decode/DecodeStage.scala:13:26
   reg         decodeOut_req;	// src/main/scala/pipeline/decode/DecodeStage.scala:13:26
   reg  [31:0] srcInfo_pc;	// src/main/scala/pipeline/decode/DecodeStage.scala:17:24
   reg  [31:0] srcInfo_inst;	// src/main/scala/pipeline/decode/DecodeStage.scala:17:24
+  reg         srcInfo_predictTaken;	// src/main/scala/pipeline/decode/DecodeStage.scala:17:24
   reg  [1:0]  stat;	// src/main/scala/pipeline/decode/DecodeStage.scala:31:21
   wire        _GEN = stat == 2'h0;	// src/main/scala/pipeline/decode/DecodeStage.scala:31:21, :33:10, :37:18
   always @(posedge clock) begin	// src/main/scala/pipeline/decode/DecodeStage.scala:7:7
@@ -878,21 +907,23 @@ module DecodeStage(	// src/main/scala/pipeline/decode/DecodeStage.scala:7:7
       decodeOut_readInfo_reg_1_addr <= 5'h0;	// src/main/scala/pipeline/decode/DecodeStage.scala:13:26, src/main/scala/pipeline/regfile/RegfileUtils.scala:9:15
       decodeOut_readInfo_reg_2_addr <= 5'h0;	// src/main/scala/pipeline/decode/DecodeStage.scala:13:26, src/main/scala/pipeline/regfile/RegfileUtils.scala:9:15
       decodeOut_fetchInfo_pc <= 32'h0;	// src/main/scala/pipeline/decode/DecodeStage.scala:13:26, src/main/scala/pipeline/exe/ExeUtils.scala:22:23
+      decodeOut_fetchInfo_predictTaken <= 1'h0;	// src/main/scala/pipeline/decode/DecodeStage.scala:9:14, :13:26
       decodeOut_req <= 1'h0;	// src/main/scala/pipeline/decode/DecodeStage.scala:9:14, :13:26
       srcInfo_pc <= 32'h0;	// src/main/scala/pipeline/decode/DecodeStage.scala:17:24, src/main/scala/pipeline/exe/ExeUtils.scala:22:23
       srcInfo_inst <= 32'h0;	// src/main/scala/pipeline/decode/DecodeStage.scala:17:24, src/main/scala/pipeline/exe/ExeUtils.scala:22:23
+      srcInfo_predictTaken <= 1'h0;	// src/main/scala/pipeline/decode/DecodeStage.scala:9:14, :17:24
       stat <= 2'h0;	// src/main/scala/pipeline/decode/DecodeStage.scala:31:21, :33:10
     end
     else begin	// src/main/scala/pipeline/decode/DecodeStage.scala:7:7
       automatic logic _GEN_0;	// src/main/scala/pipeline/decode/DecodeStage.scala:37:18
       automatic logic _GEN_1;	// src/main/scala/pipeline/decode/DecodeStage.scala:11:25, :37:18
       automatic logic _GEN_2;	// src/main/scala/pipeline/decode/DecodeStage.scala:37:18
-      automatic logic _GEN_3;	// src/main/scala/pipeline/decode/DecodeStage.scala:31:21, :37:18, :76:26, :77:16
+      automatic logic _GEN_3;	// src/main/scala/pipeline/decode/DecodeStage.scala:31:21, :37:18, :73:26, :74:16
       automatic logic _GEN_4;	// src/main/scala/pipeline/decode/DecodeStage.scala:13:26, :37:18
       _GEN_0 = stat == 2'h1;	// src/main/scala/pipeline/decode/DecodeStage.scala:31:21, :37:18, :41:16
       _GEN_1 = _GEN | ~(_GEN_0 & _du_io_out_isMatched);	// src/main/scala/pipeline/decode/DecodeStage.scala:11:25, :16:18, :37:18, :54:36, :55:26
       _GEN_2 = stat == 2'h2;	// src/main/scala/pipeline/decode/DecodeStage.scala:31:21, :37:18, :52:14
-      _GEN_3 = (&stat) & io_in_ack;	// src/main/scala/pipeline/decode/DecodeStage.scala:31:21, :37:18, :76:26, :77:16
+      _GEN_3 = (&stat) & io_in_ack;	// src/main/scala/pipeline/decode/DecodeStage.scala:31:21, :37:18, :73:26, :74:16
       _GEN_4 = _GEN | _GEN_0;	// src/main/scala/pipeline/decode/DecodeStage.scala:13:26, :37:18
       asideOut_reg_1_en <=
         ~io_bCtrl_isMispredict & (_GEN_1 ? asideOut_reg_1_en : _du_io_out_bits_reg_1_en);	// src/main/scala/pipeline/decode/DecodeStage.scala:9:14, :11:25, :16:18, :32:32, :35:14, :37:18
@@ -932,7 +963,7 @@ module DecodeStage(	// src/main/scala/pipeline/decode/DecodeStage.scala:7:7
             decodeOut_readInfo_reg_2_addr <= _du_io_out_bits_reg_2_addr;	// src/main/scala/pipeline/decode/DecodeStage.scala:13:26, :16:18
             decodeOut_fetchInfo_pc <= srcInfo_pc;	// src/main/scala/pipeline/decode/DecodeStage.scala:13:26, :17:24
           end
-          else if (_GEN_3) begin	// src/main/scala/pipeline/decode/DecodeStage.scala:31:21, :37:18, :76:26, :77:16
+          else if (_GEN_3) begin	// src/main/scala/pipeline/decode/DecodeStage.scala:31:21, :37:18, :73:26, :74:16
             decodeOut_bits_exeOp_opType <= 4'h0;	// src/main/scala/pipeline/decode/DecodeStage.scala:7:7, :13:26
             decodeOut_bits_exeOp_opFunc <= 3'h0;	// src/main/scala/pipeline/decode/DecodeStage.scala:13:26, src/main/scala/pipeline/exe/ExeUtils.scala:15:17
             decodeOut_bits_wCtrl_addr <= 5'h0;	// src/main/scala/pipeline/decode/DecodeStage.scala:13:26, src/main/scala/pipeline/regfile/RegfileUtils.scala:9:15
@@ -945,7 +976,7 @@ module DecodeStage(	// src/main/scala/pipeline/decode/DecodeStage.scala:7:7
             decodeOut_fetchInfo_pc <= 32'h0;	// src/main/scala/pipeline/decode/DecodeStage.scala:13:26, src/main/scala/pipeline/exe/ExeUtils.scala:22:23
           end
         end
-        _GEN_5 = {{_GEN_3 ? 2'h0 : stat}, {2'h3}, {2'h2}, {{1'h0, io_in_fetch_req}}};	// src/main/scala/pipeline/decode/DecodeStage.scala:9:14, :31:21, :33:10, :37:18, :39:32, :41:16, :46:16, :52:14, :60:14, :76:26, :77:16
+        _GEN_5 = {{_GEN_3 ? 2'h0 : stat}, {2'h3}, {2'h2}, {{1'h0, io_in_fetch_req}}};	// src/main/scala/pipeline/decode/DecodeStage.scala:9:14, :31:21, :33:10, :37:18, :39:32, :41:16, :46:16, :52:14, :60:14, :73:26, :74:16
         stat <= _GEN_5[stat];	// src/main/scala/pipeline/decode/DecodeStage.scala:31:21, :37:18, :39:32, :52:14, :60:14
       end
       asideOut_reg_2_en <=
@@ -954,22 +985,30 @@ module DecodeStage(	// src/main/scala/pipeline/decode/DecodeStage.scala:7:7
         ~io_bCtrl_isMispredict
         & (_GEN_4
              ? decodeOut_bits_wCtrl_en
-             : _GEN_2 ? _du_io_out_bits_wCtrl_en : ~_GEN_3 & decodeOut_bits_wCtrl_en);	// src/main/scala/pipeline/decode/DecodeStage.scala:9:14, :13:26, :16:18, :31:21, :32:32, :34:15, :37:18, :65:32, :76:26, :77:16, :78:21
+             : _GEN_2 ? _du_io_out_bits_wCtrl_en : ~_GEN_3 & decodeOut_bits_wCtrl_en);	// src/main/scala/pipeline/decode/DecodeStage.scala:9:14, :13:26, :16:18, :31:21, :32:32, :34:15, :37:18, :63:30, :73:26, :74:16, :75:21
       decodeOut_bits_operands_hasImm <=
         ~io_bCtrl_isMispredict
         & (_GEN_4
              ? decodeOut_bits_operands_hasImm
              : _GEN_2
                  ? _du_io_out_bits_hasImm
-                 : ~_GEN_3 & decodeOut_bits_operands_hasImm);	// src/main/scala/pipeline/decode/DecodeStage.scala:9:14, :13:26, :16:18, :31:21, :32:32, :34:15, :37:18, :66:42, :76:26, :77:16, :78:21
+                 : ~_GEN_3 & decodeOut_bits_operands_hasImm);	// src/main/scala/pipeline/decode/DecodeStage.scala:9:14, :13:26, :16:18, :31:21, :32:32, :34:15, :37:18, :64:40, :73:26, :74:16, :75:21
+      decodeOut_fetchInfo_predictTaken <=
+        ~io_bCtrl_isMispredict
+        & (_GEN_4
+             ? decodeOut_fetchInfo_predictTaken
+             : _GEN_2
+                 ? srcInfo_predictTaken
+                 : ~_GEN_3 & decodeOut_fetchInfo_predictTaken);	// src/main/scala/pipeline/decode/DecodeStage.scala:9:14, :13:26, :17:24, :31:21, :32:32, :34:15, :37:18, :68:29, :73:26, :74:16, :75:21
       decodeOut_req <=
         ~io_bCtrl_isMispredict
-        & (_GEN_4 ? decodeOut_req : _GEN_2 | ~_GEN_3 & decodeOut_req);	// src/main/scala/pipeline/decode/DecodeStage.scala:9:14, :13:26, :31:21, :32:32, :34:15, :37:18, :63:25, :76:26, :77:16, :78:21
+        & (_GEN_4 ? decodeOut_req : _GEN_2 | ~_GEN_3 & decodeOut_req);	// src/main/scala/pipeline/decode/DecodeStage.scala:9:14, :13:26, :31:21, :32:32, :34:15, :37:18, :61:23, :73:26, :74:16, :75:21
       if (io_bCtrl_isMispredict | ~_GEN) begin	// src/main/scala/pipeline/decode/DecodeStage.scala:17:24, :32:32, :37:18
       end
       else begin	// src/main/scala/pipeline/decode/DecodeStage.scala:17:24, :32:32, :37:18
         srcInfo_pc <= io_in_fetch_req ? io_in_fetch_bits_pc : 32'h0;	// src/main/scala/pipeline/decode/DecodeStage.scala:17:24, :39:32, :42:19, :47:19, src/main/scala/pipeline/exe/ExeUtils.scala:22:23
         srcInfo_inst <= io_in_fetch_req ? io_in_fetch_bits_inst : 32'h0;	// src/main/scala/pipeline/decode/DecodeStage.scala:17:24, :39:32, :42:19, :47:19, src/main/scala/pipeline/exe/ExeUtils.scala:22:23
+        srcInfo_predictTaken <= io_in_fetch_req & io_in_fetch_bits_predictTaken;	// src/main/scala/pipeline/decode/DecodeStage.scala:17:24, :39:32, :42:19, :47:19
       end
     end
   end // always @(posedge)
@@ -1002,10 +1041,12 @@ module DecodeStage(	// src/main/scala/pipeline/decode/DecodeStage.scala:7:7
         decodeOut_readInfo_reg_1_addr = _RANDOM[4'h4][31:27];	// src/main/scala/pipeline/decode/DecodeStage.scala:7:7, :13:26
         decodeOut_readInfo_reg_2_addr = _RANDOM[4'h5][5:1];	// src/main/scala/pipeline/decode/DecodeStage.scala:7:7, :13:26
         decodeOut_fetchInfo_pc = {_RANDOM[4'h5][31:6], _RANDOM[4'h6][5:0]};	// src/main/scala/pipeline/decode/DecodeStage.scala:7:7, :13:26
-        decodeOut_req = _RANDOM[4'h7][6];	// src/main/scala/pipeline/decode/DecodeStage.scala:7:7, :13:26
-        srcInfo_pc = {_RANDOM[4'h7][31:7], _RANDOM[4'h8][6:0]};	// src/main/scala/pipeline/decode/DecodeStage.scala:7:7, :13:26, :17:24
-        srcInfo_inst = {_RANDOM[4'h8][31:7], _RANDOM[4'h9][6:0]};	// src/main/scala/pipeline/decode/DecodeStage.scala:7:7, :17:24
-        stat = _RANDOM[4'h9][8:7];	// src/main/scala/pipeline/decode/DecodeStage.scala:7:7, :17:24, :31:21
+        decodeOut_fetchInfo_predictTaken = _RANDOM[4'h7][6];	// src/main/scala/pipeline/decode/DecodeStage.scala:7:7, :13:26
+        decodeOut_req = _RANDOM[4'h7][7];	// src/main/scala/pipeline/decode/DecodeStage.scala:7:7, :13:26
+        srcInfo_pc = {_RANDOM[4'h7][31:8], _RANDOM[4'h8][7:0]};	// src/main/scala/pipeline/decode/DecodeStage.scala:7:7, :13:26, :17:24
+        srcInfo_inst = {_RANDOM[4'h8][31:8], _RANDOM[4'h9][7:0]};	// src/main/scala/pipeline/decode/DecodeStage.scala:7:7, :17:24
+        srcInfo_predictTaken = _RANDOM[4'h9][8];	// src/main/scala/pipeline/decode/DecodeStage.scala:7:7, :17:24
+        stat = _RANDOM[4'h9][10:9];	// src/main/scala/pipeline/decode/DecodeStage.scala:7:7, :17:24, :31:21
       `endif // RANDOMIZE_REG_INIT
     end // initial
     `ifdef FIRRTL_AFTER_INITIAL	// src/main/scala/pipeline/decode/DecodeStage.scala:7:7
@@ -1040,6 +1081,7 @@ module DecodeStage(	// src/main/scala/pipeline/decode/DecodeStage.scala:7:7
   assign io_out_decode_readInfo_reg_1_addr = decodeOut_readInfo_reg_1_addr;	// src/main/scala/pipeline/decode/DecodeStage.scala:7:7, :13:26
   assign io_out_decode_readInfo_reg_2_addr = decodeOut_readInfo_reg_2_addr;	// src/main/scala/pipeline/decode/DecodeStage.scala:7:7, :13:26
   assign io_out_decode_fetchInfo_pc = decodeOut_fetchInfo_pc;	// src/main/scala/pipeline/decode/DecodeStage.scala:7:7, :13:26
+  assign io_out_decode_fetchInfo_predictTaken = decodeOut_fetchInfo_predictTaken;	// src/main/scala/pipeline/decode/DecodeStage.scala:7:7, :13:26
   assign io_out_decode_req = decodeOut_req;	// src/main/scala/pipeline/decode/DecodeStage.scala:7:7, :13:26
   assign io_out_ack = ~io_bCtrl_isMispredict & _GEN & io_in_fetch_req;	// src/main/scala/pipeline/decode/DecodeStage.scala:7:7, :9:14, :32:32, :37:18
   assign io_aside_out_reg_1_en = asideOut_reg_1_en;	// src/main/scala/pipeline/decode/DecodeStage.scala:7:7, :11:25
@@ -1110,7 +1152,8 @@ module ExeStage(	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
   input  [4:0]  io_in_decode_readInfo_reg_1_addr,	// src/main/scala/pipeline/exe/ExeStage.scala:11:14
                 io_in_decode_readInfo_reg_2_addr,	// src/main/scala/pipeline/exe/ExeStage.scala:11:14
   input  [31:0] io_in_decode_fetchInfo_pc,	// src/main/scala/pipeline/exe/ExeStage.scala:11:14
-  input         io_in_decode_req,	// src/main/scala/pipeline/exe/ExeStage.scala:11:14
+  input         io_in_decode_fetchInfo_predictTaken,	// src/main/scala/pipeline/exe/ExeStage.scala:11:14
+                io_in_decode_req,	// src/main/scala/pipeline/exe/ExeStage.scala:11:14
   output        io_out_ack,	// src/main/scala/pipeline/exe/ExeStage.scala:11:14
                 io_out_exe_bits_en,	// src/main/scala/pipeline/exe/ExeStage.scala:11:14
   output [4:0]  io_out_exe_bits_addr,	// src/main/scala/pipeline/exe/ExeStage.scala:11:14
@@ -1130,7 +1173,7 @@ module ExeStage(	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
 );
 
   wire [31:0]     _alu_io_out_res;	// src/main/scala/pipeline/exe/ExeStage.scala:29:19
-  wire [3:0][3:0] _GEN = '{4'h7, 4'hB, 4'hD, 4'hE};	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :142:39, :144:37, :147:37, :150:37, :153:37
+  wire [3:0][3:0] _GEN = '{4'h7, 4'hB, 4'hD, 4'hE};	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :154:39, :156:37, :159:37, :162:37, :165:37
   reg             outReg_bits_en;	// src/main/scala/pipeline/exe/ExeStage.scala:17:31
   reg  [4:0]      outReg_bits_addr;	// src/main/scala/pipeline/exe/ExeStage.scala:17:31
   reg  [31:0]     outReg_bits_data;	// src/main/scala/pipeline/exe/ExeStage.scala:17:31
@@ -1146,6 +1189,7 @@ module ExeStage(	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
   reg  [31:0]     srcInfo_operands_regData_1;	// src/main/scala/pipeline/exe/ExeStage.scala:22:24
   reg  [31:0]     srcInfo_operands_regData_2;	// src/main/scala/pipeline/exe/ExeStage.scala:22:24
   reg  [31:0]     fetchInfo_pc;	// src/main/scala/pipeline/exe/ExeStage.scala:23:26
+  reg             fetchInfo_predictTaken;	// src/main/scala/pipeline/exe/ExeStage.scala:23:26
   reg             preLoad;	// src/main/scala/pipeline/exe/ExeStage.scala:25:24
   reg  [4:0]      preLoadAddr;	// src/main/scala/pipeline/exe/ExeStage.scala:26:28
   reg  [31:0]     preLoadData;	// src/main/scala/pipeline/exe/ExeStage.scala:27:28
@@ -1155,11 +1199,11 @@ module ExeStage(	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
   wire            _GEN_2 = stat == 3'h2;	// src/main/scala/pipeline/exe/ExeStage.scala:49:21, :50:16, :55:18
   wire            _GEN_3 = srcInfo_exeOp_opFunc == 3'h2;	// src/main/scala/pipeline/exe/ExeStage.scala:22:24, :55:18, :100:40
   wire            _GEN_4 = stat == 3'h3;	// src/main/scala/pipeline/exe/ExeStage.scala:49:21, :50:16, :58:18
-  wire [3:0]      _GEN_5 = _GEN[_alu_io_out_res[1:0]];	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :29:19, :142:{32,39}, :144:37, :147:37, :150:37, :153:37
+  wire [3:0]      _GEN_5 = _GEN[_alu_io_out_res[1:0]];	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :29:19, :154:{32,39}, :156:37, :159:37, :162:37, :165:37
   wire            _GEN_6 = stat == 3'h4;	// src/main/scala/pipeline/exe/ExeStage.scala:49:21, :50:16, :53:49
   wire            _GEN_7 = _GEN_0 | _GEN_1 | _GEN_2;	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :50:16
   wire            _GEN_8 = stat == 3'h5;	// src/main/scala/pipeline/exe/ExeStage.scala:49:21, :50:16, :53:49
-  wire            _GEN_9 = _GEN_8 & io_aside_in_wrdy;	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :50:16, :173:31, :191:27
+  wire            _GEN_9 = _GEN_8 & io_aside_in_wrdy;	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :50:16, :185:31, :203:27
   wire            _GEN_10 = _GEN_0 | _GEN_1 | _GEN_2 | _GEN_4 | _GEN_6;	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :50:16
   always @(posedge clock) begin	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
     if (reset) begin	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
@@ -1178,6 +1222,7 @@ module ExeStage(	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
       srcInfo_operands_regData_1 <= 32'h0;	// src/main/scala/pipeline/exe/ExeStage.scala:22:24, :27:28
       srcInfo_operands_regData_2 <= 32'h0;	// src/main/scala/pipeline/exe/ExeStage.scala:22:24, :27:28
       fetchInfo_pc <= 32'h0;	// src/main/scala/pipeline/exe/ExeStage.scala:23:26, :27:28
+      fetchInfo_predictTaken <= 1'h0;	// src/main/scala/pipeline/exe/ExeStage.scala:12:14, :23:26
       preLoad <= 1'h0;	// src/main/scala/pipeline/exe/ExeStage.scala:12:14, :25:24
       preLoadAddr <= 5'h0;	// src/main/scala/pipeline/exe/ExeStage.scala:26:28
       preLoadData <= 32'h0;	// src/main/scala/pipeline/exe/ExeStage.scala:27:28
@@ -1186,10 +1231,10 @@ module ExeStage(	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
     else begin	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
       automatic logic             _GEN_11;	// src/main/scala/pipeline/exe/ExeStage.scala:67:42
       automatic logic             _GEN_12;	// src/main/scala/pipeline/exe/ExeStage.scala:50:16
-      automatic logic [7:0]       _GEN_13;	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :17:31, :50:16, :89:24, :96:19, :164:33, :198:32
-      automatic logic [7:0][4:0]  _GEN_14;	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :17:31, :50:16, :90:26, :96:19, :164:33, :198:32, :207:14
-      automatic logic [7:0][31:0] _GEN_15;	// src/main/scala/pipeline/exe/ExeStage.scala:17:31, :50:16, :91:26, :96:19, :164:33, :198:32, :207:14
-      automatic logic [7:0][2:0]  _GEN_16;	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :49:21, :50:16, :52:31, :88:14, :95:12, :140:31, :164:33, :173:31, :198:32, :206:12
+      automatic logic [7:0]       _GEN_13;	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :17:31, :50:16, :89:24, :96:19, :176:33, :210:32
+      automatic logic [7:0][4:0]  _GEN_14;	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :17:31, :50:16, :90:26, :96:19, :176:33, :210:32, :219:14
+      automatic logic [7:0][31:0] _GEN_15;	// src/main/scala/pipeline/exe/ExeStage.scala:17:31, :50:16, :91:26, :96:19, :176:33, :210:32, :219:14
+      automatic logic [7:0][2:0]  _GEN_16;	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :49:21, :50:16, :52:31, :88:14, :95:12, :152:31, :176:33, :185:31, :210:32, :218:12
       _GEN_11 = io_in_decode_bits_wCtrl_en & (|io_in_decode_bits_wCtrl_addr);	// src/main/scala/pipeline/exe/ExeStage.scala:67:{42,74}
       _GEN_12 = stat != 3'h7;	// src/main/scala/pipeline/exe/ExeStage.scala:49:21, :50:16, :53:49
       _GEN_13 =
@@ -1200,8 +1245,8 @@ module ExeStage(	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
          {outReg_bits_en},
          {srcInfo_wCtrl_en},
          {srcInfo_wCtrl_en},
-         {outReg_bits_en}};	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :17:31, :22:24, :50:16, :89:24, :96:19, :164:33, :166:24, :198:32, :200:24, :207:14
-      outReg_bits_en <= _GEN_13[stat];	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :17:31, :49:21, :50:16, :89:24, :96:19, :164:33, :198:32
+         {outReg_bits_en}};	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :17:31, :22:24, :50:16, :89:24, :96:19, :176:33, :178:24, :210:32, :212:24, :219:14
+      outReg_bits_en <= _GEN_13[stat];	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :17:31, :49:21, :50:16, :89:24, :96:19, :176:33, :210:32
       _GEN_14 =
         {{5'h0},
          {io_aside_in_wdone ? srcInfo_wCtrl_addr : outReg_bits_addr},
@@ -1210,8 +1255,8 @@ module ExeStage(	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
          {outReg_bits_addr},
          {srcInfo_wCtrl_addr},
          {srcInfo_wCtrl_addr},
-         {outReg_bits_addr}};	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :17:31, :22:24, :26:28, :50:16, :90:26, :96:19, :164:33, :167:26, :198:32, :201:26, :207:14
-      outReg_bits_addr <= _GEN_14[stat];	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :17:31, :49:21, :50:16, :90:26, :96:19, :164:33, :198:32, :207:14
+         {outReg_bits_addr}};	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :17:31, :22:24, :26:28, :50:16, :90:26, :96:19, :176:33, :179:26, :210:32, :213:26, :219:14
+      outReg_bits_addr <= _GEN_14[stat];	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :17:31, :49:21, :50:16, :90:26, :96:19, :176:33, :210:32, :219:14
       _GEN_15 =
         {{32'h0},
          {io_aside_in_wdone ? srcInfo_wCtrl_data : outReg_bits_data},
@@ -1220,53 +1265,47 @@ module ExeStage(	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
          {outReg_bits_data},
          {srcInfo_wCtrl_data},
          {_alu_io_out_res},
-         {outReg_bits_data}};	// src/main/scala/pipeline/exe/ExeStage.scala:17:31, :22:24, :27:28, :29:19, :50:16, :91:26, :96:19, :164:33, :168:26, :198:32, :202:26, :207:14
-      outReg_bits_data <= _GEN_15[stat];	// src/main/scala/pipeline/exe/ExeStage.scala:17:31, :49:21, :50:16, :91:26, :96:19, :164:33, :198:32, :207:14
+         {outReg_bits_data}};	// src/main/scala/pipeline/exe/ExeStage.scala:17:31, :22:24, :27:28, :29:19, :50:16, :91:26, :96:19, :176:33, :180:26, :210:32, :214:26, :219:14
+      outReg_bits_data <= _GEN_15[stat];	// src/main/scala/pipeline/exe/ExeStage.scala:17:31, :49:21, :50:16, :91:26, :96:19, :176:33, :210:32, :219:14
       if (~(_GEN_0 | _GEN_1)) begin	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :50:16
         if (_GEN_2) begin	// src/main/scala/pipeline/exe/ExeStage.scala:50:16
           automatic logic _GEN_17;	// src/main/scala/pipeline/exe/ExeStage.scala:100:40
           _GEN_17 = srcInfo_exeOp_opFunc == 3'h1;	// src/main/scala/pipeline/exe/ExeStage.scala:22:24, :64:18, :100:40
           if (srcInfo_exeOp_opType == 4'h4) begin	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :22:24, :98:37
-            automatic logic             _GEN_18;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :102:{55,94}, :103:42
-            automatic logic             _GEN_19;	// src/main/scala/pipeline/exe/ExeStage.scala:114:55
-            automatic logic [7:0][31:0] _GEN_20;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :100:40, :102:94, :108:94, :114:93, :121:31, :125:31
-            _GEN_18 = srcInfo_operands_regData_1 == srcInfo_operands_regData_2;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :22:24, :102:{55,94}, :103:42
-            _GEN_19 =
-              $signed(srcInfo_operands_regData_1) >= $signed(srcInfo_operands_regData_2);	// src/main/scala/pipeline/exe/ExeStage.scala:22:24, :114:55
-            if (_GEN_17)	// src/main/scala/pipeline/exe/ExeStage.scala:100:40
-              bCtrlOutReg_isMispredict <= ~_GEN_18 | bCtrlOutReg_isMispredict;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :102:{55,94}, :103:42
-            else if (_GEN_3)	// src/main/scala/pipeline/exe/ExeStage.scala:100:40
-              bCtrlOutReg_isMispredict <= _GEN_18 | bCtrlOutReg_isMispredict;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :102:{55,94}, :103:42, :108:94, :109:42
-            else if (srcInfo_exeOp_opFunc == 3'h3)	// src/main/scala/pipeline/exe/ExeStage.scala:22:24, :58:18, :100:40
-              bCtrlOutReg_isMispredict <= _GEN_19 | bCtrlOutReg_isMispredict;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :114:{55,93}, :115:42
-            else	// src/main/scala/pipeline/exe/ExeStage.scala:100:40
-              bCtrlOutReg_isMispredict <=
-                srcInfo_exeOp_opFunc == 3'h4 | srcInfo_exeOp_opFunc == 3'h5
-                | bCtrlOutReg_isMispredict;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :22:24, :53:49, :100:40, :120:40, :124:40
-            _GEN_20 =
-              {{bCtrlOutReg_npc},
-               {bCtrlOutReg_npc},
-               {fetchInfo_pc + srcInfo_operands_imm},
-               {fetchInfo_pc + srcInfo_operands_imm},
-               {_GEN_19 ? fetchInfo_pc + srcInfo_operands_imm : bCtrlOutReg_npc},
-               {_GEN_18 ? fetchInfo_pc + srcInfo_operands_imm : bCtrlOutReg_npc},
-               {_GEN_18 ? bCtrlOutReg_npc : fetchInfo_pc + srcInfo_operands_imm},
-               {bCtrlOutReg_npc}};	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :22:24, :23:26, :100:40, :102:{55,94}, :103:42, :104:{33,57}, :108:94, :110:{33,57}, :114:{55,93}, :116:{33,57}, :121:{31,55}, :125:{31,55}
-            bCtrlOutReg_npc <= _GEN_20[srcInfo_exeOp_opFunc];	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :22:24, :100:40, :102:94, :108:94, :114:93, :121:31, :125:31
+            automatic logic _GEN_18;	// src/main/scala/pipeline/exe/ExeStage.scala:102:{55,94}, :104:42, :107:42
+            _GEN_18 = srcInfo_operands_regData_1 == srcInfo_operands_regData_2;	// src/main/scala/pipeline/exe/ExeStage.scala:22:24, :102:{55,94}, :104:42, :107:42
+            if (_GEN_17) begin	// src/main/scala/pipeline/exe/ExeStage.scala:100:40
+              bCtrlOutReg_isMispredict <= _GEN_18 ^ ~fetchInfo_predictTaken;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :23:26, :102:{55,94}, :104:42, :107:42
+              bCtrlOutReg_npc <=
+                _GEN_18 ? fetchInfo_pc + 32'h4 : fetchInfo_pc + srcInfo_operands_imm;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :22:24, :23:26, :102:{55,94}, :104:42, :105:{33,57}, :107:42, :108:{33,49}
+            end
+            else if (_GEN_3) begin	// src/main/scala/pipeline/exe/ExeStage.scala:100:40
+              bCtrlOutReg_isMispredict <= _GEN_18 ^ fetchInfo_predictTaken;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :23:26, :102:{55,94}, :104:42, :107:42, :112:94, :114:42, :117:42
+              bCtrlOutReg_npc <=
+                _GEN_18 ? fetchInfo_pc + srcInfo_operands_imm : fetchInfo_pc + 32'h4;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :22:24, :23:26, :102:{55,94}, :104:42, :107:42, :108:49, :112:94, :115:{33,57}, :118:{33,49}
+            end
+            else if (srcInfo_exeOp_opFunc == 3'h3) begin	// src/main/scala/pipeline/exe/ExeStage.scala:22:24, :58:18, :100:40
+              automatic logic _GEN_19;	// src/main/scala/pipeline/exe/ExeStage.scala:122:55
+              _GEN_19 =
+                $signed(srcInfo_operands_regData_1) >= $signed(srcInfo_operands_regData_2);	// src/main/scala/pipeline/exe/ExeStage.scala:22:24, :122:55
+              bCtrlOutReg_isMispredict <= _GEN_19 ^ fetchInfo_predictTaken;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :23:26, :122:{55,93}, :124:42, :127:42
+              bCtrlOutReg_npc <=
+                _GEN_19 ? fetchInfo_pc + srcInfo_operands_imm : fetchInfo_pc + 32'h4;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :22:24, :23:26, :108:49, :122:{55,93}, :125:{33,57}, :128:{33,49}
+            end
           end
           else begin	// src/main/scala/pipeline/exe/ExeStage.scala:98:37
-            automatic logic _GEN_21;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :98:37, :130:40, :132:40
-            _GEN_21 = srcInfo_exeOp_opType == 4'h5 & _GEN_17;	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :19:43, :22:24, :98:37, :100:40, :130:40, :132:40
-            bCtrlOutReg_isMispredict <= _GEN_21 | bCtrlOutReg_isMispredict;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :98:37, :130:40, :132:40
-            if (_GEN_21)	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :98:37, :130:40, :132:40
-              bCtrlOutReg_npc <= srcInfo_operands_regData_1 + srcInfo_operands_imm;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :22:24, :133:69
+            automatic logic _GEN_20;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :98:37, :142:40, :144:40
+            _GEN_20 = srcInfo_exeOp_opType == 4'h5 & _GEN_17;	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :19:43, :22:24, :98:37, :100:40, :142:40, :144:40
+            bCtrlOutReg_isMispredict <= _GEN_20 | bCtrlOutReg_isMispredict;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :98:37, :142:40, :144:40
+            if (_GEN_20)	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :98:37, :142:40, :144:40
+              bCtrlOutReg_npc <= srcInfo_operands_regData_1 + srcInfo_operands_imm;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :22:24, :145:69
           end
         end
         else begin	// src/main/scala/pipeline/exe/ExeStage.scala:50:16
-          automatic logic _GEN_22;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :50:16
-          _GEN_22 = _GEN_4 | _GEN_6 | _GEN_8 | stat == 3'h6 | _GEN_12;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :49:21, :50:16, :53:49
-          bCtrlOutReg_isMispredict <= _GEN_22 & bCtrlOutReg_isMispredict;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :50:16
-          if (_GEN_22) begin	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :50:16
+          automatic logic _GEN_21;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :50:16
+          _GEN_21 = _GEN_4 | _GEN_6 | _GEN_8 | stat == 3'h6 | _GEN_12;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :49:21, :50:16, :53:49
+          bCtrlOutReg_isMispredict <= _GEN_21 & bCtrlOutReg_isMispredict;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :50:16
+          if (_GEN_21) begin	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :50:16
           end
           else	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :50:16
             bCtrlOutReg_npc <= 32'h0;	// src/main/scala/pipeline/exe/ExeStage.scala:19:43, :27:28
@@ -1289,6 +1328,7 @@ module ExeStage(	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
             ? preLoadData
             : io_in_decode_bits_operands_regData_2;	// src/main/scala/pipeline/exe/ExeStage.scala:22:24, :25:24, :26:28, :27:28, :74:17, :78:{22,37,75}, :79:38
         fetchInfo_pc <= io_in_decode_fetchInfo_pc;	// src/main/scala/pipeline/exe/ExeStage.scala:23:26
+        fetchInfo_predictTaken <= io_in_decode_fetchInfo_predictTaken;	// src/main/scala/pipeline/exe/ExeStage.scala:23:26
         preLoad <= _GEN_11;	// src/main/scala/pipeline/exe/ExeStage.scala:25:24, :67:42
       end
       if (_GEN_0 & io_in_decode_req & _GEN_11)	// src/main/scala/pipeline/exe/ExeStage.scala:26:28, :50:16, :52:31, :67:{42,83}, :69:23
@@ -1298,7 +1338,7 @@ module ExeStage(	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
           preLoadData <= _alu_io_out_res;	// src/main/scala/pipeline/exe/ExeStage.scala:27:28, :29:19
         else if (_GEN_2)	// src/main/scala/pipeline/exe/ExeStage.scala:50:16
           preLoadData <= srcInfo_wCtrl_data;	// src/main/scala/pipeline/exe/ExeStage.scala:22:24, :27:28
-        else if (_GEN_4 | ~(_GEN_6 & io_aside_in_rvalid)) begin	// src/main/scala/pipeline/exe/ExeStage.scala:27:28, :50:16, :164:33, :169:21
+        else if (_GEN_4 | ~(_GEN_6 & io_aside_in_rvalid)) begin	// src/main/scala/pipeline/exe/ExeStage.scala:27:28, :50:16, :176:33, :181:21
         end
         else	// src/main/scala/pipeline/exe/ExeStage.scala:27:28, :50:16
           preLoadData <= io_aside_in_rdata;	// src/main/scala/pipeline/exe/ExeStage.scala:27:28
@@ -1324,8 +1364,8 @@ module ExeStage(	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
                            | io_in_decode_bits_exeOp_opType == 4'h2
                              ? 3'h1
                              : stat)
-            : stat}};	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :14:16, :49:21, :50:16, :52:31, :53:49, :55:18, :58:18, :61:18, :64:18, :88:14, :95:12, :140:31, :159:14, :164:33, :165:14, :173:31, :193:14, :198:32, :199:14, :206:12, src/main/scala/pipeline/exe/ExeUtils.scala:15:17
-      stat <= _GEN_16[stat];	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :49:21, :50:16, :52:31, :88:14, :95:12, :140:31, :164:33, :173:31, :198:32, :206:12
+            : stat}};	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :14:16, :49:21, :50:16, :52:31, :53:49, :55:18, :58:18, :61:18, :64:18, :88:14, :95:12, :152:31, :171:14, :176:33, :177:14, :185:31, :205:14, :210:32, :211:14, :218:12, src/main/scala/pipeline/exe/ExeUtils.scala:15:17
+      stat <= _GEN_16[stat];	// src/main/scala/pipeline/exe/ExeStage.scala:14:16, :49:21, :50:16, :52:31, :88:14, :95:12, :152:31, :176:33, :185:31, :210:32, :218:12
     end
   end // always @(posedge)
   `ifdef ENABLE_INITIAL_REG_	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
@@ -1356,10 +1396,11 @@ module ExeStage(	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
         srcInfo_operands_regData_1 = {_RANDOM[4'h4][31:21], _RANDOM[4'h5][20:0]};	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :22:24
         srcInfo_operands_regData_2 = {_RANDOM[4'h5][31:21], _RANDOM[4'h6][20:0]};	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :22:24
         fetchInfo_pc = {_RANDOM[4'h6][31:21], _RANDOM[4'h7][20:0]};	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :22:24, :23:26
-        preLoad = _RANDOM[4'h8][21];	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :25:24
-        preLoadAddr = _RANDOM[4'h8][26:22];	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :25:24, :26:28
-        preLoadData = {_RANDOM[4'h8][31:27], _RANDOM[4'h9][26:0]};	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :25:24, :27:28
-        stat = _RANDOM[4'h9][29:27];	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :27:28, :49:21
+        fetchInfo_predictTaken = _RANDOM[4'h8][21];	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :23:26
+        preLoad = _RANDOM[4'h8][22];	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :23:26, :25:24
+        preLoadAddr = _RANDOM[4'h8][27:23];	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :23:26, :26:28
+        preLoadData = {_RANDOM[4'h8][31:28], _RANDOM[4'h9][27:0]};	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :23:26, :27:28
+        stat = _RANDOM[4'h9][30:28];	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :27:28, :49:21
       `endif // RANDOMIZE_REG_INIT
     end // initial
     `ifdef FIRRTL_AFTER_INITIAL	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
@@ -1385,14 +1426,14 @@ module ExeStage(	// src/main/scala/pipeline/exe/ExeStage.scala:10:7
       ? 4'h0
       : _GEN_4
           ? (io_aside_in_rrdy & _GEN_3 ? _GEN_5 : 4'h0)
-          : _GEN_6 | ~(_GEN_8 & io_aside_in_wrdy & _GEN_3) ? 4'h0 : _GEN_5;	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :14:16, :50:16, :100:40, :140:31, :141:51, :142:39, :144:37, :173:31, :174:52, :175:39
+          : _GEN_6 | ~(_GEN_8 & io_aside_in_wrdy & _GEN_3) ? 4'h0 : _GEN_5;	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :14:16, :50:16, :100:40, :152:31, :153:51, :154:39, :156:37, :185:31, :186:52, :187:39
   assign io_aside_out_addr =
     _GEN_7
       ? 32'h0
       : _GEN_4
           ? (io_aside_in_rrdy ? _alu_io_out_res : 32'h0)
-          : _GEN_6 | ~_GEN_9 ? 32'h0 : _alu_io_out_res;	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :14:16, :27:28, :29:19, :50:16, :140:31, :158:27, :173:31, :191:27
-  assign io_aside_out_wdata = _GEN_10 | ~_GEN_9 ? 32'h0 : srcInfo_operands_regData_2;	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :14:16, :22:24, :27:28, :50:16, :173:31, :191:27
+          : _GEN_6 | ~_GEN_9 ? 32'h0 : _alu_io_out_res;	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :14:16, :27:28, :29:19, :50:16, :152:31, :170:27, :185:31, :203:27
+  assign io_aside_out_wdata = _GEN_10 | ~_GEN_9 ? 32'h0 : srcInfo_operands_regData_2;	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :14:16, :22:24, :27:28, :50:16, :185:31, :203:27
   assign io_bCtrl_isMispredict = bCtrlOutReg_isMispredict;	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :19:43
   assign io_bCtrl_npc = bCtrlOutReg_npc;	// src/main/scala/pipeline/exe/ExeStage.scala:10:7, :19:43
 endmodule
@@ -2051,106 +2092,110 @@ module BetaBus(	// src/main/scala/bus/BetaBus.scala:17:7
   assign io_extRam_req_we = eoutReg_we;	// src/main/scala/bus/BetaBus.scala:17:7, :57:24
 endmodule
 
-module AlphaCpu(	// src/main/scala/elaborate/AlphaCpu.scala:12:7
-  input         clock,	// src/main/scala/elaborate/AlphaCpu.scala:12:7
-                reset,	// src/main/scala/elaborate/AlphaCpu.scala:12:7
-  output [31:0] io_baseSram_req_wData,	// src/main/scala/elaborate/AlphaCpu.scala:13:14
-  output [19:0] io_baseSram_req_addr,	// src/main/scala/elaborate/AlphaCpu.scala:13:14
-  output [3:0]  io_baseSram_req_byteSelN,	// src/main/scala/elaborate/AlphaCpu.scala:13:14
-  output        io_baseSram_req_ce,	// src/main/scala/elaborate/AlphaCpu.scala:13:14
-                io_baseSram_req_oe,	// src/main/scala/elaborate/AlphaCpu.scala:13:14
-                io_baseSram_req_we,	// src/main/scala/elaborate/AlphaCpu.scala:13:14
-  input  [31:0] io_baseSram_rspns_rData,	// src/main/scala/elaborate/AlphaCpu.scala:13:14
-  output [31:0] io_extSram_req_wData,	// src/main/scala/elaborate/AlphaCpu.scala:13:14
-  output [19:0] io_extSram_req_addr,	// src/main/scala/elaborate/AlphaCpu.scala:13:14
-  output [3:0]  io_extSram_req_byteSelN,	// src/main/scala/elaborate/AlphaCpu.scala:13:14
-  output        io_extSram_req_ce,	// src/main/scala/elaborate/AlphaCpu.scala:13:14
-                io_extSram_req_oe,	// src/main/scala/elaborate/AlphaCpu.scala:13:14
-                io_extSram_req_we,	// src/main/scala/elaborate/AlphaCpu.scala:13:14
-  input  [31:0] io_extSram_rspns_rData,	// src/main/scala/elaborate/AlphaCpu.scala:13:14
-  output        io_uart_txd,	// src/main/scala/elaborate/AlphaCpu.scala:13:14
-  input         io_uart_rxd	// src/main/scala/elaborate/AlphaCpu.scala:13:14
+module AlphaCpu(	// src/main/scala/elaborate/AlphaCpu.scala:13:7
+  input         clock,	// src/main/scala/elaborate/AlphaCpu.scala:13:7
+                reset,	// src/main/scala/elaborate/AlphaCpu.scala:13:7
+  output [31:0] io_baseSram_req_wData,	// src/main/scala/elaborate/AlphaCpu.scala:14:14
+  output [19:0] io_baseSram_req_addr,	// src/main/scala/elaborate/AlphaCpu.scala:14:14
+  output [3:0]  io_baseSram_req_byteSelN,	// src/main/scala/elaborate/AlphaCpu.scala:14:14
+  output        io_baseSram_req_ce,	// src/main/scala/elaborate/AlphaCpu.scala:14:14
+                io_baseSram_req_oe,	// src/main/scala/elaborate/AlphaCpu.scala:14:14
+                io_baseSram_req_we,	// src/main/scala/elaborate/AlphaCpu.scala:14:14
+  input  [31:0] io_baseSram_rspns_rData,	// src/main/scala/elaborate/AlphaCpu.scala:14:14
+  output [31:0] io_extSram_req_wData,	// src/main/scala/elaborate/AlphaCpu.scala:14:14
+  output [19:0] io_extSram_req_addr,	// src/main/scala/elaborate/AlphaCpu.scala:14:14
+  output [3:0]  io_extSram_req_byteSelN,	// src/main/scala/elaborate/AlphaCpu.scala:14:14
+  output        io_extSram_req_ce,	// src/main/scala/elaborate/AlphaCpu.scala:14:14
+                io_extSram_req_oe,	// src/main/scala/elaborate/AlphaCpu.scala:14:14
+                io_extSram_req_we,	// src/main/scala/elaborate/AlphaCpu.scala:14:14
+  input  [31:0] io_extSram_rspns_rData,	// src/main/scala/elaborate/AlphaCpu.scala:14:14
+  output        io_uart_txd,	// src/main/scala/elaborate/AlphaCpu.scala:14:14
+  input         io_uart_rxd	// src/main/scala/elaborate/AlphaCpu.scala:14:14
 );
 
-  wire [31:0] _bus_io_instChannel_rspns_inst;	// src/main/scala/elaborate/AlphaCpu.scala:31:19
-  wire        _bus_io_instChannel_rspns_rrdy;	// src/main/scala/elaborate/AlphaCpu.scala:31:19
-  wire        _bus_io_instChannel_rspns_rvalid;	// src/main/scala/elaborate/AlphaCpu.scala:31:19
-  wire [31:0] _bus_io_dataChannel_rspns_rdata;	// src/main/scala/elaborate/AlphaCpu.scala:31:19
-  wire        _bus_io_dataChannel_rspns_rrdy;	// src/main/scala/elaborate/AlphaCpu.scala:31:19
-  wire        _bus_io_dataChannel_rspns_rvalid;	// src/main/scala/elaborate/AlphaCpu.scala:31:19
-  wire        _bus_io_dataChannel_rspns_wrdy;	// src/main/scala/elaborate/AlphaCpu.scala:31:19
-  wire        _bus_io_dataChannel_rspns_wdone;	// src/main/scala/elaborate/AlphaCpu.scala:31:19
-  wire        _exe_io_out_ack;	// src/main/scala/elaborate/AlphaCpu.scala:30:19
-  wire        _exe_io_out_exe_bits_en;	// src/main/scala/elaborate/AlphaCpu.scala:30:19
-  wire [4:0]  _exe_io_out_exe_bits_addr;	// src/main/scala/elaborate/AlphaCpu.scala:30:19
-  wire [31:0] _exe_io_out_exe_bits_data;	// src/main/scala/elaborate/AlphaCpu.scala:30:19
-  wire        _exe_io_aside_out_rreq;	// src/main/scala/elaborate/AlphaCpu.scala:30:19
-  wire        _exe_io_aside_out_wreq;	// src/main/scala/elaborate/AlphaCpu.scala:30:19
-  wire [3:0]  _exe_io_aside_out_byteSelN;	// src/main/scala/elaborate/AlphaCpu.scala:30:19
-  wire [31:0] _exe_io_aside_out_addr;	// src/main/scala/elaborate/AlphaCpu.scala:30:19
-  wire [31:0] _exe_io_aside_out_wdata;	// src/main/scala/elaborate/AlphaCpu.scala:30:19
-  wire        _exe_io_bCtrl_isMispredict;	// src/main/scala/elaborate/AlphaCpu.scala:30:19
-  wire [31:0] _exe_io_bCtrl_npc;	// src/main/scala/elaborate/AlphaCpu.scala:30:19
-  wire [3:0]  _decode_io_out_decode_bits_exeOp_opType;	// src/main/scala/elaborate/AlphaCpu.scala:29:22
-  wire [2:0]  _decode_io_out_decode_bits_exeOp_opFunc;	// src/main/scala/elaborate/AlphaCpu.scala:29:22
-  wire        _decode_io_out_decode_bits_wCtrl_en;	// src/main/scala/elaborate/AlphaCpu.scala:29:22
-  wire [4:0]  _decode_io_out_decode_bits_wCtrl_addr;	// src/main/scala/elaborate/AlphaCpu.scala:29:22
-  wire [31:0] _decode_io_out_decode_bits_wCtrl_data;	// src/main/scala/elaborate/AlphaCpu.scala:29:22
-  wire        _decode_io_out_decode_bits_operands_hasImm;	// src/main/scala/elaborate/AlphaCpu.scala:29:22
-  wire [31:0] _decode_io_out_decode_bits_operands_imm;	// src/main/scala/elaborate/AlphaCpu.scala:29:22
-  wire [31:0] _decode_io_out_decode_bits_operands_regData_1;	// src/main/scala/elaborate/AlphaCpu.scala:29:22
-  wire [31:0] _decode_io_out_decode_bits_operands_regData_2;	// src/main/scala/elaborate/AlphaCpu.scala:29:22
-  wire [4:0]  _decode_io_out_decode_readInfo_reg_1_addr;	// src/main/scala/elaborate/AlphaCpu.scala:29:22
-  wire [4:0]  _decode_io_out_decode_readInfo_reg_2_addr;	// src/main/scala/elaborate/AlphaCpu.scala:29:22
-  wire [31:0] _decode_io_out_decode_fetchInfo_pc;	// src/main/scala/elaborate/AlphaCpu.scala:29:22
-  wire        _decode_io_out_decode_req;	// src/main/scala/elaborate/AlphaCpu.scala:29:22
-  wire        _decode_io_out_ack;	// src/main/scala/elaborate/AlphaCpu.scala:29:22
-  wire        _decode_io_aside_out_reg_1_en;	// src/main/scala/elaborate/AlphaCpu.scala:29:22
-  wire [4:0]  _decode_io_aside_out_reg_1_addr;	// src/main/scala/elaborate/AlphaCpu.scala:29:22
-  wire        _decode_io_aside_out_reg_2_en;	// src/main/scala/elaborate/AlphaCpu.scala:29:22
-  wire [4:0]  _decode_io_aside_out_reg_2_addr;	// src/main/scala/elaborate/AlphaCpu.scala:29:22
-  wire        _fetch_io_out_req;	// src/main/scala/elaborate/AlphaCpu.scala:28:21
-  wire [31:0] _fetch_io_out_bits_pc;	// src/main/scala/elaborate/AlphaCpu.scala:28:21
-  wire [31:0] _fetch_io_out_bits_inst;	// src/main/scala/elaborate/AlphaCpu.scala:28:21
-  wire        _fetch_io_aside_out_req;	// src/main/scala/elaborate/AlphaCpu.scala:28:21
-  wire [31:0] _fetch_io_aside_out_pc;	// src/main/scala/elaborate/AlphaCpu.scala:28:21
-  wire [31:0] _regfile_io_rChannel_1_out;	// src/main/scala/elaborate/AlphaCpu.scala:27:23
-  wire [31:0] _regfile_io_rChannel_2_out;	// src/main/scala/elaborate/AlphaCpu.scala:27:23
-  Regfile regfile (	// src/main/scala/elaborate/AlphaCpu.scala:27:23
+  wire [31:0] _bus_io_instChannel_rspns_inst;	// src/main/scala/elaborate/AlphaCpu.scala:32:19
+  wire        _bus_io_instChannel_rspns_rrdy;	// src/main/scala/elaborate/AlphaCpu.scala:32:19
+  wire        _bus_io_instChannel_rspns_rvalid;	// src/main/scala/elaborate/AlphaCpu.scala:32:19
+  wire [31:0] _bus_io_dataChannel_rspns_rdata;	// src/main/scala/elaborate/AlphaCpu.scala:32:19
+  wire        _bus_io_dataChannel_rspns_rrdy;	// src/main/scala/elaborate/AlphaCpu.scala:32:19
+  wire        _bus_io_dataChannel_rspns_rvalid;	// src/main/scala/elaborate/AlphaCpu.scala:32:19
+  wire        _bus_io_dataChannel_rspns_wrdy;	// src/main/scala/elaborate/AlphaCpu.scala:32:19
+  wire        _bus_io_dataChannel_rspns_wdone;	// src/main/scala/elaborate/AlphaCpu.scala:32:19
+  wire        _exe_io_out_ack;	// src/main/scala/elaborate/AlphaCpu.scala:31:19
+  wire        _exe_io_out_exe_bits_en;	// src/main/scala/elaborate/AlphaCpu.scala:31:19
+  wire [4:0]  _exe_io_out_exe_bits_addr;	// src/main/scala/elaborate/AlphaCpu.scala:31:19
+  wire [31:0] _exe_io_out_exe_bits_data;	// src/main/scala/elaborate/AlphaCpu.scala:31:19
+  wire        _exe_io_aside_out_rreq;	// src/main/scala/elaborate/AlphaCpu.scala:31:19
+  wire        _exe_io_aside_out_wreq;	// src/main/scala/elaborate/AlphaCpu.scala:31:19
+  wire [3:0]  _exe_io_aside_out_byteSelN;	// src/main/scala/elaborate/AlphaCpu.scala:31:19
+  wire [31:0] _exe_io_aside_out_addr;	// src/main/scala/elaborate/AlphaCpu.scala:31:19
+  wire [31:0] _exe_io_aside_out_wdata;	// src/main/scala/elaborate/AlphaCpu.scala:31:19
+  wire        _exe_io_bCtrl_isMispredict;	// src/main/scala/elaborate/AlphaCpu.scala:31:19
+  wire [31:0] _exe_io_bCtrl_npc;	// src/main/scala/elaborate/AlphaCpu.scala:31:19
+  wire [3:0]  _decode_io_out_decode_bits_exeOp_opType;	// src/main/scala/elaborate/AlphaCpu.scala:30:22
+  wire [2:0]  _decode_io_out_decode_bits_exeOp_opFunc;	// src/main/scala/elaborate/AlphaCpu.scala:30:22
+  wire        _decode_io_out_decode_bits_wCtrl_en;	// src/main/scala/elaborate/AlphaCpu.scala:30:22
+  wire [4:0]  _decode_io_out_decode_bits_wCtrl_addr;	// src/main/scala/elaborate/AlphaCpu.scala:30:22
+  wire [31:0] _decode_io_out_decode_bits_wCtrl_data;	// src/main/scala/elaborate/AlphaCpu.scala:30:22
+  wire        _decode_io_out_decode_bits_operands_hasImm;	// src/main/scala/elaborate/AlphaCpu.scala:30:22
+  wire [31:0] _decode_io_out_decode_bits_operands_imm;	// src/main/scala/elaborate/AlphaCpu.scala:30:22
+  wire [31:0] _decode_io_out_decode_bits_operands_regData_1;	// src/main/scala/elaborate/AlphaCpu.scala:30:22
+  wire [31:0] _decode_io_out_decode_bits_operands_regData_2;	// src/main/scala/elaborate/AlphaCpu.scala:30:22
+  wire [4:0]  _decode_io_out_decode_readInfo_reg_1_addr;	// src/main/scala/elaborate/AlphaCpu.scala:30:22
+  wire [4:0]  _decode_io_out_decode_readInfo_reg_2_addr;	// src/main/scala/elaborate/AlphaCpu.scala:30:22
+  wire [31:0] _decode_io_out_decode_fetchInfo_pc;	// src/main/scala/elaborate/AlphaCpu.scala:30:22
+  wire        _decode_io_out_decode_fetchInfo_predictTaken;	// src/main/scala/elaborate/AlphaCpu.scala:30:22
+  wire        _decode_io_out_decode_req;	// src/main/scala/elaborate/AlphaCpu.scala:30:22
+  wire        _decode_io_out_ack;	// src/main/scala/elaborate/AlphaCpu.scala:30:22
+  wire        _decode_io_aside_out_reg_1_en;	// src/main/scala/elaborate/AlphaCpu.scala:30:22
+  wire [4:0]  _decode_io_aside_out_reg_1_addr;	// src/main/scala/elaborate/AlphaCpu.scala:30:22
+  wire        _decode_io_aside_out_reg_2_en;	// src/main/scala/elaborate/AlphaCpu.scala:30:22
+  wire [4:0]  _decode_io_aside_out_reg_2_addr;	// src/main/scala/elaborate/AlphaCpu.scala:30:22
+  wire        _fetch_io_out_req;	// src/main/scala/elaborate/AlphaCpu.scala:29:21
+  wire [31:0] _fetch_io_out_bits_pc;	// src/main/scala/elaborate/AlphaCpu.scala:29:21
+  wire [31:0] _fetch_io_out_bits_inst;	// src/main/scala/elaborate/AlphaCpu.scala:29:21
+  wire        _fetch_io_out_bits_predictTaken;	// src/main/scala/elaborate/AlphaCpu.scala:29:21
+  wire        _fetch_io_aside_out_req;	// src/main/scala/elaborate/AlphaCpu.scala:29:21
+  wire [31:0] _fetch_io_aside_out_pc;	// src/main/scala/elaborate/AlphaCpu.scala:29:21
+  wire [31:0] _regfile_io_rChannel_1_out;	// src/main/scala/elaborate/AlphaCpu.scala:28:23
+  wire [31:0] _regfile_io_rChannel_2_out;	// src/main/scala/elaborate/AlphaCpu.scala:28:23
+  Regfile regfile (	// src/main/scala/elaborate/AlphaCpu.scala:28:23
     .clock                 (clock),
     .reset                 (reset),
-    .io_rChannel_1_in_en   (_decode_io_aside_out_reg_1_en),	// src/main/scala/elaborate/AlphaCpu.scala:29:22
-    .io_rChannel_1_in_addr (_decode_io_aside_out_reg_1_addr),	// src/main/scala/elaborate/AlphaCpu.scala:29:22
+    .io_rChannel_1_in_en   (_decode_io_aside_out_reg_1_en),	// src/main/scala/elaborate/AlphaCpu.scala:30:22
+    .io_rChannel_1_in_addr (_decode_io_aside_out_reg_1_addr),	// src/main/scala/elaborate/AlphaCpu.scala:30:22
     .io_rChannel_1_out     (_regfile_io_rChannel_1_out),
-    .io_rChannel_2_in_en   (_decode_io_aside_out_reg_2_en),	// src/main/scala/elaborate/AlphaCpu.scala:29:22
-    .io_rChannel_2_in_addr (_decode_io_aside_out_reg_2_addr),	// src/main/scala/elaborate/AlphaCpu.scala:29:22
+    .io_rChannel_2_in_en   (_decode_io_aside_out_reg_2_en),	// src/main/scala/elaborate/AlphaCpu.scala:30:22
+    .io_rChannel_2_in_addr (_decode_io_aside_out_reg_2_addr),	// src/main/scala/elaborate/AlphaCpu.scala:30:22
     .io_rChannel_2_out     (_regfile_io_rChannel_2_out),
-    .io_wChannel_en        (_exe_io_out_exe_bits_en),	// src/main/scala/elaborate/AlphaCpu.scala:30:19
-    .io_wChannel_addr      (_exe_io_out_exe_bits_addr),	// src/main/scala/elaborate/AlphaCpu.scala:30:19
-    .io_wChannel_data      (_exe_io_out_exe_bits_data)	// src/main/scala/elaborate/AlphaCpu.scala:30:19
+    .io_wChannel_en        (_exe_io_out_exe_bits_en),	// src/main/scala/elaborate/AlphaCpu.scala:31:19
+    .io_wChannel_addr      (_exe_io_out_exe_bits_addr),	// src/main/scala/elaborate/AlphaCpu.scala:31:19
+    .io_wChannel_data      (_exe_io_out_exe_bits_data)	// src/main/scala/elaborate/AlphaCpu.scala:31:19
   );
-  FetchStage fetch (	// src/main/scala/elaborate/AlphaCpu.scala:28:21
-    .clock                 (clock),
-    .reset                 (reset),
-    .io_in_ack             (_decode_io_out_ack),	// src/main/scala/elaborate/AlphaCpu.scala:29:22
-    .io_out_req            (_fetch_io_out_req),
-    .io_out_bits_pc        (_fetch_io_out_bits_pc),
-    .io_out_bits_inst      (_fetch_io_out_bits_inst),
-    .io_aside_in_inst      (_bus_io_instChannel_rspns_inst),	// src/main/scala/elaborate/AlphaCpu.scala:31:19
-    .io_aside_in_rrdy      (_bus_io_instChannel_rspns_rrdy),	// src/main/scala/elaborate/AlphaCpu.scala:31:19
-    .io_aside_in_rvalid    (_bus_io_instChannel_rspns_rvalid),	// src/main/scala/elaborate/AlphaCpu.scala:31:19
-    .io_aside_out_req      (_fetch_io_aside_out_req),
-    .io_aside_out_pc       (_fetch_io_aside_out_pc),
-    .io_bCtrl_isMispredict (_exe_io_bCtrl_isMispredict),	// src/main/scala/elaborate/AlphaCpu.scala:30:19
-    .io_bCtrl_npc          (_exe_io_bCtrl_npc)	// src/main/scala/elaborate/AlphaCpu.scala:30:19
+  FetchStageAlpha fetch (	// src/main/scala/elaborate/AlphaCpu.scala:29:21
+    .clock                    (clock),
+    .reset                    (reset),
+    .io_in_ack                (_decode_io_out_ack),	// src/main/scala/elaborate/AlphaCpu.scala:30:22
+    .io_out_req               (_fetch_io_out_req),
+    .io_out_bits_pc           (_fetch_io_out_bits_pc),
+    .io_out_bits_inst         (_fetch_io_out_bits_inst),
+    .io_out_bits_predictTaken (_fetch_io_out_bits_predictTaken),
+    .io_aside_in_inst         (_bus_io_instChannel_rspns_inst),	// src/main/scala/elaborate/AlphaCpu.scala:32:19
+    .io_aside_in_rrdy         (_bus_io_instChannel_rspns_rrdy),	// src/main/scala/elaborate/AlphaCpu.scala:32:19
+    .io_aside_in_rvalid       (_bus_io_instChannel_rspns_rvalid),	// src/main/scala/elaborate/AlphaCpu.scala:32:19
+    .io_aside_out_req         (_fetch_io_aside_out_req),
+    .io_aside_out_pc          (_fetch_io_aside_out_pc),
+    .io_bCtrl_isMispredict    (_exe_io_bCtrl_isMispredict),	// src/main/scala/elaborate/AlphaCpu.scala:31:19
+    .io_bCtrl_npc             (_exe_io_bCtrl_npc)	// src/main/scala/elaborate/AlphaCpu.scala:31:19
   );
-  DecodeStage decode (	// src/main/scala/elaborate/AlphaCpu.scala:29:22
+  DecodeStage decode (	// src/main/scala/elaborate/AlphaCpu.scala:30:22
     .clock                                 (clock),
     .reset                                 (reset),
-    .io_in_fetch_req                       (_fetch_io_out_req),	// src/main/scala/elaborate/AlphaCpu.scala:28:21
-    .io_in_fetch_bits_pc                   (_fetch_io_out_bits_pc),	// src/main/scala/elaborate/AlphaCpu.scala:28:21
-    .io_in_fetch_bits_inst                 (_fetch_io_out_bits_inst),	// src/main/scala/elaborate/AlphaCpu.scala:28:21
-    .io_in_ack                             (_exe_io_out_ack),	// src/main/scala/elaborate/AlphaCpu.scala:30:19
+    .io_in_fetch_req                       (_fetch_io_out_req),	// src/main/scala/elaborate/AlphaCpu.scala:29:21
+    .io_in_fetch_bits_pc                   (_fetch_io_out_bits_pc),	// src/main/scala/elaborate/AlphaCpu.scala:29:21
+    .io_in_fetch_bits_inst                 (_fetch_io_out_bits_inst),	// src/main/scala/elaborate/AlphaCpu.scala:29:21
+    .io_in_fetch_bits_predictTaken         (_fetch_io_out_bits_predictTaken),	// src/main/scala/elaborate/AlphaCpu.scala:29:21
+    .io_in_ack                             (_exe_io_out_ack),	// src/main/scala/elaborate/AlphaCpu.scala:31:19
     .io_out_decode_bits_exeOp_opType       (_decode_io_out_decode_bits_exeOp_opType),
     .io_out_decode_bits_exeOp_opFunc       (_decode_io_out_decode_bits_exeOp_opFunc),
     .io_out_decode_bits_wCtrl_en           (_decode_io_out_decode_bits_wCtrl_en),
@@ -2165,41 +2210,43 @@ module AlphaCpu(	// src/main/scala/elaborate/AlphaCpu.scala:12:7
     .io_out_decode_readInfo_reg_1_addr     (_decode_io_out_decode_readInfo_reg_1_addr),
     .io_out_decode_readInfo_reg_2_addr     (_decode_io_out_decode_readInfo_reg_2_addr),
     .io_out_decode_fetchInfo_pc            (_decode_io_out_decode_fetchInfo_pc),
+    .io_out_decode_fetchInfo_predictTaken  (_decode_io_out_decode_fetchInfo_predictTaken),
     .io_out_decode_req                     (_decode_io_out_decode_req),
     .io_out_ack                            (_decode_io_out_ack),
-    .io_aside_in_regLeft                   (_regfile_io_rChannel_1_out),	// src/main/scala/elaborate/AlphaCpu.scala:27:23
-    .io_aside_in_regRight                  (_regfile_io_rChannel_2_out),	// src/main/scala/elaborate/AlphaCpu.scala:27:23
+    .io_aside_in_regLeft                   (_regfile_io_rChannel_1_out),	// src/main/scala/elaborate/AlphaCpu.scala:28:23
+    .io_aside_in_regRight                  (_regfile_io_rChannel_2_out),	// src/main/scala/elaborate/AlphaCpu.scala:28:23
     .io_aside_out_reg_1_en                 (_decode_io_aside_out_reg_1_en),
     .io_aside_out_reg_1_addr               (_decode_io_aside_out_reg_1_addr),
     .io_aside_out_reg_2_en                 (_decode_io_aside_out_reg_2_en),
     .io_aside_out_reg_2_addr               (_decode_io_aside_out_reg_2_addr),
-    .io_bCtrl_isMispredict                 (_exe_io_bCtrl_isMispredict)	// src/main/scala/elaborate/AlphaCpu.scala:30:19
+    .io_bCtrl_isMispredict                 (_exe_io_bCtrl_isMispredict)	// src/main/scala/elaborate/AlphaCpu.scala:31:19
   );
-  ExeStage exe (	// src/main/scala/elaborate/AlphaCpu.scala:30:19
+  ExeStage exe (	// src/main/scala/elaborate/AlphaCpu.scala:31:19
     .clock                                (clock),
     .reset                                (reset),
-    .io_in_decode_bits_exeOp_opType       (_decode_io_out_decode_bits_exeOp_opType),	// src/main/scala/elaborate/AlphaCpu.scala:29:22
-    .io_in_decode_bits_exeOp_opFunc       (_decode_io_out_decode_bits_exeOp_opFunc),	// src/main/scala/elaborate/AlphaCpu.scala:29:22
-    .io_in_decode_bits_wCtrl_en           (_decode_io_out_decode_bits_wCtrl_en),	// src/main/scala/elaborate/AlphaCpu.scala:29:22
-    .io_in_decode_bits_wCtrl_addr         (_decode_io_out_decode_bits_wCtrl_addr),	// src/main/scala/elaborate/AlphaCpu.scala:29:22
-    .io_in_decode_bits_wCtrl_data         (_decode_io_out_decode_bits_wCtrl_data),	// src/main/scala/elaborate/AlphaCpu.scala:29:22
-    .io_in_decode_bits_operands_hasImm    (_decode_io_out_decode_bits_operands_hasImm),	// src/main/scala/elaborate/AlphaCpu.scala:29:22
-    .io_in_decode_bits_operands_imm       (_decode_io_out_decode_bits_operands_imm),	// src/main/scala/elaborate/AlphaCpu.scala:29:22
-    .io_in_decode_bits_operands_regData_1 (_decode_io_out_decode_bits_operands_regData_1),	// src/main/scala/elaborate/AlphaCpu.scala:29:22
-    .io_in_decode_bits_operands_regData_2 (_decode_io_out_decode_bits_operands_regData_2),	// src/main/scala/elaborate/AlphaCpu.scala:29:22
-    .io_in_decode_readInfo_reg_1_addr     (_decode_io_out_decode_readInfo_reg_1_addr),	// src/main/scala/elaborate/AlphaCpu.scala:29:22
-    .io_in_decode_readInfo_reg_2_addr     (_decode_io_out_decode_readInfo_reg_2_addr),	// src/main/scala/elaborate/AlphaCpu.scala:29:22
-    .io_in_decode_fetchInfo_pc            (_decode_io_out_decode_fetchInfo_pc),	// src/main/scala/elaborate/AlphaCpu.scala:29:22
-    .io_in_decode_req                     (_decode_io_out_decode_req),	// src/main/scala/elaborate/AlphaCpu.scala:29:22
+    .io_in_decode_bits_exeOp_opType       (_decode_io_out_decode_bits_exeOp_opType),	// src/main/scala/elaborate/AlphaCpu.scala:30:22
+    .io_in_decode_bits_exeOp_opFunc       (_decode_io_out_decode_bits_exeOp_opFunc),	// src/main/scala/elaborate/AlphaCpu.scala:30:22
+    .io_in_decode_bits_wCtrl_en           (_decode_io_out_decode_bits_wCtrl_en),	// src/main/scala/elaborate/AlphaCpu.scala:30:22
+    .io_in_decode_bits_wCtrl_addr         (_decode_io_out_decode_bits_wCtrl_addr),	// src/main/scala/elaborate/AlphaCpu.scala:30:22
+    .io_in_decode_bits_wCtrl_data         (_decode_io_out_decode_bits_wCtrl_data),	// src/main/scala/elaborate/AlphaCpu.scala:30:22
+    .io_in_decode_bits_operands_hasImm    (_decode_io_out_decode_bits_operands_hasImm),	// src/main/scala/elaborate/AlphaCpu.scala:30:22
+    .io_in_decode_bits_operands_imm       (_decode_io_out_decode_bits_operands_imm),	// src/main/scala/elaborate/AlphaCpu.scala:30:22
+    .io_in_decode_bits_operands_regData_1 (_decode_io_out_decode_bits_operands_regData_1),	// src/main/scala/elaborate/AlphaCpu.scala:30:22
+    .io_in_decode_bits_operands_regData_2 (_decode_io_out_decode_bits_operands_regData_2),	// src/main/scala/elaborate/AlphaCpu.scala:30:22
+    .io_in_decode_readInfo_reg_1_addr     (_decode_io_out_decode_readInfo_reg_1_addr),	// src/main/scala/elaborate/AlphaCpu.scala:30:22
+    .io_in_decode_readInfo_reg_2_addr     (_decode_io_out_decode_readInfo_reg_2_addr),	// src/main/scala/elaborate/AlphaCpu.scala:30:22
+    .io_in_decode_fetchInfo_pc            (_decode_io_out_decode_fetchInfo_pc),	// src/main/scala/elaborate/AlphaCpu.scala:30:22
+    .io_in_decode_fetchInfo_predictTaken  (_decode_io_out_decode_fetchInfo_predictTaken),	// src/main/scala/elaborate/AlphaCpu.scala:30:22
+    .io_in_decode_req                     (_decode_io_out_decode_req),	// src/main/scala/elaborate/AlphaCpu.scala:30:22
     .io_out_ack                           (_exe_io_out_ack),
     .io_out_exe_bits_en                   (_exe_io_out_exe_bits_en),
     .io_out_exe_bits_addr                 (_exe_io_out_exe_bits_addr),
     .io_out_exe_bits_data                 (_exe_io_out_exe_bits_data),
-    .io_aside_in_rdata                    (_bus_io_dataChannel_rspns_rdata),	// src/main/scala/elaborate/AlphaCpu.scala:31:19
-    .io_aside_in_rrdy                     (_bus_io_dataChannel_rspns_rrdy),	// src/main/scala/elaborate/AlphaCpu.scala:31:19
-    .io_aside_in_rvalid                   (_bus_io_dataChannel_rspns_rvalid),	// src/main/scala/elaborate/AlphaCpu.scala:31:19
-    .io_aside_in_wrdy                     (_bus_io_dataChannel_rspns_wrdy),	// src/main/scala/elaborate/AlphaCpu.scala:31:19
-    .io_aside_in_wdone                    (_bus_io_dataChannel_rspns_wdone),	// src/main/scala/elaborate/AlphaCpu.scala:31:19
+    .io_aside_in_rdata                    (_bus_io_dataChannel_rspns_rdata),	// src/main/scala/elaborate/AlphaCpu.scala:32:19
+    .io_aside_in_rrdy                     (_bus_io_dataChannel_rspns_rrdy),	// src/main/scala/elaborate/AlphaCpu.scala:32:19
+    .io_aside_in_rvalid                   (_bus_io_dataChannel_rspns_rvalid),	// src/main/scala/elaborate/AlphaCpu.scala:32:19
+    .io_aside_in_wrdy                     (_bus_io_dataChannel_rspns_wrdy),	// src/main/scala/elaborate/AlphaCpu.scala:32:19
+    .io_aside_in_wdone                    (_bus_io_dataChannel_rspns_wdone),	// src/main/scala/elaborate/AlphaCpu.scala:32:19
     .io_aside_out_rreq                    (_exe_io_aside_out_rreq),
     .io_aside_out_wreq                    (_exe_io_aside_out_wreq),
     .io_aside_out_byteSelN                (_exe_io_aside_out_byteSelN),
@@ -2208,19 +2255,19 @@ module AlphaCpu(	// src/main/scala/elaborate/AlphaCpu.scala:12:7
     .io_bCtrl_isMispredict                (_exe_io_bCtrl_isMispredict),
     .io_bCtrl_npc                         (_exe_io_bCtrl_npc)
   );
-  BetaBus bus (	// src/main/scala/elaborate/AlphaCpu.scala:31:19
+  BetaBus bus (	// src/main/scala/elaborate/AlphaCpu.scala:32:19
     .clock                       (clock),
     .reset                       (reset),
-    .io_instChannel_req_req      (_fetch_io_aside_out_req),	// src/main/scala/elaborate/AlphaCpu.scala:28:21
-    .io_instChannel_req_pc       (_fetch_io_aside_out_pc),	// src/main/scala/elaborate/AlphaCpu.scala:28:21
+    .io_instChannel_req_req      (_fetch_io_aside_out_req),	// src/main/scala/elaborate/AlphaCpu.scala:29:21
+    .io_instChannel_req_pc       (_fetch_io_aside_out_pc),	// src/main/scala/elaborate/AlphaCpu.scala:29:21
     .io_instChannel_rspns_inst   (_bus_io_instChannel_rspns_inst),
     .io_instChannel_rspns_rrdy   (_bus_io_instChannel_rspns_rrdy),
     .io_instChannel_rspns_rvalid (_bus_io_instChannel_rspns_rvalid),
-    .io_dataChannel_req_rreq     (_exe_io_aside_out_rreq),	// src/main/scala/elaborate/AlphaCpu.scala:30:19
-    .io_dataChannel_req_wreq     (_exe_io_aside_out_wreq),	// src/main/scala/elaborate/AlphaCpu.scala:30:19
-    .io_dataChannel_req_byteSelN (_exe_io_aside_out_byteSelN),	// src/main/scala/elaborate/AlphaCpu.scala:30:19
-    .io_dataChannel_req_addr     (_exe_io_aside_out_addr),	// src/main/scala/elaborate/AlphaCpu.scala:30:19
-    .io_dataChannel_req_wdata    (_exe_io_aside_out_wdata),	// src/main/scala/elaborate/AlphaCpu.scala:30:19
+    .io_dataChannel_req_rreq     (_exe_io_aside_out_rreq),	// src/main/scala/elaborate/AlphaCpu.scala:31:19
+    .io_dataChannel_req_wreq     (_exe_io_aside_out_wreq),	// src/main/scala/elaborate/AlphaCpu.scala:31:19
+    .io_dataChannel_req_byteSelN (_exe_io_aside_out_byteSelN),	// src/main/scala/elaborate/AlphaCpu.scala:31:19
+    .io_dataChannel_req_addr     (_exe_io_aside_out_addr),	// src/main/scala/elaborate/AlphaCpu.scala:31:19
+    .io_dataChannel_req_wdata    (_exe_io_aside_out_wdata),	// src/main/scala/elaborate/AlphaCpu.scala:31:19
     .io_dataChannel_rspns_rdata  (_bus_io_dataChannel_rspns_rdata),
     .io_dataChannel_rspns_rrdy   (_bus_io_dataChannel_rspns_rrdy),
     .io_dataChannel_rspns_rvalid (_bus_io_dataChannel_rspns_rvalid),

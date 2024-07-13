@@ -41,6 +41,8 @@ object DecodePorts {
   class DecodeSrcInfo extends Bundle {
     val pc = UInt(pcWidth)
     val inst = UInt(instWidth)
+    // For Branch Prediction
+    val predictTaken = Bool()
   }
   class DecodeOut extends Bundle {
     val bits = new ExeSrcInfo

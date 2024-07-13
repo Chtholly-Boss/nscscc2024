@@ -4,6 +4,7 @@ import chisel3.util._
 import FetchPorts._
 import FetchUtils._
 import FetchParams._
+import pipeline.decode.DecodeParam.{_2RI16 => Inst}
 class FetchStageAlpha extends Module {
   val io = IO(new FetchIo)
   io.aside.out := initFetchAsideOut
@@ -11,6 +12,7 @@ class FetchStageAlpha extends Module {
 
   val outReg = RegInit(initFetchOut)
   io.out := outReg
+  val npc = RegInit(0.U(32.W))
 
   object State extends ChiselEnum {
     val
@@ -45,6 +47,26 @@ class FetchStageAlpha extends Module {
           stat := PCGEN
           outReg.bits.inst := io.aside.in.inst
           outReg.req := true.B
+          // BTFNT Branch Prediction
+          outReg.bits.predictTaken := false.B
+          npc := outReg.bits.pc + 4.U
+          switch (io.aside.in.inst(31,26)) {
+            is (Inst.beq,Inst.bge,Inst.bne) {
+              when (io.aside.in.inst(25) === 1.U) {
+                outReg.bits.predictTaken := true.B
+                npc := (outReg.bits.pc.asSInt +
+                  (io.aside.in.inst(25,10) ## 0.U(2.W)).asSInt
+                  ).asUInt
+              }
+            }
+            is (Inst.bl,Inst.b_) {
+              outReg.bits.predictTaken := true.B
+              npc := (outReg.bits.pc.asSInt +
+                (io.aside.in.inst(9,0) ## io.aside.in.inst(25,10) ## 0.U(2.W)).asSInt
+                ).asUInt
+            }
+          }
+
         }
       }
       is (PCGEN) {
@@ -52,7 +74,8 @@ class FetchStageAlpha extends Module {
           outReg.req := false.B
           stat := SEND
           // Generate new pc: May need a pcGen
-          outReg.bits.pc := outReg.bits.pc + 4.U
+          //outReg.bits.pc := outReg.bits.pc + 4.U
+          outReg.bits.pc := npc
         }
       }
     }

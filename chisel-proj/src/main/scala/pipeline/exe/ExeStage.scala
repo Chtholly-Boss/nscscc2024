@@ -57,10 +57,72 @@ class ExeStage extends Module {
             stat := BRANCH
           }
           is (tp.load) {
-            stat := RD
+            // Try Skipping one cycle
+            when (io.aside.in.rrdy) {
+              io.aside.out.rreq := true.B
+              when (preLoad && io.in.decode.readInfo.reg_1.addr === preLoadAddr) {
+                io.aside.out.addr := (preLoadData.asSInt
+                  + io.in.decode.bits.operands.imm.asSInt).asUInt
+              }.otherwise {
+                io.aside.out.addr := (
+                  io.in.decode.bits.operands.regData_1.asSInt +
+                    io.in.decode.bits.operands.imm.asSInt
+                ).asUInt
+              }
+              switch(io.aside.out.addr(1,0)) {
+                is ("b00".U) {
+                  io.aside.out.byteSelN := "b1110".U
+                }
+                is ("b01".U) {
+                  io.aside.out.byteSelN := "b1101".U
+                }
+                is ("b10".U) {
+                  io.aside.out.byteSelN := "b1011".U
+                }
+                is ("b11".U) {
+                  io.aside.out.byteSelN := "b0111".U
+                }
+              }
+              stat := RDWAIT
+            } .otherwise {
+              stat := RD
+            }
           }
           is (tp.store) {
-            stat := WR
+            when (io.aside.in.wrdy) {
+              switch(io.aside.out.addr(1,0)) {
+                is ("b00".U) {
+                  io.aside.out.byteSelN := "b1110".U
+                }
+                is ("b01".U) {
+                  io.aside.out.byteSelN := "b1101".U
+                }
+                is ("b10".U) {
+                  io.aside.out.byteSelN := "b1011".U
+                }
+                is ("b11".U) {
+                  io.aside.out.byteSelN := "b0111".U
+                }
+              }
+              stat := WRWAIT
+              io.aside.out.wreq := true.B
+              when (preLoad && io.in.decode.readInfo.reg_2.addr === preLoadAddr) {
+                io.aside.out.wdata := preLoadData
+              }.otherwise {
+                io.aside.out.wdata := io.in.decode.bits.operands.regData_2
+              }
+              when (preLoad && io.in.decode.readInfo.reg_1.addr === preLoadAddr) {
+                io.aside.out.addr := (preLoadData.asSInt
+                  + io.in.decode.bits.operands.imm.asSInt).asUInt
+              }.otherwise {
+                io.aside.out.addr := (
+                  io.in.decode.bits.operands.regData_1.asSInt +
+                    io.in.decode.bits.operands.imm.asSInt
+                  ).asUInt
+              }
+            }.otherwise {
+              stat := WR
+            }
           }
           is (tp.logic,tp.arith,tp.shift) {
             stat := ALUEXE

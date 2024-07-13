@@ -17,9 +17,9 @@ class AlphaBus extends Module {
     val baseRam = new SramChannel
     val extRam = new SramChannel
   })
-  io.instChannel.rspns := initFetchAsideIn
+  io.instChannel.rspns := initFetchAsideIn()
   io.dataChannel.rspns := initExeAsideIn
-  val instReg = RegInit(initFetchAsideIn)
+  val instReg = RegInit(initFetchAsideIn())
   val dataReg = RegInit(initExeAsideIn)
   io.instChannel.rspns := instReg
   io.dataChannel.rspns := dataReg

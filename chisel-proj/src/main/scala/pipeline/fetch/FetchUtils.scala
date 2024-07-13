@@ -9,8 +9,8 @@ object FetchUtils {
     init.bits := initDecodeSrcInfo
     init
   }
-  def initFetchAsideIn:FetchAsideIn = {
-    val init = Wire(new FetchAsideIn)
+  def initFetchAsideIn(dataWidth:Int = 32):FetchAsideIn = {
+    val init = Wire(new FetchAsideIn(dataWidth))
     init.inst := 0.U
     init.rrdy := false.B
     init.rvalid := false.B

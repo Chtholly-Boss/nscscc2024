@@ -11,7 +11,7 @@ class Icache(params: ParamsBundle) extends Module{
     val core = new MasterSide
     val bus = new SlaveSide
   })
-  io.core.rspns := initFetchAsideIn
+  io.core.rspns := initFetchAsideIn()
   io.bus.req := initFetchAsideOut
   // Block Memory Ports: Should be replaced by ip core
   val mem = Module(new BlockMem(params.depth,params.dataWidth))

@@ -1,8 +1,8 @@
 package elaborate
 import chisel3._
-import pipeline.fetch.FetchStage
-import pipeline.fetch.FetchStageAlpha
+import pipeline.fetch._
 import pipeline.decode.DecodeStage
+import pipeline.decode.DecodeStageAlpha
 import pipeline.exe.ExeStage
 import pipeline.regfile.Regfile
 import bus.sram._
@@ -26,10 +26,10 @@ class AlphaCpu extends Module {
     }
   })
   val regfile = Module(new Regfile)
-  val fetch = Module(new FetchStageAlpha)
-  val decode = Module(new DecodeStage)
+  val fetch = Module(new FetchStageBeta)
+  val decode = Module(new DecodeStageAlpha)
   val exe = Module(new ExeStage)
-  val bus = Module(new BetaBus)
+  val bus = Module(new NewBetaBus)
   // Peripheral Ports
   bus.io.baseRam.rspns := io.baseSram.rspns
   bus.io.extRam.rspns := io.extSram.rspns

@@ -10,9 +10,9 @@ object BusPorts {
     val req = Output(new SramRequest)
   }
 
-  class InstChannel extends Bundle {
+  class InstChannel(dataWidth:Int = 32) extends Bundle {
     val req = Input(new FetchAsideOut)
-    val rspns = Output(new FetchAsideIn)
+    val rspns = Output(new FetchAsideIn(dataWidth))
   }
 
   class DataChannel extends Bundle {

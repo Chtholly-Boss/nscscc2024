@@ -14,9 +14,9 @@ import bus.uart._
   1. InstReq only reads baseRam
   2. DataReq read/write baseRam/extRam/uart
  */
-class BetaBus extends Module {
+class NewBetaBus extends Module {
   val io = IO(new Bundle() {
-    val instChannel = new InstChannel
+    val instChannel = new InstChannel(4 * 32)
     val dataChannel = new DataChannel
     val baseRam = new SramChannel
     val extRam = new SramChannel
@@ -46,7 +46,7 @@ class BetaBus extends Module {
   // *********************************
   io.instChannel.rspns := initFetchAsideIn()
   io.dataChannel.rspns := initExeAsideIn
-  val instReg = RegInit(initFetchAsideIn())
+  val instReg = RegInit(initFetchAsideIn(4 * 32))
   val dataReg = RegInit(initExeAsideIn)
   io.instChannel.rspns := instReg
   io.dataChannel.rspns := dataReg
@@ -63,9 +63,9 @@ class BetaBus extends Module {
 
   object IS extends ChiselEnum {
     val
-      IDLE,
-      WAIT,
-      B_RD
+    IDLE,
+    WAIT,
+    B_RD
     = Value
   }
   val istat = RegInit(IS.IDLE)
@@ -74,16 +74,16 @@ class BetaBus extends Module {
 
   object DS extends ChiselEnum {
     val
-      IDLE,
-      B_WAIT,
-      E_WAIT,
-      B_RD,
-      B_WR,
-      E_RD,
-      E_WR,
-      U_CS, // Check Status
-      U_RD,
-      U_WR
+    IDLE,
+    B_WAIT,
+    E_WAIT,
+    B_RD,
+    B_WR,
+    E_RD,
+    E_WR,
+    U_CS, // Check Status
+    U_RD,
+    U_WR
     = Value
   }
   val dstat = RegInit(DS.IDLE)
@@ -96,6 +96,7 @@ class BetaBus extends Module {
   baseRamBusy := istat === IS.B_RD || dstat === DS.B_RD || dstat === DS.B_WR
   extRamBusy := dstat === DS.E_RD || dstat === DS.E_WR
 
+  val iWordCount = RegInit(0.U(4.W))
   // Inst req State Machine
   switch(istat) {
     is (IS.IDLE) {
@@ -108,7 +109,7 @@ class BetaBus extends Module {
           istat := IS.WAIT
         } .otherwise {
           istat := IS.B_RD
-          boutReg := sramReadWord(io.instChannel.req.pc(21,2))
+          iWordCount := 0.U
         }
       }
       instReg.rvalid := false.B
@@ -116,15 +117,29 @@ class BetaBus extends Module {
     is (IS.WAIT) {
       when(!baseRamBusy) {
         istat := IS.B_RD
+        // TODO : Revised to Read More than one word
         boutReg := sramReadWord(instReqBuf.pc(21,2))
       }
     }
     is (IS.B_RD) {
-      // Assume that read in 1 cycle
-      istat := IS.IDLE
-      instReg.rvalid := true.B
-      instReg.inst := io.baseRam.rspns.rData
-      boutReg := initSramReq
+      when (iWordCount === 4.U) {
+        istat := IS.IDLE
+        instReg.rvalid := true.B
+        instReg.inst := io.baseRam.rspns.rData ## instReg.inst(127,32)
+        boutReg := initSramReq
+      } .otherwise {
+        istat := IS.B_RD
+        boutReg := sramReadWord(instReqBuf.pc(21,4) ## 0.U(2.W) + iWordCount)
+        /*
+        when cnt == 0,no inst in
+        when cnt == 1,addr 0 inst in
+        when cnt == 4,addr 3 inst in
+         */
+        //instReg.inst := instReg.inst(95,0) ## io.baseRam.rspns.rData
+        instReg.inst := io.baseRam.rspns.rData ## instReg.inst(127,32)
+        iWordCount := iWordCount + 1.U
+      }
+
     }
   }
   // Data Req State Machine

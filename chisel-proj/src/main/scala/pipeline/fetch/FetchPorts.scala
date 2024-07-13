@@ -12,21 +12,21 @@ object FetchPorts {
     val pc = UInt(32.W)
   }
   // This may be replaced by Bus Bundle
-  class FetchAsideIn extends Bundle {
-    val inst = UInt(32.W)
+  class FetchAsideIn(dataWidth:Int = 32) extends Bundle {
+    val inst = UInt(dataWidth.W)
     val rrdy = Bool()
     val rvalid = Bool()
   }
-  class FetchAsideIo extends Bundle {
-    val in = Input(new FetchAsideIn)
+  class FetchAsideIo(dataWidth:Int = 32) extends Bundle {
+    val in = Input(new FetchAsideIn(dataWidth))
     val out = Output(new FetchAsideOut)
   }
-  class FetchIo extends Bundle {
+  class FetchIo(dataWidth:Int = 32) extends Bundle {
     val in = Input(new Bundle() {
       val ack = Bool()
     })
     val out = Output(new FetchOut)
-    val aside = new FetchAsideIo
+    val aside = new FetchAsideIo(dataWidth)
     val bCtrl = Input(new ExeBranchInfo)
   }
 }

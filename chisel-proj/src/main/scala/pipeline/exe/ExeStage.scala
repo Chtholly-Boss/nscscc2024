@@ -42,13 +42,15 @@ class ExeStage extends Module {
       RD,
       RDWAIT,
       WR,
-      WRWAIT,
-      DONE = Value
+      WRWAIT = Value
   }
   import State._
   val stat = RegInit(IDLE)
   switch(stat) {
     is (IDLE) {
+      outReg := initExeOut
+      bCtrlOutReg := initExeBranchInfo
+
       when (io.in.decode.req) {
         switch (io.in.decode.bits.exeOp.opType) {
           is (tp.branch,tp.jump) {
@@ -85,14 +87,14 @@ class ExeStage extends Module {
       }
     }
     is (ALUEXE) {
-        stat := DONE
+        stat := IDLE
         outReg.bits.en := srcInfo.wCtrl.en
         outReg.bits.addr := srcInfo.wCtrl.addr
         outReg.bits.data := alu.io.out.res
         preLoadData := alu.io.out.res
     }
     is (BRANCH) {
-      stat := DONE
+      stat := IDLE
       outReg.bits := srcInfo.wCtrl
       preLoadData := srcInfo.wCtrl.data
       switch (srcInfo.exeOp.opType) {
@@ -100,7 +102,6 @@ class ExeStage extends Module {
           switch(srcInfo.exeOp.opFunc) {
             is (Branch.bne) {
               when (srcInfo.operands.regData_1.asSInt =/= srcInfo.operands.regData_2.asSInt) {
-                //bCtrlOutReg.isMispredict := true.B
                 bCtrlOutReg.isMispredict := !fetchInfo.predictTaken
                 bCtrlOutReg.npc := (fetchInfo.pc.asSInt + srcInfo.operands.imm.asSInt).asUInt
               } .otherwise {
@@ -110,7 +111,6 @@ class ExeStage extends Module {
             }
             is (Branch.beq) {
               when (srcInfo.operands.regData_1.asSInt === srcInfo.operands.regData_2.asSInt) {
-                //bCtrlOutReg.isMispredict := true.B
                 bCtrlOutReg.isMispredict := !fetchInfo.predictTaken
                 bCtrlOutReg.npc := (fetchInfo.pc.asSInt + srcInfo.operands.imm.asSInt).asUInt
               }.otherwise {
@@ -120,7 +120,6 @@ class ExeStage extends Module {
             }
             is (Branch.bge) {
               when (srcInfo.operands.regData_1.asSInt >= srcInfo.operands.regData_2.asSInt) {
-                //bCtrlOutReg.isMispredict := true.B
                 bCtrlOutReg.isMispredict := !fetchInfo.predictTaken
                 bCtrlOutReg.npc := (fetchInfo.pc.asSInt + srcInfo.operands.imm.asSInt).asUInt
               }.otherwise {
@@ -128,14 +127,6 @@ class ExeStage extends Module {
                 bCtrlOutReg.npc := fetchInfo.pc + 4.U
               }
             }
-           // is (Branch.b_) {
-           //   bCtrlOutReg.isMispredict := true.B
-           //   bCtrlOutReg.npc := (fetchInfo.pc.asSInt + srcInfo.operands.imm.asSInt).asUInt
-           // }
-           // is (Branch.bl) {
-           //   bCtrlOutReg.isMispredict := true.B
-           //   bCtrlOutReg.npc := (fetchInfo.pc.asSInt + srcInfo.operands.imm.asSInt).asUInt
-           // }
           }
         }
         is (tp.jump) {
@@ -174,7 +165,7 @@ class ExeStage extends Module {
     is (RDWAIT) {
       io.aside.out.rreq := false.B
       when (io.aside.in.rvalid) {
-        stat := DONE
+        stat := IDLE
         outReg.bits.en := srcInfo.wCtrl.en
         outReg.bits.addr := srcInfo.wCtrl.addr
         outReg.bits.data := io.aside.in.rdata
@@ -208,16 +199,11 @@ class ExeStage extends Module {
     is (WRWAIT) {
       io.aside.out.wreq := false.B
       when (io.aside.in.wdone) {
-        stat := DONE
+        stat := IDLE
         outReg.bits.en := srcInfo.wCtrl.en
         outReg.bits.addr := srcInfo.wCtrl.addr
         outReg.bits.data := srcInfo.wCtrl.data
       }
-    }
-    is (DONE) {
-      stat := IDLE
-      outReg := initExeOut
-      bCtrlOutReg := initExeBranchInfo
     }
   }
 }

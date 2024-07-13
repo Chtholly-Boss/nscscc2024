@@ -58,19 +58,16 @@ class DecodeStage extends Module {
       }
       is (READ) {
         stat := DONE
-        // Send Decode Res
-        //when (du.io.out.isMatched) {
-          decodeOut.req := true.B
-          decodeOut.bits.exeOp := du.io.out.bits.exeOp
-          decodeOut.bits.wCtrl := du.io.out.bits.wCtrl
-          decodeOut.bits.operands.hasImm := du.io.out.bits.hasImm
-          decodeOut.bits.operands.imm := du.io.out.bits.imm
-          decodeOut.bits.operands.regData_1 := io.aside.in.regLeft
-          decodeOut.bits.operands.regData_2 := io.aside.in.regRight
-          decodeOut.fetchInfo := srcInfo
-          decodeOut.readInfo.reg_1 := du.io.out.bits.reg_1
-          decodeOut.readInfo.reg_2 := du.io.out.bits.reg_2
-        //}
+        decodeOut.req := true.B
+        decodeOut.bits.exeOp := du.io.out.bits.exeOp
+        decodeOut.bits.wCtrl := du.io.out.bits.wCtrl
+        decodeOut.bits.operands.hasImm := du.io.out.bits.hasImm
+        decodeOut.bits.operands.imm := du.io.out.bits.imm
+        decodeOut.bits.operands.regData_1 := io.aside.in.regLeft
+        decodeOut.bits.operands.regData_2 := io.aside.in.regRight
+        decodeOut.fetchInfo := srcInfo
+        decodeOut.readInfo.reg_1 := du.io.out.bits.reg_1
+        decodeOut.readInfo.reg_2 := du.io.out.bits.reg_2
       }
       is (DONE) {
         when (io.in.ack) {

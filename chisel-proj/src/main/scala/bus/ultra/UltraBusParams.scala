@@ -11,6 +11,7 @@ object UltraBusParams {
   val sramFrequency = 60 * _M
   val memCycles = math.ceil(cpuFrequency / sramFrequency)
 
+  val initPcAddr = "h8000_0000".U
   // Sram Virtual Addr(31,22)
   val baseSramAddr = "b1000_0000_00".U
   val extSramAddr = "b1000_0000_01".U

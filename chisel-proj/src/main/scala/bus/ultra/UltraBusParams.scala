@@ -10,7 +10,7 @@ object UltraBusParams {
   val iBandWidth = iWords * wordLength
   val dBandWidth = dWords * wordLength
   val _M = math.pow(10,6).toInt
-  val cpuFrequency = 80 * _M
+  val cpuFrequency = 100 * _M
   val sramFrequency = 60 * _M
   val memCycles = 2
 

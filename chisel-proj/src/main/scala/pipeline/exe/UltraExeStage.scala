@@ -204,6 +204,7 @@ class UltraExeStage extends Module {
         outReg.bits.en := srcInfo.wCtrl.en
         outReg.bits.addr := srcInfo.wCtrl.addr
         outReg.bits.data := io.aside.in.rdata
+        preLoadData := io.aside.in.rdata
         when(srcInfo.exeOp.opFunc === Load.ld_b){
           switch(alu.io.out.res(1,0)){
             is("b00".U){

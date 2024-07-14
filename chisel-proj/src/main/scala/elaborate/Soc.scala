@@ -1,6 +1,5 @@
 package elaborate
 import chisel3._
-import elaborate.AlphaCpu
 import bus.sram._
 import bus.sram.SramPorts._
 
@@ -15,7 +14,7 @@ class Soc extends Module {
       val rspns = new SramResponse
     })
   })
-  val cpu = Module(new AlphaCpu)
+  val cpu = Module(new UltraCpu)
   val baseRam = Module(new BaseSram)
   val extRam = Module(new SramSim)
 

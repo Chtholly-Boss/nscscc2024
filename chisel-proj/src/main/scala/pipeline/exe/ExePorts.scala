@@ -3,6 +3,7 @@ import chisel3._
 import ExeParams._
 import pipeline.regfile.RegfilePorts.WriteCtrl
 import pipeline.decode.DecodePorts.DecodeOut
+import bus.ultra.UltraBusPorts._
 
 object ExePorts {
   class Operands extends Bundle {
@@ -74,4 +75,15 @@ object ExePorts {
     val bCtrl = Output(new ExeBranchInfo)
   }
 
+  class UltraExeIo extends Bundle {
+    val in = Input(new Bundle() {
+      val decode = new DecodeOut
+    })
+    val out = Output(new Bundle {
+      val ack = Bool()
+      val exe = new ExeOut
+    })
+    val aside = new DataMasterIo
+    val bCtrl = Output(new ExeBranchInfo)
+  }
 }

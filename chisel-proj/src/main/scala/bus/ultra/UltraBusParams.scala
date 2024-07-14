@@ -3,16 +3,16 @@ import chisel3._
 import chisel3.util._
 object UltraBusParams {
   val wordLength = 32
-  val iWords = 2
+  val iWords = 4
   val iOffsetWidth = 2 + log2Ceil(iWords)
   val dWords = 4
   val dOffsetWidth = 2 + log2Ceil(dWords)
   val iBandWidth = iWords * wordLength
   val dBandWidth = dWords * wordLength
   val _M = math.pow(10,6).toInt
-  val cpuFrequency = 60 * _M
+  val cpuFrequency = 80 * _M
   val sramFrequency = 60 * _M
-  val memCycles = 3
+  val memCycles = 2
 
   val initPcAddr = "h8000_0000".U
   // Sram Virtual Addr(31,22)

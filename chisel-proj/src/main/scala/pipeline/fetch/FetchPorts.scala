@@ -2,6 +2,7 @@ package pipeline.fetch
 import chisel3._
 import pipeline.decode.DecodePorts.DecodeSrcInfo
 import pipeline.exe.ExePorts.ExeBranchInfo
+import bus.ultra.UltraBusPorts._
 object FetchPorts {
   class FetchOut extends Bundle {
     val req = Bool()
@@ -27,6 +28,14 @@ object FetchPorts {
     })
     val out = Output(new FetchOut)
     val aside = new FetchAsideIo(dataWidth)
+    val bCtrl = Input(new ExeBranchInfo)
+  }
+  class UltraFetchIo extends Bundle {
+    val in = Input(new Bundle() {
+      val ack = Bool()
+    })
+    val out = Output(new FetchOut)
+    val aside = new InstMasterIo
     val bCtrl = Input(new ExeBranchInfo)
   }
 }

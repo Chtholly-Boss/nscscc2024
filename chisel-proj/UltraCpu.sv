@@ -327,15 +327,14 @@ module UltraFetchStage(	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:9
   wire [127:0] _curInst_T_2 = io_aside_in_rdata >> {121'h0, outReg_bits_pc[3:0], 3'h0};	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:9:7, :14:23, :51:{40,58}
   wire         _GEN_3 = _GEN | _GEN_0;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:17:27, :37:19
   wire         _GEN_4 = io_bCtrl_isMispredict | _GEN_3;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:17:27, :32:31, :37:19
-  wire         _GEN_5 = npc[21:4] == outReg_bits_pc[21:4];	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:14:23, :16:20, :80:{20,27,45}
-  wire [127:0] _curInst_T_5 = instBuffer >> {121'h0, npc[3:2], 5'h0};	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:16:20, :17:27, :51:40, :81:{35,42,48}
-  wire         _GEN_6 = (&stat) & io_in_ack & _GEN_5;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:19:11, :30:21, :37:19, :79:26, :80:{27,53}, :81:21
-  wire [31:0]  curInst =
-    _GEN_4
-      ? 32'h0
-      : _GEN_2
-          ? (io_aside_in_rvalid ? _curInst_T_2[31:0] : 32'h0)
-          : _GEN_6 ? _curInst_T_5[31:0] : 32'h0;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:16:20, :17:27, :19:11, :32:31, :37:19, :50:35, :51:{19,40}, :79:26, :80:53, :81:{21,35}
+  wire         _GEN_5 = npc[21:4] == outReg_bits_pc[21:4];	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:14:23, :16:20, :81:{20,27,45}
+  wire [127:0] _curInst_T_5 = instBuffer >> {121'h0, npc[3:2], 5'h0};	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:16:20, :17:27, :51:40, :82:{35,42,48}
+  wire         _GEN_6 = (&stat) & io_in_ack & _GEN_5;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:19:11, :30:21, :37:19, :79:26, :81:{27,53}, :82:21
+  wire [31:0]  _GEN_7 =
+    _GEN_2
+      ? (io_aside_in_rvalid ? _curInst_T_2[31:0] : 32'h0)
+      : _GEN_6 ? _curInst_T_5[31:0] : 32'h0;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:16:20, :19:11, :37:19, :50:35, :51:{19,40}, :79:26, :81:53, :82:{21,35}
+  wire [31:0]  curInst = _GEN_4 ? 32'h0 : _GEN_7;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:16:20, :17:27, :19:11, :32:31, :37:19, :50:35
   always @(posedge clock) begin	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:9:7
     if (reset) begin	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:9:7
       outReg_req <= 1'h0;	// src/main/scala/bus/ultra/UltraBusUtils.scala:20:15, src/main/scala/pipeline/fetch/UltraFetchStage.scala:14:23
@@ -347,69 +346,73 @@ module UltraFetchStage(	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:9
       stat <= 2'h0;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:30:21, :64:35
     end
     else begin	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:9:7
-      automatic logic _GEN_7;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:59:35
-      automatic logic _GEN_8;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:59:35
-      automatic logic _GEN_9;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:14:23, :37:19, :79:26, :80:53
-      _GEN_7 =
-        curInst[31:26] == 6'h16 | curInst[31:26] == 6'h19 | curInst[31:26] == 6'h17;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:19:11, :32:31, :37:19, :59:{26,35}
-      _GEN_8 = curInst[31:26] == 6'h15 | curInst[31:26] == 6'h14;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:19:11, :32:31, :37:19, :59:{26,35}
-      _GEN_9 = (&stat) & io_in_ack;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:14:23, :30:21, :37:19, :79:26, :80:53
+      automatic logic _GEN_8;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:14:23, :37:19, :79:26, :81:53
+      _GEN_8 = (&stat) & io_in_ack;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:14:23, :30:21, :37:19, :79:26, :81:53
       outReg_req <=
         ~io_bCtrl_isMispredict
         & (_GEN_3
              ? outReg_req
-             : _GEN_2 ? io_aside_in_rvalid | outReg_req : _GEN_9 ? _GEN_5 : outReg_req);	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:14:23, :17:27, :32:31, :34:16, :37:19, :50:35, :55:22, :79:26, :80:{27,53}
+             : _GEN_2 ? io_aside_in_rvalid | outReg_req : _GEN_8 ? _GEN_5 : outReg_req);	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:14:23, :17:27, :32:31, :34:16, :37:19, :50:35, :55:22, :79:26, :81:{27,53}
       if (io_bCtrl_isMispredict)	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:10:14
         outReg_bits_pc <= io_bCtrl_npc;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:14:23
       else begin	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:10:14
-        automatic logic [3:0][31:0] _GEN_10;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:14:23, :37:19, :39:24
-        _GEN_10 =
-          {{_GEN_0 | _GEN_2 | ~_GEN_9 ? outReg_bits_pc : npc},
+        automatic logic [3:0][31:0] _GEN_9;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:14:23, :37:19, :39:24
+        _GEN_9 =
+          {{_GEN_0 | _GEN_2 | ~_GEN_8 ? outReg_bits_pc : npc},
            {outReg_bits_pc},
            {outReg_bits_pc},
-           {32'h80000000}};	// src/main/scala/bus/ultra/UltraBusUtils.scala:21:13, src/main/scala/pipeline/fetch/UltraFetchStage.scala:14:23, :16:20, :37:19, :39:24, :79:26, :80:53
-        outReg_bits_pc <= _GEN_10[stat];	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:14:23, :30:21, :37:19, :39:24
-      end
-      if (_GEN_4 | ~(_GEN_2 ? io_aside_in_rvalid : _GEN_6)) begin	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:14:23, :17:27, :19:11, :32:31, :37:19, :50:35, :54:28, :79:26, :80:53, :81:21, :84:30
-      end
-      else begin	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:14:23, :32:31, :37:19
-        outReg_bits_inst <= curInst;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:14:23, :19:11, :32:31, :37:19
-        outReg_bits_predictTaken <= _GEN_7 ? curInst[25] : _GEN_8;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:14:23, :19:11, :32:31, :37:19, :59:35, :61:{28,42}
+           {32'h80000000}};	// src/main/scala/bus/ultra/UltraBusUtils.scala:21:13, src/main/scala/pipeline/fetch/UltraFetchStage.scala:14:23, :16:20, :37:19, :39:24, :79:26, :81:53
+        outReg_bits_pc <= _GEN_9[stat];	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:14:23, :30:21, :37:19, :39:24
       end
       if (~_GEN_4) begin	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:17:27, :32:31, :37:19
+        automatic logic        _GEN_10;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:59:35
         automatic logic [13:0] _GEN_11;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:63:47
-        automatic logic [3:0]  _GEN_12;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:70:45
+        automatic logic        _GEN_12;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:59:35
+        automatic logic        _GEN_13;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:59:35, :61:42
+        automatic logic [3:0]  _GEN_14;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:70:45
+        _GEN_10 =
+          curInst[31:26] == 6'h16 | curInst[31:26] == 6'h19 | curInst[31:26] == 6'h17;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:19:11, :32:31, :37:19, :59:{26,35}
         _GEN_11 = {14{curInst[25]}};	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:19:11, :32:31, :37:19, :61:28, :63:47
-        _GEN_12 = {4{curInst[9]}};	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:19:11, :32:31, :37:19, :70:45
+        _GEN_12 = curInst[31:26] == 6'h15 | curInst[31:26] == 6'h14;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:19:11, :32:31, :37:19, :59:{26,35}
+        _GEN_13 = _GEN_10 ? curInst[25] : _GEN_12;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:19:11, :32:31, :37:19, :59:35, :61:{28,42}
+        _GEN_14 = {4{curInst[9]}};	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:19:11, :32:31, :37:19, :70:45
         if (_GEN_2) begin	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:37:19
           if (io_aside_in_rvalid) begin	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:10:14
             automatic logic [31:0] _npc_T;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:58:33
             _npc_T = outReg_bits_pc + 32'h4;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:14:23, :58:33
-            if (_GEN_7) begin	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:59:35
+            outReg_bits_inst <= curInst;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:14:23, :19:11, :32:31, :37:19
+            outReg_bits_predictTaken <= _GEN_13;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:14:23, :59:35, :61:42
+            if (_GEN_10) begin	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:59:35
               if (curInst[25])	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:19:11, :32:31, :37:19, :61:28
                 npc <= outReg_bits_pc + {_GEN_11, curInst[25:10], 2'h0};	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:14:23, :16:20, :19:11, :32:31, :37:19, :63:47, :64:{27,35}
               else	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:61:28
                 npc <= _npc_T;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:16:20, :58:33
             end
-            else if (_GEN_8)	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:59:35
-              npc <= outReg_bits_pc + {_GEN_12, curInst[9:0], curInst[25:10], 2'h0};	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:14:23, :16:20, :19:11, :32:31, :37:19, :64:35, :70:45, :71:{25,41}
+            else if (_GEN_12)	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:59:35
+              npc <= outReg_bits_pc + {_GEN_14, curInst[9:0], curInst[25:10], 2'h0};	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:14:23, :16:20, :19:11, :32:31, :37:19, :64:35, :70:45, :71:{25,41}
             else	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:59:35
               npc <= _npc_T;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:16:20, :58:33
           end
         end
-        else if (_GEN_6) begin	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:19:11, :37:19, :79:26, :80:53, :81:21
-          automatic logic [31:0] _npc_T_20;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:86:24
-          _npc_T_20 = npc + 32'h4;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:16:20, :58:33, :86:24
-          if (_GEN_7) begin	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:59:35
-            if (curInst[25])	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:19:11, :32:31, :37:19, :61:28
-              npc <= npc + {_GEN_11, curInst[25:10], 2'h0};	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:16:20, :19:11, :32:31, :37:19, :63:47, :64:35, :92:38, :93:29
-            else	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:61:28
-              npc <= _npc_T_20;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:16:20, :86:24
+        else begin	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:37:19
+          if (_GEN_8) begin	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:14:23, :37:19, :79:26, :81:53
+            outReg_bits_inst <= ~_GEN_5 | _GEN_4 ? 32'h0 : _GEN_7;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:14:23, :16:20, :17:27, :32:31, :37:19, :50:35, :80:18, :81:{27,53}, :85:30
+            outReg_bits_predictTaken <= _GEN_5 & _GEN_13;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:14:23, :59:35, :61:42, :80:18, :81:{27,53}, :88:37
           end
-          else if (_GEN_8)	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:59:35
-            npc <= npc + {_GEN_12, curInst[9:0], curInst[25:10], 2'h0};	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:16:20, :19:11, :32:31, :37:19, :64:35, :70:45, :99:36, :100:{27,43}
-          else	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:59:35
-            npc <= _npc_T_20;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:16:20, :86:24
+          if (_GEN_6) begin	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:19:11, :37:19, :79:26, :81:53, :82:21
+            automatic logic [31:0] _npc_T_20;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:87:24
+            _npc_T_20 = npc + 32'h4;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:16:20, :58:33, :87:24
+            if (_GEN_10) begin	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:59:35
+              if (curInst[25])	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:19:11, :32:31, :37:19, :61:28
+                npc <= npc + {_GEN_11, curInst[25:10], 2'h0};	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:16:20, :19:11, :32:31, :37:19, :63:47, :64:35, :92:38, :93:29
+              else	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:61:28
+                npc <= _npc_T_20;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:16:20, :87:24
+            end
+            else if (_GEN_12)	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:59:35
+              npc <= npc + {_GEN_14, curInst[9:0], curInst[25:10], 2'h0};	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:16:20, :19:11, :32:31, :37:19, :64:35, :70:45, :99:36, :100:{27,43}
+            else	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:59:35
+              npc <= _npc_T_20;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:16:20, :87:24
+          end
         end
       end
       if (_GEN_4 | ~(_GEN_2 & io_aside_in_rvalid)) begin	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:17:27, :32:31, :37:19, :50:35, :53:22
@@ -426,8 +429,8 @@ module UltraFetchStage(	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:9
         if (io_aside_in_rvalid)	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:10:14
           stat <= 2'h3;	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:30:21, :52:16
       end
-      else if (_GEN_9)	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:14:23, :37:19, :79:26, :80:53
-        stat <= {_GEN_5, 1'h1};	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:30:21, :33:10, :80:{27,53}, :82:18, :106:18
+      else if (_GEN_8)	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:14:23, :37:19, :79:26, :81:53
+        stat <= {_GEN_5, 1'h1};	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:30:21, :33:10, :81:{27,53}, :83:18, :106:18
     end
   end // always @(posedge)
   `ifdef ENABLE_INITIAL_REG_	// src/main/scala/pipeline/fetch/UltraFetchStage.scala:9:7

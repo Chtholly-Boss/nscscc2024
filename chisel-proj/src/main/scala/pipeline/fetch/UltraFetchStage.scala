@@ -77,6 +77,7 @@ class UltraFetchStage extends Module {
       }
       is (PCGEN) {
         when (io.in.ack) {
+          outReg := initFetchOut
           when (npc(21,4) === outReg.bits.pc(21,4)) {
             curInst := instBuffer >> (npc(3,2) << 5)
             stat := PCGEN
@@ -84,7 +85,6 @@ class UltraFetchStage extends Module {
             outReg.bits.inst := curInst(31,0)
             outReg.req := true.B
             npc := npc + 4.U
-            outReg.bits.predictTaken := false.B
             switch (curInst(31,26)) {
               is (Inst.beq,Inst.bge,Inst.bne) {
                 when (curInst(25) === 1.U) {

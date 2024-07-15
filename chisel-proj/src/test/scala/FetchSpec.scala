@@ -7,7 +7,7 @@ class FetchSpec extends AnyFlatSpec with ChiselScalatestTester {
     test (new FetchElaborate()) { core =>
       core.clock.setTimeout(0)
       core.io.in.ack.poke(true.B)
-      step(50)
+      step(1500)
     }
   }
 }

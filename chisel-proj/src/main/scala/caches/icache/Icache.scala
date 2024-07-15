@@ -75,6 +75,7 @@ class Icache extends Module {
       }
     }
     is(IS.WAIT){
+      req2busReg := initInstReq
       when(io.bus.in.rvalid){
         cacheWen := true.B
         tagRamWdata := 1.U(1.W) ## iReqBuf.pc(21,offsetWidth + indexWidth)

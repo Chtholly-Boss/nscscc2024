@@ -104,8 +104,6 @@ class UltraFetchStage extends Module {
           } .otherwise {
             outReg.req := false.B
             stat := SEND
-            // Generate new pc: May need a pcGen
-            //outReg.bits.pc := outReg.bits.pc + 4.U
             outReg.bits.pc := npc
           }
         }

@@ -211,6 +211,8 @@ class UltraBus extends Module{
   switch(dstat){
     is(D.IDLE){
       dRspnsReg := initDataRspns
+      UR_clear := false.B
+      UT_start := false.B
       when(isData2BaseRam){
         dIsProcessing()
         when(baseramBusy){
@@ -246,6 +248,7 @@ class UltraBus extends Module{
           }
           is(uartDataAddr){
             when(io.dChannel.in.rreq){
+              UR_clear := true.B
               dLoadDone(UartReceiver.io.RxD_data)
             }
             when(io.dChannel.in.wreq){

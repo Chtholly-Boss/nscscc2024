@@ -8,8 +8,10 @@ import bus.ultra.UltraBusUtils._
 import caches.blkmem.BlockMem
 class Icache extends Module {
   val io = IO(new IcacheIo)
-  io.bus.out := initInstReq
-  io.core.out := initInstRspns
+  val rspns2coreReg = RegInit(initDataRspns)
+  val req2busReg = RegInit(initInstReq)
+  io.core.out := rspns2coreReg
+  io.bus.out := req2busReg
 
   val cacheWen = WireDefault(false.B)
   // Tag Block Sram
@@ -29,20 +31,48 @@ class Icache extends Module {
   when(io.core.in.rreq){
     iReqBuf := io.core.in
   }
-  val tagBuf = RegInit(0.U(tagWidth.W))
-  val dataBuf = RegInit(0.U(bandwidth.W))
-
   val stat = RegInit(IS.IDLE)
+
+  def reqDone(data:Bits) = {
+    rspns2coreReg.rvalid := true.B
+    rspns2coreReg.rdata := data
+  }
   switch(stat){
     is(IS.IDLE){
-
+      rspns2coreReg.rvalid := false.B
+      when(io.core.in.rreq){
+        stat := IS.TAG_CHECK
+      }
     }
     is(IS.TAG_CHECK){
-
+      when(
+        tagRam.io.out.rdata(validBit) &&
+          tagRam.io.out.rdata === iReqBuf.pc(21,indexWidth + offsetWidth)
+      ) {
+        // Hit
+        stat := IS.IDLE
+        rspns2coreReg := dataRam.io.out.rdata
+      }.otherwise {
+        when(io.bus.in.rrdy){
+          stat := IS.WAIT
+          req2busReg := iReqBuf
+        }.otherwise{
+          stat := IS.SEND
+        }
+      }
+    }
+    is(IS.SEND){
+      when(io.bus.in.rrdy){
+        stat := IS.WAIT
+        req2busReg := iReqBuf
+      }
     }
     is(IS.WAIT){
       when(io.bus.in.rvalid){
-
+        cacheWen := true.B
+        tagRamWdata := 1.U(1.W) ## iReqBuf.pc(21,offsetWidth + indexWidth)
+        dataWdata := io.bus.in.rdata
+        reqDone(io.bus.in.rdata)
       }
     }
   }

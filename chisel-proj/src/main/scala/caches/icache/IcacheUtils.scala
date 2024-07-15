@@ -5,6 +5,7 @@ object IcacheUtils {
     val
       IDLE,
       TAG_CHECK,
+      SEND,
       WAIT
     = Value
   }

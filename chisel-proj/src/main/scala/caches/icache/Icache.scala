@@ -17,7 +17,7 @@ class Icache extends Module {
   // Tag Block Sram
   val tagRam = Module(new BlockMem(depth,1 + tagWidth))
   tagRam.io.in.addr := io.core.in.pc(indexWidth+offsetWidth-1,offsetWidth)
-  val tagRamWdata = WireDefault(0.U(tagWidth.W))
+  val tagRamWdata = WireDefault(0.U((tagWidth+1).W))
   tagRam.io.in.wen := cacheWen
   tagRam.io.in.wdata := tagRamWdata
   // Data Block Ram
@@ -47,11 +47,11 @@ class Icache extends Module {
     is(IS.TAG_CHECK){
       when(
         tagRam.io.out.rdata(validBit) &&
-          tagRam.io.out.rdata === iReqBuf.pc(21,indexWidth + offsetWidth)
+          tagRam.io.out.rdata(tagWidth-1,0) === iReqBuf.pc(21,indexWidth + offsetWidth)
       ) {
         // Hit
         stat := IS.IDLE
-        rspns2coreReg := dataRam.io.out.rdata
+        reqDone(dataRam.io.out.rdata)
       }.otherwise {
         when(io.bus.in.rrdy){
           stat := IS.WAIT
@@ -73,6 +73,7 @@ class Icache extends Module {
         tagRamWdata := 1.U(1.W) ## iReqBuf.pc(21,offsetWidth + indexWidth)
         dataWdata := io.bus.in.rdata
         reqDone(io.bus.in.rdata)
+        stat := IS.IDLE
       }
     }
   }

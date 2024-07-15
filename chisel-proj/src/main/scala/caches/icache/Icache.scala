@@ -13,7 +13,7 @@ class Icache extends Module {
   val pcOutReg = RegInit(0.U(32.W))
   io_pc := pcOutReg
 
-  val rspns2coreReg = RegInit(initDataRspns)
+  val rspns2coreReg = RegInit(initInstRspns)
   val req2busReg = RegInit(initInstReq)
   io.core.out := rspns2coreReg
   io.bus.out := req2busReg

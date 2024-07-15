@@ -8,6 +8,11 @@ import bus.ultra.UltraBusUtils._
 import caches.blkmem.BlockMem
 class Icache extends Module {
   val io = IO(new IcacheIo)
+  // supplement to ibuffer and bpunits
+  val io_pc = IO(Output(UInt(32.W)))
+  val pcOutReg = RegInit(0.U(32.W))
+  io_pc := pcOutReg
+
   val rspns2coreReg = RegInit(initDataRspns)
   val req2busReg = RegInit(initInstReq)
   io.core.out := rspns2coreReg
@@ -36,6 +41,8 @@ class Icache extends Module {
   def reqDone(data:Bits) = {
     rspns2coreReg.rvalid := true.B
     rspns2coreReg.rdata := data
+    // Send for record and predict
+    pcOutReg := iReqBuf.pc
   }
   switch(stat){
     is(IS.IDLE){

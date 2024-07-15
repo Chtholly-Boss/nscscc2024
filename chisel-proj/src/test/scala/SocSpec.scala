@@ -4,7 +4,7 @@ import org.scalatest.flatspec.AnyFlatSpec
 import elaborate.Soc
 
 class SocSpec extends AnyFlatSpec with ChiselScalatestTester {
-  "Fetch2Decode2Exe" should "Pass" in {
+  "Soc" should "Pass" in {
     test (new Soc()) { core =>
       core.clock.setTimeout(0)
       step(8000)

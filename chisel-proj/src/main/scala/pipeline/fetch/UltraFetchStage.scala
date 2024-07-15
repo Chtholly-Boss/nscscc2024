@@ -84,6 +84,7 @@ class UltraFetchStage extends Module {
             outReg.bits.inst := curInst(31,0)
             outReg.req := true.B
             npc := npc + 4.U
+            outReg.bits.predictTaken := false.B
             switch (curInst(31,26)) {
               is (Inst.beq,Inst.bge,Inst.bne) {
                 when (curInst(25) === 1.U) {

@@ -6,21 +6,11 @@ import BpBufferUtils._
 import helper.MultiMux1
 import bus.ultra.UltraBusPorts._
 class BpBuffer extends Module {
-  val io = IO(new Bundle() {
-    val icache = new Bundle {
-      val in = Input(new InstRspns)
-    }
-    val fetch = new Bundle {
-      val in = Input(new Bundle {
-        val pc = UInt(32.W)       // For Selecting the outputs
-      })
-      val out = Output(new BpOut)
-    }
-  })
-  io.fetch.out := initBpOut()
+  val io = IO(new BpBufferIo)
+  io.core.out := initBpOut()
   val bpers = Seq.fill(bandwidth/32)(Module(new BpUnit))
   bpers.foreach( bper => {
-    bper.io.in.pc := io.fetch.in.pc
+    bper.io.in.pc := io.core.in.pc
     bper.io.in.index := bpers.indexOf(bper).U
     bper.io.in.rvalid := io.icache.in.rvalid
     bper.io.in.inst := io.icache.in.rdata(
@@ -33,7 +23,7 @@ class BpBuffer extends Module {
       dst.valid := src.io.out.isMatched
       dst.bits := src.io.out.bits
   }
-  io.fetch.out := bpMux.io.output.bits
+  io.core.out := bpMux.io.output.bits
   bpMux.io.output.valid := DontCare
 
 }

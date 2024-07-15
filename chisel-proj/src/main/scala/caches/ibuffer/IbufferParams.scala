@@ -6,4 +6,6 @@ object IbufferParams {
   val offsetWidth = iOffsetWidth
   val tagWidth = 22 - offsetWidth
   val instWidth = 32
+  val validBit = tagWidth
+  val bandWidth = iBandWidth
 }

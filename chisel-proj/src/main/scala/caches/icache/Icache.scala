@@ -53,7 +53,7 @@ class Icache extends Module {
     }
     is(IS.TAG_CHECK){
       when(
-        tagRam.io.out.rdata(validBit) &&
+        tagRam.io.out.rdata(validBit) === 1.U &&
           tagRam.io.out.rdata(tagWidth-1,0) === iReqBuf.pc(21,indexWidth + offsetWidth)
       ) {
         // Hit

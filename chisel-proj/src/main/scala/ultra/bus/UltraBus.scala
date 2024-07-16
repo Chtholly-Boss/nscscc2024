@@ -142,6 +142,7 @@ class UltraBus extends Module{
 
 
   // Data Handy Functions
+  import DataLoadType._
   val dWordCnt = Counter(dWords+1)
   val dCycleCnt = Counter(memCycles)
   val dData = RegInit(0.U(dBandWidth.W))
@@ -169,13 +170,13 @@ class UltraBus extends Module{
   }
   def dstat2BaseLoad(src:DataReq) = {
     switch(src.rtype){
-      is(0.U) {
+      is(1.U) { // uncache
         dstat := D.B_LOAD_SINGLE
-        baseramReqReg := sramReadWord(src.addr(21,2))
+        baseramReqReg := sramRead(src.addr(21,2),src.byteSelN)
       }
-      is(1.U) {
+      is(0.U) { // cache
         dstat := D.B_LOAD_LINE
-        baseramReqReg := sramReadWord(src.addr(21,dOffsetWidth) ## 0.U((dOffsetWidth-2).W))
+        baseramReqReg := sramRead(src.addr(21,dOffsetWidth) ## 0.U((dOffsetWidth-2).W),src.byteSelN)
       }
     }
     dWordCnt.reset()
@@ -189,13 +190,13 @@ class UltraBus extends Module{
   }
   def dstat2ExtLoad(src:DataReq)= {
     switch(src.rtype) {
-      is(0.U){
+      is(1.U){
         dstat := D.E_LOAD_SINGLE
-        extramReqReg := sramReadWord(src.addr(21,2))
+        extramReqReg := sramRead(src.addr(21,2),src.byteSelN)
       }
-      is(1.U) {
+      is(0.U) {
         dstat := D.E_LOAD_LINE
-        extramReqReg := sramReadWord(src.addr(21,dOffsetWidth) ## 0.U((dOffsetWidth-2).W))
+        extramReqReg := sramRead(src.addr(21,dOffsetWidth) ## 0.U((dOffsetWidth-2).W),src.byteSelN)
       }
     }
     dWordCnt.reset()

@@ -31,8 +31,8 @@ object UltraBusUtils {
   // Data Channel Utils
   object DataLoadType extends ChiselEnum {
     val
-    SINGLE,
-    LINE
+      CACHE,
+      UNCACHE
     = Value
   }
   object DataState extends ChiselEnum {

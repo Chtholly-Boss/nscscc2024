@@ -1,7 +1,7 @@
 package ultra.pipeline.exe
 import chisel3._
 import chisel3.util._
-import UltraExePorts.AluIo
+import UltraExePorts.AluPorts.AluIo
 import UltraExeParams._
 import UltraExeParams.{ExeType => tp}
 import UltraExeParams.{Arithmetic => arith,Logic => lg,Shift => sht}

@@ -2,7 +2,7 @@ package ultra.caches.bpbuffer
 
 import chisel3._
 import chisel3.util._
-import pipeline.decode.DecodeParam.{_2RI16 => Inst}
+import ultra.pipeline.decode.UltraDecodeParams.{_2RI16 => Inst}
 import BpBufferPorts._
 import BpBufferUtils._
 import ultra.caches.icache.IcacheParams._

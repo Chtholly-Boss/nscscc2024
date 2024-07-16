@@ -2,8 +2,8 @@ package ultra.pipeline.decode.decoders
 
 import chisel3._
 import chisel3.util._
-import pipeline.decode.DecodeParam.{_2RI12 => Inst}
-import pipeline.exe.ExeParams._
+import ultra.pipeline.decode.UltraDecodeParams.{_2RI12 => Inst}
+import ultra.pipeline.exe.UltraExeParams._
 class Decoder_2RI12 extends BaseDecoder {
   val opcode = WireDefault(io.in.inst(31,22))
   val imm12 = WireDefault(io.in.inst(21,10))

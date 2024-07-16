@@ -1,8 +1,9 @@
 package ultra.pipeline.decode
 import chisel3._
 import ultra.pipeline.regfile.RegfilePorts._
-import ultra.pipeline.exe.UltraExePorts._
 import ultra.pipeline.fetch.UltraFetchPorts.FetchPipePorts._
+import ultra.pipeline.exe.UltraExePorts.ExePipePorts._
+import ultra.pipeline.exe.UltraExePorts.AluPorts._
 import UltraDecodeParams._
 object UltraDecodePorts {
   object DecoderPorts {

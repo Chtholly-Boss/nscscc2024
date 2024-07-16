@@ -3,10 +3,11 @@ import chisel3._
 import ultra.bus.UltraBus
 import ultra.bus.sram.SramPorts._
 import ultra.caches.FetchPlugin
+import ultra.caches.ExePlugin
 import ultra.pipeline.fetch.UltraFetchStage
 import ultra.pipeline.regfile.Regfile
 import ultra.pipeline.decode.UltraDecodeStage
-import ultra.pipeline.exe.ExeStage // TODO: replace it with UltraExeStage
+import ultra.pipeline.exe.UltraExeStage
 class UltraCpu extends Module {
   val io = IO(new Bundle() {
     val baseSram = new Bundle() {
@@ -48,16 +49,19 @@ class UltraCpu extends Module {
   decodeStage.io.pipe.fetch.in <> fetchStage.io.pipe.out
   decodeStage.io.pipe.fetch.out <> fetchStage.io.pipe.in
 
-  val exeStage = Module(new ExeStage)
-  exeStage.io.in.decode <> decodeStage.io.pipe.exe.out
-  exeStage.io.out.ack <> decodeStage.io.pipe.exe.in.ack
-  exeStage.io.out.exe.bits <> regfile.io.wChannel
+  val exeStage = Module(new UltraExeStage)
+  val exePlugin = Module(new ExePlugin)
+  exeStage.io.aside.in <> exePlugin.io.core.out
+  exeStage.io.aside.out <> exePlugin.io.core.in
+  exePlugin.io.bus.out <> bus.io.dChannel.in
+  exePlugin.io.bus.in <> bus.io.dChannel.out
 
-  exeStage.io.bCtrl <> fetchStage.io.pipe.br
-  exeStage.io.bCtrl <> decodeStage.io.pipe.br
+  exeStage.io.pipe.decode.in <> decodeStage.io.pipe.exe.out
+  exeStage.io.pipe.decode.out <> decodeStage.io.pipe.exe.in
+  exeStage.io.pipe.br <> decodeStage.io.pipe.br
+  exeStage.io.pipe.br <> fetchStage.io.pipe.br
 
-  exeStage.io.aside.out <> bus.io.dChannel.in
-  exeStage.io.aside.in <> bus.io.dChannel.out
+  exeStage.io.pipe.wback.out.bits <> regfile.io.wChannel
 }
 object UltraCpu extends App {
   emitVerilog(new UltraCpu)

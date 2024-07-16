@@ -1,8 +1,7 @@
 package ultra.pipeline.fetch
 import chisel3._
 import ultra.pipeline.decode.UltraDecodePorts.DecodePipePorts._
-import ultra.pipeline.exe.UltraExePorts._
-import ultra.bus.UltraBusPorts._
+import ultra.pipeline.exe.UltraExePorts.ExePipePorts._
 object UltraFetchPorts {
   object FetchAsidePorts {
     class FetchAsideIn extends Bundle {

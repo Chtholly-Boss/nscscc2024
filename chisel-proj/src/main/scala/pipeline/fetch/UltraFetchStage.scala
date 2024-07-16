@@ -5,7 +5,7 @@ import FetchPorts._
 import FetchUtils._
 import FetchParams._
 import pipeline.decode.DecodeParam.{_2RI16 => Inst}
-import bus.ultra.UltraBusUtils._
+import ultra.bus.UltraBusUtils._
 class UltraFetchStage extends Module {
   val io = IO(new UltraFetchIo)
   io.aside.out := initInstReq

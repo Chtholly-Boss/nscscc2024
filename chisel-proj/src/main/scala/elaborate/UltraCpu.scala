@@ -1,18 +1,11 @@
 package elaborate
 import chisel3._
-import pipeline.fetch._
-import pipeline.decode.DecodeStage
 import pipeline.decode.DecodeStageAlpha
-import pipeline.exe.ExeStage
-import pipeline.regfile.Regfile
-import bus.sram._
-import bus.sram.SramPorts._
-import bus._
-import pipeline.exe.ExePorts._
-import bus.ultra.UltraBus
+import ultra.bus.UltraBus
 import pipeline.fetch.UltraFetchStage
 import pipeline.exe.UltraExeStage
-
+import ultra.pipeline.regfile.Regfile
+import ultra.bus.sram.SramPorts._
 class UltraCpu extends Module {
   val io = IO(new Bundle() {
     val baseSram = new Bundle() {

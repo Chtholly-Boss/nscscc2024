@@ -2,7 +2,7 @@ package pipeline.fetch
 import chisel3._
 import pipeline.decode.DecodePorts.DecodeSrcInfo
 import pipeline.exe.ExePorts.ExeBranchInfo
-import bus.ultra.UltraBusPorts._
+import ultra.bus.UltraBusPorts._
 object FetchPorts {
   class FetchOut extends Bundle {
     val req = Bool()

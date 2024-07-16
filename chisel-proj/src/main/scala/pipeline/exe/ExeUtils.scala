@@ -2,7 +2,7 @@ package pipeline.exe
 import chisel3._
 import ExeParams._
 import ExePorts._
-import pipeline.regfile.RegfileUtils.{initRctrl, initWctrl}
+import ultra.pipeline.regfile.RegfileUtils.{initRctrl, initWctrl}
 object ExeUtils {
   def initOperands:Operands = {
     val init = Wire(new Operands)

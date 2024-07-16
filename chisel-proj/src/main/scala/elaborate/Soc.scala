@@ -1,8 +1,7 @@
 package elaborate
 import chisel3._
-import bus.sram._
-import bus.sram.SramPorts._
-
+import ultra.bus.sram.{BaseSram, SramSim}
+import ultra.bus.sram.SramPorts._
 class Soc extends Module {
   val io = IO(new Bundle() {
     val baseSram = Output(new Bundle() {

@@ -1,9 +1,8 @@
 package pipeline.decode
 import chisel3._
-import pipeline.regfile.RegfileUtils._
 import pipeline.exe.ExeUtils._
 import DecodePorts._
-
+import ultra.pipeline.regfile.RegfileUtils._
 
 object DecodeUtils {
   def initDecoderRes:DecoderRes = {

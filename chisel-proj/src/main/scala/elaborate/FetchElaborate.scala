@@ -1,12 +1,12 @@
 package elaborate
 import chisel3._
 import pipeline.fetch.FetchPorts.FetchOut
-import bus.sram._
-import bus.ultra.UltraBus
+import ultra.bus.UltraBus
 import pipeline.ultra.fetch.UltraFetchStage
-import caches.icache.Icache
-import caches.ibuffer.Ibuffer
-import caches.bpbuffer.BpBuffer
+import ultra.bus.sram.{BaseSram, ExtSram}
+import ultra.caches.bpbuffer.BpBuffer
+import ultra.caches.ibuffer.Ibuffer
+import ultra.caches.icache.Icache
 
 class FetchElaborate extends Module {
   val io = IO(new Bundle() {

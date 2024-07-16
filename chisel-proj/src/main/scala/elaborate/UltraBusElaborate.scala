@@ -1,8 +1,9 @@
 package elaborate
 import chisel3._
-import bus.ultra.UltraBusPorts._
-import bus.ultra.UltraBus
-import bus.sram._
+import ultra.bus.UltraBusPorts._
+import ultra.bus.UltraBus
+import ultra.bus.sram.BaseSram
+
 class UltraBusElaborate extends Module {
   val io = IO(new Bundle() {
     val inst = new InstSlaveIo

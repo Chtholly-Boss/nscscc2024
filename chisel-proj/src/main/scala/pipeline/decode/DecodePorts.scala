@@ -2,9 +2,9 @@ package pipeline.decode
 
 import chisel3._
 import DecodeParam._
-import pipeline.regfile.RegfilePorts._
 import pipeline.exe.ExePorts._
 import pipeline.fetch.FetchPorts._
+import ultra.pipeline.regfile.RegfilePorts._
 
 object DecodePorts {
   // Decoder IO

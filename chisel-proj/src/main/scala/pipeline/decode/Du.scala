@@ -2,7 +2,8 @@ package pipeline.decode
 import chisel3._
 import decoders._
 import DecodePorts._
-import helper.MultiMux1
+import ultra.helper.MultiMux1
+
 class Du extends BaseDecoder {
     val decoders =
       Seq(

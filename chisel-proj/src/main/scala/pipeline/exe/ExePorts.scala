@@ -1,9 +1,9 @@
 package pipeline.exe
 import chisel3._
 import ExeParams._
-import pipeline.regfile.RegfilePorts.WriteCtrl
+import ultra.pipeline.regfile.RegfilePorts.WriteCtrl
 import pipeline.decode.DecodePorts.DecodeOut
-import bus.ultra.UltraBusPorts._
+import ultra.bus.UltraBusPorts._
 
 object ExePorts {
   class Operands extends Bundle {

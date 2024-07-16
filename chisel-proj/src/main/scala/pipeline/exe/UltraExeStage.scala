@@ -6,7 +6,7 @@ import ExeUtils._
 import ExeParams._
 import ExeParams.{ExeType => tp}
 import pipeline.decode.DecodeUtils._
-import bus.ultra.UltraBusUtils._
+import ultra.bus.UltraBusUtils._
 
 class UltraExeStage extends Module {
   val io = IO(new UltraExeIo)

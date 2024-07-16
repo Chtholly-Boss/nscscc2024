@@ -66,9 +66,11 @@ object UltraDecodePorts {
         })
         val out = Output(new DecodePipeOut)
       }
-      val aside = new DecodeAsidePorts.DecodeAsideIo
       val br = Input(new ExeBranchInfo)
     }
   }
-
+  class DecodeIo extends Bundle{
+    val pipe = new DecodePipePorts.DecodePipeIo
+    val aside = new DecodeAsidePorts.DecodeAsideIo
+  }
 }

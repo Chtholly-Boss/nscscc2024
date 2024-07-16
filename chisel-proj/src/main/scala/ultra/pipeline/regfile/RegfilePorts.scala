@@ -5,7 +5,6 @@ import RegfileParam._
 
 object RegfilePorts {
   class ReadCtrl extends Bundle {
-    val en = Bool()
     val addr = UInt(addrWidth)
   }
   class WriteCtrl extends Bundle {

@@ -13,8 +13,6 @@ class Decoder_3R extends BaseDecoder {
 
   io.out.bits.wCtrl.en := true.B
   io.out.bits.wCtrl.addr := rd
-  io.out.bits.reg_1.en := true.B
-  io.out.bits.reg_2.en := true.B
   io.out.bits.reg_1.addr := rj
   io.out.bits.reg_2.addr := rk
 

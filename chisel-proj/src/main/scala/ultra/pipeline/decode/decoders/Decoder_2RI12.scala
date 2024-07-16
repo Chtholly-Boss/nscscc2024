@@ -18,7 +18,6 @@ class Decoder_2RI12 extends BaseDecoder {
   io.out.bits.hasImm := true.B
   io.out.bits.wCtrl.en := true.B
   io.out.bits.wCtrl.addr:= rd
-  io.out.bits.reg_1.en:= true.B
   io.out.bits.reg_1.addr := rj
   // - decode opcode
   switch(opcode) {
@@ -64,7 +63,6 @@ class Decoder_2RI12 extends BaseDecoder {
       io.out.bits.exeOp.opFunc := Store.st_b
       io.out.bits.imm := immSext.asUInt
       io.out.bits.wCtrl.en := false.B
-      io.out.bits.reg_2.en := true.B
       io.out.bits.reg_2.addr := rd
     }
     is (Inst.st_w) {
@@ -73,7 +71,6 @@ class Decoder_2RI12 extends BaseDecoder {
       io.out.bits.exeOp.opFunc := Store.st_w
       io.out.bits.imm := immSext.asUInt
       io.out.bits.wCtrl.en := false.B
-      io.out.bits.reg_2.en := true.B
       io.out.bits.reg_2.addr := rd
     }
   }

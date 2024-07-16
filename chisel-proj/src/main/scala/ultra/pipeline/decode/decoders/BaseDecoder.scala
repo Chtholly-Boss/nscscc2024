@@ -1,8 +1,8 @@
 package ultra.pipeline.decode.decoders
 
 import chisel3._
-import pipeline.decode.DecodePorts._
-import pipeline.decode.DecodeUtils._
+import ultra.pipeline.decode.UltraDecodePorts.DecoderPorts._
+import ultra.pipeline.decode.UltraDecodeUtils._
 class BaseDecoder extends Module {
   val io = IO(new DecoderIo)
   io.out.bits := initDecoderRes

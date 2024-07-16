@@ -20,8 +20,8 @@ class FetchElaborate extends Module {
   val ibuffer = Module(new Ibuffer)
   val bpBuffer = Module(new BpBuffer)
   val bus = Module(new UltraBus)
-  val baseRam = Module(new BaseSram)
-  val extRam = Module(new ExtSram)
+  val baseRam = Module(new BaseSram("./func/bintests/fib.txt"))
+  val extRam = Module(new ExtSram(""))
 
   fetchStage.io.aside.in.pcOffset := bpBuffer.io.core.out.offset
   fetchStage.io.aside.in.predictTaken := bpBuffer.io.core.out.predictTaken

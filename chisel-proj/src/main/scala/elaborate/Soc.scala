@@ -14,7 +14,7 @@ class Soc extends Module {
     })
   })
   val cpu = Module(new UltraCpu)
-  val baseRam = Module(new BaseSram)
+  val baseRam = Module(new BaseSram("./func/bintests/fib.txt"))
   val extRam = Module(new SramSim)
 
   cpu.io.baseSram.req <> baseRam.io.in

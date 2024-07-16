@@ -14,7 +14,6 @@ class Decoder_Special extends BaseDecoder {
   io.out.bits.wCtrl.addr := rd
   // Special Case of Add
   io.out.bits.hasImm := true.B
-  io.out.bits.reg_1.en := true.B
   io.out.bits.reg_1.addr := 0.U
   switch (opcode) {
     is (Inst.lu12i_w) {

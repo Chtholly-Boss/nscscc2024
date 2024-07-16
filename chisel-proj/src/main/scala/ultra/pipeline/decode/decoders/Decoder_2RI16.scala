@@ -14,9 +14,7 @@ class Decoder_2RI16 extends BaseDecoder {
 
   io.out.bits.hasImm := true.B
   io.out.bits.imm := immSext.asUInt
-  io.out.bits.reg_1.en := true.B
   io.out.bits.reg_1.addr := rj
-  io.out.bits.reg_2.en := true.B
   io.out.bits.reg_2.addr := rd
   switch (opcode) {
     is (Inst.jirl) {

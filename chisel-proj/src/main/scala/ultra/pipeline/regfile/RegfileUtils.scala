@@ -13,14 +13,12 @@ object RegfileUtils {
   }
   def initRctrl:ReadCtrl = {
     val init = Wire(new ReadCtrl)
-    init.en := false.B
     init.addr := 0.U
     init
   }
 
   def rDataFAddr(addr:UInt):ReadCtrl = {
     val rCtrl = Wire(new ReadCtrl)
-    rCtrl.en := true.B
     rCtrl.addr := addr
     rCtrl
   }

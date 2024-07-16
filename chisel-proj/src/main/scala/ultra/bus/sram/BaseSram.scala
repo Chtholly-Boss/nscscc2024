@@ -1,8 +1,7 @@
 package ultra.bus.sram
 
 import chisel3.util.experimental.loadMemoryFromFileInline
-class BaseSram extends SramSim {
-  val path = "./func/bintests/demo.txt"
+class BaseSram(path:String) extends SramSim {
   if (path.trim().nonEmpty) {
     loadMemoryFromFileInline(mem,path)
   }

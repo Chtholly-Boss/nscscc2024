@@ -44,7 +44,13 @@ class UltraFetchStage extends Module {
     fstat := WAIT
     io.aside.out.rreq := true.B
   }
-
+  def checkBuf():Unit = {
+    when(io.aside.in.isInBuf){
+      getInstInBuf()
+    }.otherwise{
+      refillInstInBuf()
+    }
+  }
   // Working Logic
   when(io.pipe.br.isMispredict){
     fstat := MISS
@@ -57,24 +63,16 @@ class UltraFetchStage extends Module {
       }
       is (WAIT) {
         when(io.aside.in.rvalid){
-          getInstInBuf()
+          checkBuf()
         }
       }
       is (READY) {
         when(io.pipe.in.ack){
-          when(io.aside.in.isInBuf){
-            getInstInBuf()
-          }.otherwise{
-            refillInstInBuf()
-          }
+          checkBuf()
         }
       }
       is (MISS){
-        when(io.aside.in.isInBuf){
-          getInstInBuf()
-        }.otherwise{
-          refillInstInBuf()
-        }
+        checkBuf()
       }
     }
   }

@@ -4175,7 +4175,7 @@ module ExeStage(	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7
 
   wire [31:0]      io_aside_out_addr_0;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:47:16, :52:31
   wire [31:0]      _alu_io_out_res;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:27:19
-  wire [3:0][3:0]  _GEN = '{4'h7, 4'hB, 4'hD, 4'hE};	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:14:16, :71:48, :73:43, :76:43, :79:43, :82:43
+  wire [3:0][3:0]  _GEN = '{4'h7, 4'hB, 4'hD, 4'hE};	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:14:16, :78:48, :80:43, :83:43, :86:43, :89:43
   reg              outReg_bits_en;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:17:31
   reg  [4:0]       outReg_bits_addr;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:17:31
   reg  [31:0]      outReg_bits_data;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:17:31
@@ -4199,46 +4199,45 @@ module ExeStage(	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7
     io_in_decode_bits_exeOp_opType == 4'h4 | io_in_decode_bits_exeOp_opType == 4'h5;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7, :53:49
   wire             _GEN_2 = io_in_decode_bits_exeOp_opType == 4'h6;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7, :53:49
   wire             _GEN_3 = preLoad & io_in_decode_readInfo_reg_1_addr == preLoadAddr;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:23:24, :24:28, :61:{29,65}
-  wire             _GEN_4 = io_in_decode_bits_exeOp_opFunc == 3'h2;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:55:18, :70:51
-  wire             _GEN_5 = io_in_decode_bits_exeOp_opType == 4'h7;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7, :53:49
-  wire             _GEN_6 = _GEN_1 | _GEN_2;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:14:16, :53:49
-  wire             _GEN_7 = _GEN_5 & io_aside_in_wrdy;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:14:16, :53:49, :92:37, :111:82
-  wire             _GEN_8 = stat == 3'h1;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:46:21, :47:16, :130:18
-  wire             _GEN_9 = stat == 3'h2;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:46:21, :47:16, :55:18
-  wire             _GEN_10 = srcInfo_exeOp_opType == 4'h4;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7, :20:24, :165:37
-  wire             _GEN_11 = srcInfo_exeOp_opFunc == 3'h1;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:20:24, :130:18, :167:40
-  wire             _GEN_12 = srcInfo_operands_regData_1 == srcInfo_operands_regData_2;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:20:24, :169:{55,94}, :170:39, :173:39
-  wire             _GEN_13 = srcInfo_exeOp_opFunc == 3'h2;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:20:24, :55:18, :167:40
-  wire             _GEN_14 = srcInfo_exeOp_opFunc == 3'h3;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:20:24, :88:20, :167:40
-  wire             _GEN_15 =
-    $signed(srcInfo_operands_regData_1) >= $signed(srcInfo_operands_regData_2);	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:20:24, :187:55
-  wire             _GEN_16 = srcInfo_exeOp_opType == 4'h5;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7, :20:24, :165:37
-  wire             _GEN_17 = _GEN_0 | _GEN_8;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:15:12, :47:16, :50:16
-  wire             _GEN_18 = stat == 3'h3;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:46:21, :47:16, :88:20
-  wire [3:0]       _GEN_19 = _GEN[_alu_io_out_res[1:0]];	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:14:16, :27:19, :71:48, :73:43, :76:43, :79:43, :82:43, :210:{32,39}, :212:37
-  wire             _GEN_20 = stat == 3'h4;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:46:21, :47:16, :53:49
-  wire             _GEN_21 = _GEN_8 | _GEN_9;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:14:16, :47:16
-  wire             _GEN_22 = stat == 3'h5;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:46:21, :47:16, :53:49
-  wire [3:0]       _GEN_23 =
-    _GEN_20 | ~(_GEN_22 & io_aside_in_wrdy & _GEN_13) ? 4'h0 : _GEN_19;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7, :14:16, :47:16, :167:40, :210:39, :212:37, :241:31, :242:52, :243:39
-  wire [7:0][3:0]  _GEN_24 =
-    {{_GEN_23},
-     {_GEN_23},
-     {_GEN_23},
-     {4'h0},
-     {io_aside_in_rrdy & _GEN_13 ? _GEN_19 : 4'h0},
+  wire             _GEN_4 = io_in_decode_bits_exeOp_opType == 4'h7;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7, :53:49
+  wire             _GEN_5 = _GEN_1 | _GEN_2;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:14:16, :53:49
+  wire             _GEN_6 = _GEN_4 & io_aside_in_wrdy;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:14:16, :53:49, :76:37, :95:82
+  wire             _GEN_7 = stat == 3'h1;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:46:21, :47:16, :114:18
+  wire             _GEN_8 = stat == 3'h2;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:46:21, :47:16, :55:18
+  wire             _GEN_9 = srcInfo_exeOp_opType == 4'h4;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7, :20:24, :148:37
+  wire             _GEN_10 = srcInfo_exeOp_opFunc == 3'h1;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:20:24, :114:18, :150:40
+  wire             _GEN_11 = srcInfo_operands_regData_1 == srcInfo_operands_regData_2;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:20:24, :152:{55,94}, :153:39, :156:39
+  wire             _GEN_12 = srcInfo_exeOp_opFunc == 3'h2;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:20:24, :55:18, :150:40
+  wire             _GEN_13 = srcInfo_exeOp_opFunc == 3'h3;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:20:24, :72:20, :150:40
+  wire             _GEN_14 =
+    $signed(srcInfo_operands_regData_1) >= $signed(srcInfo_operands_regData_2);	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:20:24, :170:55
+  wire             _GEN_15 = srcInfo_exeOp_opType == 4'h5;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7, :20:24, :148:37
+  wire             _GEN_16 = _GEN_0 | _GEN_7;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:15:12, :47:16, :50:16
+  wire             _GEN_17 = stat == 3'h3;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:46:21, :47:16, :72:20
+  wire             _GEN_18 = stat == 3'h4;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:46:21, :47:16, :53:49
+  wire             _GEN_19 = _GEN_7 | _GEN_8;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:14:16, :47:16
+  wire             _GEN_20 = stat == 3'h5;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:46:21, :47:16, :53:49
+  wire             _GEN_21 = _GEN_7 | _GEN_8 | _GEN_17 | _GEN_18;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:14:16, :47:16
+  wire [3:0]       _GEN_22 =
+    _GEN_21 | ~(_GEN_20 & io_aside_in_wrdy & _GEN_12) ? 4'h0 : _GEN[_alu_io_out_res[1:0]];	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7, :14:16, :27:19, :47:16, :78:48, :80:43, :83:43, :86:43, :89:43, :150:40, :206:32, :228:31, :229:52, :230:39, :232:37
+  wire [7:0][3:0]  _GEN_23 =
+    {{_GEN_22},
+     {_GEN_22},
+     {_GEN_22},
      {4'h0},
      {4'h0},
-     {~io_in_decode_req | _GEN_1
-      | ~(_GEN_2 ? io_aside_in_rrdy & _GEN_4 : _GEN_5 & io_aside_in_wrdy & _GEN_4)
+     {4'h0},
+     {4'h0},
+     {~io_in_decode_req | _GEN_5
+      | ~(_GEN_4 & io_aside_in_wrdy & io_in_decode_bits_exeOp_opFunc == 3'h2)
         ? 4'h0
-        : _GEN[io_aside_out_addr_0[1:0]]}};	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7, :14:16, :47:16, :52:31, :53:49, :59:37, :70:{51,65}, :71:{41,48}, :73:43, :76:43, :79:43, :82:43, :92:37, :93:66, :94:48, :167:40, :208:31, :209:51, :210:39, :212:37
-  wire             _GEN_25 = _GEN_22 & io_aside_in_wrdy;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:14:16, :47:16, :241:31, :259:27
-  wire [31:0]      _GEN_26 = _GEN_20 | ~_GEN_25 ? 32'h0 : _alu_io_out_res;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:14:16, :25:28, :27:19, :47:16, :241:31, :259:27
-  wire [7:0][31:0] _GEN_27 =
-    {{_GEN_26},
-     {_GEN_26},
-     {_GEN_26},
+        : _GEN[io_aside_out_addr_0[1:0]]}};	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7, :14:16, :47:16, :52:31, :53:49, :55:18, :76:37, :77:{51,66}, :78:{41,48}, :80:43, :83:43, :86:43, :89:43
+  wire             _GEN_24 = _GEN_20 & io_aside_in_wrdy;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:14:16, :47:16, :228:31, :246:27
+  wire [31:0]      _GEN_25 = _GEN_18 | ~_GEN_24 ? 32'h0 : _alu_io_out_res;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:14:16, :25:28, :27:19, :47:16, :228:31, :246:27
+  wire [7:0][31:0] _GEN_26 =
+    {{_GEN_25},
+     {_GEN_25},
+     {_GEN_25},
      {32'h0},
      {io_aside_in_rrdy ? _alu_io_out_res : 32'h0},
      {32'h0},
@@ -4252,28 +4251,27 @@ module ExeStage(	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7
                       : io_in_decode_bits_operands_regData_1
                         + io_in_decode_bits_operands_imm)
                  : 32'h0)
-            : _GEN_7
+            : _GEN_6
                 ? (_GEN_3
                      ? preLoadData + io_in_decode_bits_operands_imm
                      : io_in_decode_bits_operands_regData_1
                        + io_in_decode_bits_operands_imm)
-                : 32'h0}};	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:14:16, :25:28, :27:19, :47:16, :52:31, :53:49, :59:37, :61:{29,82}, :62:35, :63:19, :65:35, :66:63, :92:37, :111:82, :116:82, :117:35, :118:19, :120:35, :121:63, :208:31, :226:27
-  assign io_aside_out_addr_0 = _GEN_27[stat];	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:14:16, :46:21, :47:16, :52:31, :208:31
-  wire             _GEN_28 = _GEN_8 | _GEN_9 | _GEN_18 | _GEN_20;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:14:16, :47:16
-  wire [31:0]      _GEN_29 = _GEN_28 | ~_GEN_25 ? 32'h0 : srcInfo_operands_regData_2;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:14:16, :20:24, :25:28, :47:16, :241:31, :259:27
-  wire [7:0][31:0] _GEN_30 =
-    {{_GEN_29},
-     {_GEN_29},
-     {_GEN_29},
+                : 32'h0}};	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:14:16, :25:28, :27:19, :47:16, :52:31, :53:49, :59:37, :61:{29,82}, :62:35, :63:19, :65:35, :66:63, :76:37, :95:82, :100:82, :101:35, :102:19, :104:35, :105:63, :191:31, :193:27
+  assign io_aside_out_addr_0 = _GEN_26[stat];	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:14:16, :46:21, :47:16, :52:31, :191:31
+  wire [31:0]      _GEN_27 = _GEN_21 | ~_GEN_24 ? 32'h0 : srcInfo_operands_regData_2;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:14:16, :20:24, :25:28, :47:16, :228:31, :246:27
+  wire [7:0][31:0] _GEN_28 =
+    {{_GEN_27},
+     {_GEN_27},
+     {_GEN_27},
      {32'h0},
      {32'h0},
      {32'h0},
      {32'h0},
-     {~io_in_decode_req | _GEN_6 | ~_GEN_7
+     {~io_in_decode_req | _GEN_5 | ~_GEN_6
         ? 32'h0
         : preLoad & io_in_decode_readInfo_reg_2_addr == preLoadAddr
             ? preLoadData
-            : io_in_decode_bits_operands_regData_2}};	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:14:16, :23:24, :24:28, :25:28, :47:16, :52:31, :53:49, :92:37, :111:{29,65,82}, :112:36, :114:36
+            : io_in_decode_bits_operands_regData_2}};	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:14:16, :23:24, :24:28, :25:28, :47:16, :52:31, :53:49, :76:37, :95:{29,65,82}, :96:36, :98:36
   always @(posedge clock) begin	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7
     if (reset) begin	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7
       outReg_bits_en <= 1'h0;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:12:14, :17:31
@@ -4296,30 +4294,37 @@ module ExeStage(	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7
       stat <= 3'h0;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:46:21, src/main/scala/ultra/pipeline/exe/UltraExeUtils.scala:15:17
     end
     else begin	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7
-      automatic logic             _GEN_31;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:133:42
-      automatic logic             _GEN_32;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:46:21, :47:16, :266:32, :267:14
-      automatic logic [2:0]       _GEN_33;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:46:21, :47:16, :266:32, :267:14
+      automatic logic             _GEN_29;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:117:42
+      automatic logic [3:0][31:0] _GEN_30 =
+        {{{24'h0, io_aside_in_rdata[31:24]}},
+         {{24'h0, io_aside_in_rdata[23:16]}},
+         {{24'h0, io_aside_in_rdata[15:8]}},
+         {{24'h0, io_aside_in_rdata[7:0]}}};	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:203:26, :206:38, :208:{32,52}, :212:{32,52}, :216:{32,52}, :220:{32,52}
+      automatic logic [31:0]      _GEN_31;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:203:26, :205:49, :206:38
+      automatic logic             _GEN_32;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:46:21, :47:16, :253:32, :254:14
+      automatic logic [2:0]       _GEN_33;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:46:21, :47:16, :253:32, :254:14
       automatic logic             _GEN_34;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:17:31, :47:16
       automatic logic [4:0]       _GEN_35;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:17:31, :47:16
       automatic logic [31:0]      _GEN_36;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:17:31, :47:16
-      automatic logic [7:0][4:0]  _GEN_37;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:14:16, :17:31, :47:16, :49:14, :156:24, :163:19, :232:33
-      automatic logic [7:0][31:0] _GEN_38;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:17:31, :47:16, :49:14, :157:24, :163:19, :232:33
-      automatic logic [7:0][2:0]  _GEN_39;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:14:16, :47:16, :52:31, :154:12, :161:12, :208:31, :232:33, :241:31
-      _GEN_31 = io_in_decode_bits_wCtrl_en & (|io_in_decode_bits_wCtrl_addr);	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:133:{42,74}
-      _GEN_32 = stat == 3'h6 & io_aside_in_wdone;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:46:21, :47:16, :53:49, :266:32, :267:14
-      _GEN_33 = _GEN_32 ? 3'h0 : stat;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:46:21, :47:16, :266:32, :267:14, src/main/scala/ultra/pipeline/exe/UltraExeUtils.scala:15:17
-      _GEN_34 = _GEN_22 | ~_GEN_32;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:17:31, :46:21, :47:16, :266:32, :267:14
+      automatic logic [7:0][4:0]  _GEN_37;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:14:16, :17:31, :47:16, :49:14, :140:24, :146:19, :199:33
+      automatic logic [7:0][31:0] _GEN_38;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:17:31, :47:16, :49:14, :141:24, :146:19, :199:33
+      automatic logic [7:0][2:0]  _GEN_39;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:14:16, :47:16, :52:31, :138:12, :145:12, :191:31, :199:33, :228:31
+      _GEN_29 = io_in_decode_bits_wCtrl_en & (|io_in_decode_bits_wCtrl_addr);	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:117:{42,74}
+      _GEN_31 = _GEN_12 ? _GEN_30[_alu_io_out_res[1:0]] : io_aside_in_rdata[31:0];	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:27:19, :150:40, :203:26, :205:49, :206:{32,38}, :208:32, :212:32, :216:32, :220:32
+      _GEN_32 = stat == 3'h6 & io_aside_in_wdone;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:46:21, :47:16, :53:49, :253:32, :254:14
+      _GEN_33 = _GEN_32 ? 3'h0 : stat;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:46:21, :47:16, :253:32, :254:14, src/main/scala/ultra/pipeline/exe/UltraExeUtils.scala:15:17
+      _GEN_34 = _GEN_20 | ~_GEN_32;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:17:31, :46:21, :47:16, :253:32, :254:14
       _GEN_35 = _GEN_34 ? outReg_bits_addr : srcInfo_wCtrl_addr;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:17:31, :20:24, :47:16
       _GEN_36 = _GEN_34 ? outReg_bits_data : srcInfo_wCtrl_data;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:17:31, :20:24, :47:16
       outReg_bits_en <=
         ~_GEN_0
-        & (_GEN_21
+        & (_GEN_19
              ? srcInfo_wCtrl_en
-             : _GEN_18
+             : _GEN_17
                  ? outReg_bits_en
-                 : _GEN_20
+                 : _GEN_18
                      ? (io_aside_in_rvalid ? srcInfo_wCtrl_en : outReg_bits_en)
-                     : _GEN_34 ? outReg_bits_en : srcInfo_wCtrl_en);	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:14:16, :17:31, :20:24, :47:16, :49:14, :155:22, :163:19, :232:33, :234:24
+                     : _GEN_34 ? outReg_bits_en : srcInfo_wCtrl_en);	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:14:16, :17:31, :20:24, :47:16, :49:14, :139:22, :146:19, :199:33, :201:24
       _GEN_37 =
         {{_GEN_35},
          {_GEN_35},
@@ -4328,19 +4333,19 @@ module ExeStage(	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7
          {outReg_bits_addr},
          {srcInfo_wCtrl_addr},
          {srcInfo_wCtrl_addr},
-         {5'h0}};	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:14:16, :17:31, :20:24, :24:28, :47:16, :49:14, :156:24, :163:19, :232:33, :235:26
-      outReg_bits_addr <= _GEN_37[stat];	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:14:16, :17:31, :46:21, :47:16, :49:14, :156:24, :163:19, :232:33
+         {5'h0}};	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:14:16, :17:31, :20:24, :24:28, :47:16, :49:14, :140:24, :146:19, :199:33, :202:26
+      outReg_bits_addr <= _GEN_37[stat];	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:14:16, :17:31, :46:21, :47:16, :49:14, :140:24, :146:19, :199:33
       _GEN_38 =
         {{_GEN_36},
          {_GEN_36},
          {outReg_bits_data},
-         {io_aside_in_rvalid ? io_aside_in_rdata[31:0] : outReg_bits_data},
+         {io_aside_in_rvalid ? _GEN_31 : outReg_bits_data},
          {outReg_bits_data},
          {srcInfo_wCtrl_data},
          {_alu_io_out_res},
-         {32'h0}};	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:17:31, :20:24, :25:28, :27:19, :47:16, :49:14, :157:24, :163:19, :232:33, :236:26
-      outReg_bits_data <= _GEN_38[stat];	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:17:31, :46:21, :47:16, :49:14, :157:24, :163:19, :232:33
-      if (_GEN_0 & io_in_decode_req) begin	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:23:24, :47:16, :52:31, :133:83
+         {32'h0}};	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:17:31, :20:24, :25:28, :27:19, :47:16, :49:14, :141:24, :146:19, :199:33, :203:26, :205:49, :206:38
+      outReg_bits_data <= _GEN_38[stat];	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:17:31, :46:21, :47:16, :49:14, :141:24, :146:19, :199:33
+      if (_GEN_0 & io_in_decode_req) begin	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:23:24, :47:16, :52:31, :117:83
         srcInfo_exeOp_opType <= io_in_decode_bits_exeOp_opType;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:20:24
         srcInfo_exeOp_opFunc <= io_in_decode_bits_exeOp_opFunc;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:20:24
         srcInfo_wCtrl_en <= io_in_decode_bits_wCtrl_en;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:20:24
@@ -4351,26 +4356,26 @@ module ExeStage(	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7
         srcInfo_operands_regData_1 <=
           preLoad & preLoadAddr == io_in_decode_readInfo_reg_1_addr
             ? preLoadData
-            : io_in_decode_bits_operands_regData_1;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:20:24, :23:24, :24:28, :25:28, :140:17, :141:{22,37,75}, :142:38
+            : io_in_decode_bits_operands_regData_1;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:20:24, :23:24, :24:28, :25:28, :124:17, :125:{22,37,75}, :126:38
         srcInfo_operands_regData_2 <=
           preLoad & preLoadAddr == io_in_decode_readInfo_reg_2_addr
             ? preLoadData
-            : io_in_decode_bits_operands_regData_2;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:20:24, :23:24, :24:28, :25:28, :140:17, :144:{22,37,75}, :145:38
+            : io_in_decode_bits_operands_regData_2;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:20:24, :23:24, :24:28, :25:28, :124:17, :128:{22,37,75}, :129:38
         fetchInfo_pc <= io_in_decode_fetchInfo_pc;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:21:26
         fetchInfo_predictTaken <= io_in_decode_fetchInfo_predictTaken;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:21:26
-        preLoad <= _GEN_31;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:23:24, :133:42
+        preLoad <= _GEN_29;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:23:24, :117:42
       end
-      if (_GEN_0 & io_in_decode_req & _GEN_31)	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:24:28, :47:16, :52:31, :133:{42,83}, :135:23
+      if (_GEN_0 & io_in_decode_req & _GEN_29)	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:24:28, :47:16, :52:31, :117:{42,83}, :119:23
         preLoadAddr <= io_in_decode_bits_wCtrl_addr;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:24:28
       if (~_GEN_0) begin	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:47:16, :49:14
-        if (_GEN_8)	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:47:16
+        if (_GEN_7)	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:47:16
           preLoadData <= _alu_io_out_res;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:25:28, :27:19
-        else if (_GEN_9)	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:47:16
+        else if (_GEN_8)	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:47:16
           preLoadData <= srcInfo_wCtrl_data;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:20:24, :25:28
-        else if (_GEN_18 | ~(_GEN_20 & io_aside_in_rvalid)) begin	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:25:28, :47:16, :232:33, :237:21
+        else if (_GEN_17 | ~(_GEN_18 & io_aside_in_rvalid)) begin	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:25:28, :47:16, :199:33, :205:49
         end
         else	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:25:28, :47:16
-          preLoadData <= io_aside_in_rdata[31:0];	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:25:28, :236:26
+          preLoadData <= _GEN_31;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:25:28, :203:26, :205:49, :206:38
       end
       _GEN_39 =
         {{_GEN_33},
@@ -4385,15 +4390,15 @@ module ExeStage(	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7
                  ? 3'h2
                  : _GEN_2
                      ? (io_aside_in_rrdy ? 3'h4 : 3'h3)
-                     : _GEN_5
+                     : _GEN_4
                          ? (io_aside_in_wrdy ? 3'h6 : 3'h5)
                          : io_in_decode_bits_exeOp_opType == 4'h1
                            | io_in_decode_bits_exeOp_opType == 4'h3
                            | io_in_decode_bits_exeOp_opType == 4'h2
                              ? 3'h1
                              : stat)
-            : stat}};	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7, :14:16, :46:21, :47:16, :52:31, :53:49, :55:18, :59:37, :86:20, :88:20, :92:37, :109:20, :126:20, :130:18, :154:12, :161:12, :208:31, :227:14, :232:33, :233:14, :241:31, :261:14, :266:32, :267:14, src/main/scala/ultra/pipeline/exe/UltraExeUtils.scala:15:17
-      stat <= _GEN_39[stat];	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:14:16, :46:21, :47:16, :52:31, :154:12, :161:12, :208:31, :232:33, :241:31
+            : stat}};	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7, :14:16, :46:21, :47:16, :52:31, :53:49, :55:18, :59:37, :70:20, :72:20, :76:37, :93:20, :110:20, :114:18, :138:12, :145:12, :191:31, :194:14, :199:33, :200:14, :228:31, :248:14, :253:32, :254:14, src/main/scala/ultra/pipeline/exe/UltraExeUtils.scala:15:17
+      stat <= _GEN_39[stat];	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:14:16, :46:21, :47:16, :52:31, :138:12, :145:12, :191:31, :199:33, :228:31
     end
   end // always @(posedge)
   `ifdef ENABLE_INITIAL_REG_	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7
@@ -4448,39 +4453,39 @@ module ExeStage(	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7
   assign io_aside_out_rreq =
     _GEN_0
       ? io_in_decode_req & ~_GEN_1 & _GEN_2 & io_aside_in_rrdy
-      : ~_GEN_21 & _GEN_18 & io_aside_in_rrdy;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7, :14:16, :47:16, :52:31, :53:49
+      : ~_GEN_19 & _GEN_17 & io_aside_in_rrdy;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7, :14:16, :47:16, :52:31, :53:49
   assign io_aside_out_wreq =
     _GEN_0
-      ? io_in_decode_req & ~_GEN_6 & _GEN_5 & io_aside_in_wrdy
-      : ~_GEN_28 & _GEN_22 & io_aside_in_wrdy;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7, :14:16, :47:16, :52:31, :53:49
-  assign io_aside_out_byteSelN = _GEN_24[stat];	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7, :14:16, :46:21, :47:16, :52:31, :208:31
+      ? io_in_decode_req & ~_GEN_5 & _GEN_4 & io_aside_in_wrdy
+      : ~_GEN_21 & _GEN_20 & io_aside_in_wrdy;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7, :14:16, :47:16, :52:31, :53:49
+  assign io_aside_out_byteSelN = _GEN_23[stat];	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7, :14:16, :46:21, :47:16, :52:31
   assign io_aside_out_addr = io_aside_out_addr_0;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7, :47:16, :52:31
-  assign io_aside_out_wdata = _GEN_30[stat];	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7, :14:16, :46:21, :47:16, :52:31
+  assign io_aside_out_wdata = _GEN_28[stat];	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7, :14:16, :46:21, :47:16, :52:31
   assign io_bCtrl_isMispredict =
-    ~_GEN_17 & _GEN_9
-    & (_GEN_10
-         ? (_GEN_11
-              ? _GEN_12 ^ ~fetchInfo_predictTaken
-              : _GEN_13
-                  ? _GEN_12 ^ fetchInfo_predictTaken
-                  : _GEN_14 & (_GEN_15 ^ fetchInfo_predictTaken))
-         : _GEN_16 & _GEN_11);	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7, :15:12, :21:26, :47:16, :50:16, :162:16, :165:37, :167:40, :169:{55,94}, :170:39, :173:39, :178:94, :179:39, :182:39, :187:{55,93}, :188:39, :191:39, :198:40
+    ~_GEN_16 & _GEN_8
+    & (_GEN_9
+         ? (_GEN_10
+              ? _GEN_11 ^ ~fetchInfo_predictTaken
+              : _GEN_12
+                  ? _GEN_11 ^ fetchInfo_predictTaken
+                  : _GEN_13 & (_GEN_14 ^ fetchInfo_predictTaken))
+         : _GEN_15 & _GEN_10);	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7, :15:12, :21:26, :47:16, :50:16, :148:37, :150:40, :152:{55,94}, :153:39, :156:39, :161:94, :162:39, :165:39, :170:{55,93}, :171:39, :174:39, :181:40
   assign io_bCtrl_npc =
-    _GEN_17 | ~_GEN_9
+    _GEN_16 | ~_GEN_8
       ? 32'h0
-      : _GEN_10
-          ? (_GEN_11
-               ? (_GEN_12 ? fetchInfo_pc + 32'h4 : fetchInfo_pc + srcInfo_operands_imm)
-               : _GEN_13
-                   ? (_GEN_12
+      : _GEN_9
+          ? (_GEN_10
+               ? (_GEN_11 ? fetchInfo_pc + 32'h4 : fetchInfo_pc + srcInfo_operands_imm)
+               : _GEN_12
+                   ? (_GEN_11
                         ? fetchInfo_pc + srcInfo_operands_imm
                         : fetchInfo_pc + 32'h4)
-                   : _GEN_14
-                       ? (_GEN_15
+                   : _GEN_13
+                       ? (_GEN_14
                             ? fetchInfo_pc + srcInfo_operands_imm
                             : fetchInfo_pc + 32'h4)
                        : 32'h0)
-          : _GEN_16 & _GEN_11 ? srcInfo_operands_regData_1 + srcInfo_operands_imm : 32'h0;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7, :15:12, :20:24, :21:26, :25:28, :47:16, :50:16, :162:16, :165:37, :167:40, :169:{55,94}, :170:39, :171:{30,54}, :173:39, :174:{30,46}, :178:94, :180:{30,54}, :183:{30,46}, :187:{55,93}, :189:{30,54}, :192:{30,46}, :198:40, :201:{28,66}
+          : _GEN_15 & _GEN_10 ? srcInfo_operands_regData_1 + srcInfo_operands_imm : 32'h0;	// src/main/scala/ultra/pipeline/exe/ExeStage.scala:10:7, :15:12, :20:24, :21:26, :25:28, :47:16, :50:16, :148:37, :150:40, :152:{55,94}, :153:39, :154:{30,54}, :156:39, :157:{30,46}, :161:94, :163:{30,54}, :166:{30,46}, :170:{55,93}, :172:{30,54}, :175:{30,46}, :181:40, :184:{28,66}
 endmodule
 
 module UltraCpu(	// src/main/scala/ultra/UltraCpu.scala:10:7

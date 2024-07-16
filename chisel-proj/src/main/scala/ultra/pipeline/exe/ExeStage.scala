@@ -67,22 +67,6 @@ class ExeStage extends Module {
                     io.in.decode.bits.operands.imm.asSInt
                   ).asUInt
               }
-              when(io.in.decode.bits.exeOp.opFunc === Load.ld_b){
-                switch(io.aside.out.addr(1,0)) {
-                  is ("b00".U) {
-                    io.aside.out.byteSelN := "b1110".U
-                  }
-                  is ("b01".U) {
-                    io.aside.out.byteSelN := "b1101".U
-                  }
-                  is ("b10".U) {
-                    io.aside.out.byteSelN := "b1011".U
-                  }
-                  is ("b11".U) {
-                    io.aside.out.byteSelN := "b0111".U
-                  }
-                }
-              }
               stat := RDWAIT
             } .otherwise {
               stat := RD
@@ -159,7 +143,6 @@ class ExeStage extends Module {
     }
     is (BRANCH) {
       stat := IDLE
-      io.bCtrl := initExeBranchInfo
       outReg.bits := srcInfo.wCtrl
       preLoadData := srcInfo.wCtrl.data
       switch (srcInfo.exeOp.opType) {
@@ -206,22 +189,6 @@ class ExeStage extends Module {
     }
     is (RD) {
       when (io.aside.in.rrdy) {
-        when (srcInfo.exeOp.opFunc === Load.ld_b) {
-          switch(alu.io.out.res(1,0)) {
-            is ("b00".U) {
-              io.aside.out.byteSelN := "b1110".U
-            }
-            is ("b01".U) {
-              io.aside.out.byteSelN := "b1101".U
-            }
-            is ("b10".U) {
-              io.aside.out.byteSelN := "b1011".U
-            }
-            is ("b11".U) {
-              io.aside.out.byteSelN := "b0111".U
-            }
-          }
-        }
         io.aside.out.rreq := true.B
         io.aside.out.addr := alu.io.out.res
         stat := RDWAIT
@@ -235,6 +202,26 @@ class ExeStage extends Module {
         outReg.bits.addr := srcInfo.wCtrl.addr
         outReg.bits.data := io.aside.in.rdata
         preLoadData := io.aside.in.rdata
+        when(srcInfo.exeOp.opFunc === Load.ld_b){
+          switch(alu.io.out.res(1,0)){
+            is("b00".U){
+              outReg.bits.data := io.aside.in.rdata(7,0)
+              preLoadData := io.aside.in.rdata(7,0)
+            }
+            is("b01".U){
+              outReg.bits.data := io.aside.in.rdata(15,8)
+              preLoadData := io.aside.in.rdata(15,8)
+            }
+            is("b10".U){
+              outReg.bits.data := io.aside.in.rdata(23,16)
+              preLoadData := io.aside.in.rdata(23,16)
+            }
+            is("b11".U){
+              outReg.bits.data := io.aside.in.rdata(31,24)
+              preLoadData := io.aside.in.rdata(31,24)
+            }
+          }
+        }
       }
     }
     is (WR) {

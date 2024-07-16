@@ -11,12 +11,17 @@ class UltraDecodeStage extends Module {
   val pipeOutReg = RegInit(initDecodeOut)
   io.pipe.exe.out := pipeOutReg
   val instIn = WireDefault(io.pipe.fetch.in.bits.inst)
-  when(instIn(31,24) === "h00".U){
+  when(instIn(31,28) === "b0001".U){
+    // Special Instruction
+    io.aside.out.reg_1.addr := 0.U
+  }.otherwise{
     io.aside.out.reg_1.addr := instIn(9,5)
+  }
+  when(instIn(31,24) === "h00".U){
+    // 3R instruction
     io.aside.out.reg_2.addr := instIn(14,10)
   }.otherwise{
-    io.aside.out.reg_1.addr := instIn(4,0)
-    io.aside.out.reg_2.addr := instIn(9,5)
+    io.aside.out.reg_2.addr := instIn(4,0)
   }
   // Internal Utils
   val du = Module(new Du)
@@ -46,17 +51,8 @@ class UltraDecodeStage extends Module {
     pipeOutReg.bits.wCtrl := du.io.out.bits.wCtrl
     pipeOutReg.bits.operands.hasImm := du.io.out.bits.hasImm
     pipeOutReg.bits.operands.imm := du.io.out.bits.imm
-    when(
-      du.io.out.bits.exeOp.opType === ExeType.load ||
-        du.io.out.bits.exeOp.opType === ExeType.store ||
-        du.io.out.bits.exeOp.opType === ExeType.branch
-    ) {
-      pipeOutReg.bits.operands.regData_1 := io.aside.in.regRight
-      pipeOutReg.bits.operands.regData_2 := io.aside.in.regLeft
-    } .otherwise {
-      pipeOutReg.bits.operands.regData_1 := io.aside.in.regLeft
-      pipeOutReg.bits.operands.regData_2 := io.aside.in.regRight
-    }
+    pipeOutReg.bits.operands.regData_1 := io.aside.in.regLeft
+    pipeOutReg.bits.operands.regData_2 := io.aside.in.regRight
   }
 
   when(io.pipe.br.isMispredict){

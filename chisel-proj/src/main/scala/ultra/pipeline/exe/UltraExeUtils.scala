@@ -2,6 +2,7 @@ package ultra.pipeline.exe
 import chisel3._
 import ultra.pipeline.regfile.RegfileUtils._
 import UltraExePorts._
+import ultra.bus.UltraBusUtils._
 object UltraExeUtils {
   def initOperands:Operands = {
     val init = Wire(new Operands)
@@ -30,23 +31,11 @@ object UltraExeUtils {
     init.bits := initWctrl
     init
   }
-  def initExeAsideIn:ExeAsideIn = {
-    val init = Wire(new ExeAsideIn)
-    init.rvalid := false.B
-    init.rrdy := false.B
-    init.rdata := 0.U
-    init.wdone := false.B
-    init.wrdy := false.B
-    init
+  def initExeAsideIn= {
+    initDataRspns
   }
-  def initExeAsideOut:ExeAsideOut = {
-    val init = Wire(new ExeAsideOut)
-    init.addr := 0.U
-    init.wdata := 0.U
-    init.rreq := false.B
-    init.wreq := false.B
-    init.byteSelN := "b0000".U
-    init
+  def initExeAsideOut = {
+    initDataReq
   }
   def initExeBranchInfo:ExeBranchInfo = {
     val init = Wire(new ExeBranchInfo)

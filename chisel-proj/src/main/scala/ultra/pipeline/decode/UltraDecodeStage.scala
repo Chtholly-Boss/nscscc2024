@@ -48,7 +48,8 @@ class UltraDecodeStage extends Module {
     pipeOutReg.bits.operands.imm := du.io.out.bits.imm
     when(
       du.io.out.bits.exeOp.opType === ExeType.load ||
-        du.io.out.bits.exeOp.opType === ExeType.store
+        du.io.out.bits.exeOp.opType === ExeType.store ||
+        du.io.out.bits.exeOp.opType === ExeType.branch
     ) {
       pipeOutReg.bits.operands.regData_1 := io.aside.in.regRight
       pipeOutReg.bits.operands.regData_2 := io.aside.in.regLeft
@@ -59,7 +60,7 @@ class UltraDecodeStage extends Module {
   }
 
   when(io.pipe.br.isMispredict){
-
+    default()
   }.otherwise{
     switch(dcstat){
       is (IDLE){
@@ -70,10 +71,12 @@ class UltraDecodeStage extends Module {
         }
       }
       is (DONE){
-        when(io.pipe.fetch.in.req){
-          getDecodeRes()
-        }.otherwise{
-          default()
+        when(io.pipe.exe.in.ack){
+          when(io.pipe.fetch.in.req){
+            getDecodeRes()
+          }.otherwise{
+            default()
+          }
         }
       }
     }

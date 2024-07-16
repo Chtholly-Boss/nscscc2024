@@ -6,6 +6,7 @@ import ultra.caches.FetchPlugin
 import ultra.pipeline.fetch.UltraFetchStage
 import ultra.pipeline.regfile.Regfile
 import ultra.pipeline.decode.UltraDecodeStage
+import ultra.pipeline.exe.ExeStage // TODO: replace it with UltraExeStage
 class UltraCpu extends Module {
   val io = IO(new Bundle() {
     val baseSram = new Bundle() {
@@ -41,13 +42,22 @@ class UltraCpu extends Module {
   val regfile = Module(new Regfile)
   decodeStage.io.aside.in.regLeft <> regfile.io.rChannel_1.out
   decodeStage.io.aside.in.regRight <> regfile.io.rChannel_2.out
-  decodeStage.io.aside.out <> regfile.io.rChannel_1.in
-  decodeStage.io.aside.out <> regfile.io.rChannel_2.in
+  decodeStage.io.aside.out.reg_1 <> regfile.io.rChannel_1.in
+  decodeStage.io.aside.out.reg_2 <> regfile.io.rChannel_2.in
 
   decodeStage.io.pipe.fetch.in <> fetchStage.io.pipe.out
   decodeStage.io.pipe.fetch.out <> fetchStage.io.pipe.in
 
-  bus.io.dChannel := DontCare
+  val exeStage = Module(new ExeStage)
+  exeStage.io.in.decode <> decodeStage.io.pipe.exe.out
+  exeStage.io.out.ack <> decodeStage.io.pipe.exe.in.ack
+  exeStage.io.out.exe.bits <> regfile.io.wChannel
+
+  exeStage.io.bCtrl <> fetchStage.io.pipe.br
+  exeStage.io.bCtrl <> decodeStage.io.pipe.br
+
+  exeStage.io.aside.out <> bus.io.dChannel.in
+  exeStage.io.aside.in <> bus.io.dChannel.out
 }
 object UltraCpu extends App {
   emitVerilog(new UltraCpu)

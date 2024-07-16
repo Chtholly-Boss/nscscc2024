@@ -31,7 +31,7 @@ object UltraFetchUtils {
     def initFetchOut():FetchPipeOut = {
       val init = Wire(new FetchPipeOut)
       init.req := false.B
-      init.bits.pc := initDecodeSrcInfo
+      init.bits := initDecodeSrcInfo
       init
     }
   }

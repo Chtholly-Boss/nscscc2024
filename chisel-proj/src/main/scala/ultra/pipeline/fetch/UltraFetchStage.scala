@@ -18,7 +18,8 @@ class UltraFetchStage extends Module {
     val
       RST,  // rst to init pc
       WAIT, // Wait for buffer refill
-      READY // wait for ack
+      READY, // wait for ack
+      MISS // mispredict branch
     = Value
   }
   import FetchState._
@@ -45,17 +46,30 @@ class UltraFetchStage extends Module {
   }
 
   // Working Logic
-  switch(fstat){
-    is (RST) {
-      refillInstInBuf()
-    }
-    is (WAIT) {
-      when(io.aside.in.rvalid){
-        getInstInBuf()
+  when(io.pipe.br.isMispredict){
+    fstat := MISS
+    npc := io.pipe.br.npc
+    pipeOutReg := initFetchOut()
+  }.otherwise{
+    switch(fstat){
+      is (RST) {
+        refillInstInBuf()
       }
-    }
-    is (READY) {
-      when(io.pipe.in.ack){
+      is (WAIT) {
+        when(io.aside.in.rvalid){
+          getInstInBuf()
+        }
+      }
+      is (READY) {
+        when(io.pipe.in.ack){
+          when(io.aside.in.isInBuf){
+            getInstInBuf()
+          }.otherwise{
+            refillInstInBuf()
+          }
+        }
+      }
+      is (MISS){
         when(io.aside.in.isInBuf){
           getInstInBuf()
         }.otherwise{
@@ -64,5 +78,6 @@ class UltraFetchStage extends Module {
       }
     }
   }
+
 
 }

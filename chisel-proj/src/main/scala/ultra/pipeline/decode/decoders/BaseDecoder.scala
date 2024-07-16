@@ -1,4 +1,5 @@
-package pipeline.decode.decoders
+package ultra.pipeline.decode.decoders
+
 import chisel3._
 import pipeline.decode.DecodePorts._
 import pipeline.decode.DecodeUtils._

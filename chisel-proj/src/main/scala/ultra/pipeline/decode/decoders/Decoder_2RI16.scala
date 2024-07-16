@@ -1,4 +1,5 @@
-package pipeline.decode.decoders
+package ultra.pipeline.decode.decoders
+
 import chisel3._
 import chisel3.util._
 import pipeline.decode.DecodeParam.{_2RI16 => Inst}

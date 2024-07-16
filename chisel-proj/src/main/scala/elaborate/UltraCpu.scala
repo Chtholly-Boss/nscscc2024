@@ -53,8 +53,4 @@ class UltraCpu extends Module {
   // Branch MisPrediction
   fetch.io.bCtrl <> exe.io.bCtrl
   decode.io.bCtrl <> exe.io.bCtrl
-
-}
-object UltraCpu extends App {
-  emitVerilog(new UltraCpu)
 }

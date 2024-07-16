@@ -67,18 +67,20 @@ class ExeStage extends Module {
                     io.in.decode.bits.operands.imm.asSInt
                   ).asUInt
               }
-              switch(io.aside.out.addr(1,0)) {
-                is ("b00".U) {
-                  io.aside.out.byteSelN := "b1110".U
-                }
-                is ("b01".U) {
-                  io.aside.out.byteSelN := "b1101".U
-                }
-                is ("b10".U) {
-                  io.aside.out.byteSelN := "b1011".U
-                }
-                is ("b11".U) {
-                  io.aside.out.byteSelN := "b0111".U
+              when(io.in.decode.bits.exeOp.opFunc === Load.ld_b){
+                switch(io.aside.out.addr(1,0)) {
+                  is ("b00".U) {
+                    io.aside.out.byteSelN := "b1110".U
+                  }
+                  is ("b01".U) {
+                    io.aside.out.byteSelN := "b1101".U
+                  }
+                  is ("b10".U) {
+                    io.aside.out.byteSelN := "b1011".U
+                  }
+                  is ("b11".U) {
+                    io.aside.out.byteSelN := "b0111".U
+                  }
                 }
               }
               stat := RDWAIT
@@ -88,18 +90,20 @@ class ExeStage extends Module {
           }
           is (tp.store) {
             when (io.aside.in.wrdy) {
-              switch(io.aside.out.addr(1,0)) {
-                is ("b00".U) {
-                  io.aside.out.byteSelN := "b1110".U
-                }
-                is ("b01".U) {
-                  io.aside.out.byteSelN := "b1101".U
-                }
-                is ("b10".U) {
-                  io.aside.out.byteSelN := "b1011".U
-                }
-                is ("b11".U) {
-                  io.aside.out.byteSelN := "b0111".U
+              when(io.in.decode.bits.exeOp.opFunc === Store.st_b){
+                switch(io.aside.out.addr(1,0)) {
+                  is ("b00".U) {
+                    io.aside.out.byteSelN := "b1110".U
+                  }
+                  is ("b01".U) {
+                    io.aside.out.byteSelN := "b1101".U
+                  }
+                  is ("b10".U) {
+                    io.aside.out.byteSelN := "b1011".U
+                  }
+                  is ("b11".U) {
+                    io.aside.out.byteSelN := "b0111".U
+                  }
                 }
               }
               stat := WRWAIT

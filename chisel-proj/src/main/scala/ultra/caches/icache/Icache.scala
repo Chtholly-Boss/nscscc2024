@@ -21,22 +21,28 @@ class Icache extends Module {
   io.bus.out := req2busReg
 
   val cacheWen = WireDefault(false.B)
+  val cacheAddr = WireDefault(0.U(indexWidth.W))
+
   // Tag Block Sram
   val tagRam = Module(new BlockMem(depth,1 + tagWidth))
-  tagRam.io.in.addr := io.core.in.pc(indexWidth+offsetWidth-1,offsetWidth)
+  tagRam.io.in.addr := cacheAddr
   val tagRamWdata = WireDefault(0.U((tagWidth+1).W))
   tagRam.io.in.wen := cacheWen
   tagRam.io.in.wdata := tagRamWdata
   // Data Block Ram
   val dataRam = Module(new BlockMem(depth,bandwidth))
-  dataRam.io.in.addr := io.core.in.pc(indexWidth+offsetWidth-1,offsetWidth)
+  dataRam.io.in.addr := cacheAddr
   val dataWdata = WireDefault(0.U(bandwidth.W))
   dataRam.io.in.wen := cacheWen
   dataRam.io.in.wdata := dataWdata
 
   val iReqBuf = RegInit(initInstReq)
   val stat = RegInit(IS.IDLE)
-
+  when(cacheWen){
+    cacheAddr := iReqBuf.pc(indexWidth+offsetWidth-1,offsetWidth)
+  }.otherwise{
+    cacheAddr := io.core.in.pc(indexWidth+offsetWidth-1,offsetWidth)
+  }
   def reqDone(data:Bits) = {
     rspns2coreReg.rvalid := true.B
     rspns2coreReg.rdata := data

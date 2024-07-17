@@ -2421,84 +2421,86 @@ module Icache(	// src/main/scala/ultra/caches/icache/Icache.scala:11:7
   output [31:0]  io_pc	// src/main/scala/ultra/caches/icache/Icache.scala:14:17
 );
 
-  wire [255:0] _dataRam_io_out_rdata;	// src/main/scala/ultra/caches/icache/Icache.scala:31:23
-  wire [11:0]  _tagRam_io_out_rdata;	// src/main/scala/ultra/caches/icache/Icache.scala:25:22
+  wire         cacheWen;	// src/main/scala/ultra/caches/icache/Icache.scala:23:29, :52:15
+  wire [255:0] _dataRam_io_out_rdata;	// src/main/scala/ultra/caches/icache/Icache.scala:33:23
+  wire [11:0]  _tagRam_io_out_rdata;	// src/main/scala/ultra/caches/icache/Icache.scala:27:22
   reg  [31:0]  pcOutReg;	// src/main/scala/ultra/caches/icache/Icache.scala:15:25
   reg  [255:0] rspns2coreReg_rdata;	// src/main/scala/ultra/caches/icache/Icache.scala:18:30
   reg          rspns2coreReg_rvalid;	// src/main/scala/ultra/caches/icache/Icache.scala:18:30
   reg  [31:0]  req2busReg_pc;	// src/main/scala/ultra/caches/icache/Icache.scala:19:27
   reg          req2busReg_rreq;	// src/main/scala/ultra/caches/icache/Icache.scala:19:27
-  reg  [31:0]  iReqBuf_pc;	// src/main/scala/ultra/caches/icache/Icache.scala:37:24
-  reg          iReqBuf_rreq;	// src/main/scala/ultra/caches/icache/Icache.scala:37:24
-  reg  [1:0]   stat;	// src/main/scala/ultra/caches/icache/Icache.scala:38:21
-  wire         _GEN = stat == 2'h0;	// src/main/scala/ultra/caches/icache/Icache.scala:38:21, :46:15, :60:14
-  wire         _GEN_0 = stat == 2'h1;	// src/main/scala/ultra/caches/icache/Icache.scala:38:21, :46:15, :50:14
-  wire         _GEN_1 = stat == 2'h2;	// src/main/scala/ultra/caches/icache/Icache.scala:38:21, :46:15, :67:16
-  wire         _GEN_2 = _GEN | _GEN_0 | _GEN_1;	// src/main/scala/ultra/caches/icache/Icache.scala:23:29, :46:15
-  wire         cacheWen = ~_GEN_2 & (&stat) & io_bus_in_rvalid;	// src/main/scala/ultra/caches/icache/Icache.scala:23:29, :38:21, :46:15
-  wire         _GEN_3 = (&stat) & io_bus_in_rvalid;	// src/main/scala/ultra/caches/icache/Icache.scala:27:32, :38:21, :46:15, :79:29, :81:21
-  wire         _GEN_4 = _GEN_2 | ~_GEN_3;	// src/main/scala/ultra/caches/icache/Icache.scala:23:29, :27:32, :46:15, :79:29, :81:21
+  reg  [31:0]  iReqBuf_pc;	// src/main/scala/ultra/caches/icache/Icache.scala:39:24
+  reg          iReqBuf_rreq;	// src/main/scala/ultra/caches/icache/Icache.scala:39:24
+  reg  [1:0]   stat;	// src/main/scala/ultra/caches/icache/Icache.scala:40:21
+  wire [5:0]   cacheAddr = cacheWen ? iReqBuf_pc[10:5] : io_core_in_pc[10:5];	// src/main/scala/ultra/caches/icache/Icache.scala:23:29, :39:24, :41:17, :42:{15,28}, :44:{15,31}, :52:15
+  wire         _GEN = stat == 2'h0;	// src/main/scala/ultra/caches/icache/Icache.scala:40:21, :52:15, :66:14
+  wire         _GEN_0 = stat == 2'h1;	// src/main/scala/ultra/caches/icache/Icache.scala:40:21, :52:15, :56:14
+  wire         _GEN_1 = stat == 2'h2;	// src/main/scala/ultra/caches/icache/Icache.scala:40:21, :52:15, :73:16
+  wire         _GEN_2 = _GEN | _GEN_0 | _GEN_1;	// src/main/scala/ultra/caches/icache/Icache.scala:23:29, :52:15
+  assign cacheWen = ~_GEN_2 & (&stat) & io_bus_in_rvalid;	// src/main/scala/ultra/caches/icache/Icache.scala:23:29, :40:21, :52:15
+  wire         _GEN_3 = (&stat) & io_bus_in_rvalid;	// src/main/scala/ultra/caches/icache/Icache.scala:29:32, :40:21, :52:15, :85:29, :87:21
+  wire         _GEN_4 = _GEN_2 | ~_GEN_3;	// src/main/scala/ultra/caches/icache/Icache.scala:23:29, :29:32, :52:15, :85:29, :87:21
   always @(posedge clock) begin	// src/main/scala/ultra/caches/icache/Icache.scala:11:7
     if (reset) begin	// src/main/scala/ultra/caches/icache/Icache.scala:11:7
       pcOutReg <= 32'h0;	// src/main/scala/ultra/caches/icache/Icache.scala:15:25
-      rspns2coreReg_rdata <= 256'h0;	// src/main/scala/ultra/caches/icache/Icache.scala:18:30, :33:30
+      rspns2coreReg_rdata <= 256'h0;	// src/main/scala/ultra/caches/icache/Icache.scala:18:30, :35:30
       rspns2coreReg_rvalid <= 1'h0;	// src/main/scala/ultra/bus/UltraBusUtils.scala:24:16, src/main/scala/ultra/caches/icache/Icache.scala:18:30
       req2busReg_pc <= 32'h80000000;	// src/main/scala/ultra/bus/UltraBusUtils.scala:19:13, src/main/scala/ultra/caches/icache/Icache.scala:19:27
       req2busReg_rreq <= 1'h0;	// src/main/scala/ultra/bus/UltraBusUtils.scala:24:16, src/main/scala/ultra/caches/icache/Icache.scala:19:27
-      iReqBuf_pc <= 32'h80000000;	// src/main/scala/ultra/bus/UltraBusUtils.scala:19:13, src/main/scala/ultra/caches/icache/Icache.scala:37:24
-      iReqBuf_rreq <= 1'h0;	// src/main/scala/ultra/bus/UltraBusUtils.scala:24:16, src/main/scala/ultra/caches/icache/Icache.scala:37:24
-      stat <= 2'h0;	// src/main/scala/ultra/caches/icache/Icache.scala:38:21, :60:14
+      iReqBuf_pc <= 32'h80000000;	// src/main/scala/ultra/bus/UltraBusUtils.scala:19:13, src/main/scala/ultra/caches/icache/Icache.scala:39:24
+      iReqBuf_rreq <= 1'h0;	// src/main/scala/ultra/bus/UltraBusUtils.scala:24:16, src/main/scala/ultra/caches/icache/Icache.scala:39:24
+      stat <= 2'h0;	// src/main/scala/ultra/caches/icache/Icache.scala:40:21, :66:14
     end
     else begin	// src/main/scala/ultra/caches/icache/Icache.scala:11:7
-      automatic logic              _GEN_5;	// src/main/scala/ultra/caches/icache/Icache.scala:56:47
-      automatic logic              _GEN_6;	// src/main/scala/ultra/caches/icache/Icache.scala:19:27, :58:9, :63:29
-      automatic logic              _GEN_7 = _GEN_1 | ~_GEN_3;	// src/main/scala/ultra/caches/icache/Icache.scala:18:30, :27:32, :46:15, :79:29, :81:21
-      automatic logic [3:0][31:0]  _GEN_8;	// src/main/scala/ultra/caches/icache/Icache.scala:15:25, :46:15, :58:9
-      automatic logic [3:0][255:0] _GEN_9;	// src/main/scala/ultra/caches/icache/Icache.scala:18:30, :46:15, :58:9
-      automatic logic [3:0][31:0]  _GEN_10;	// src/main/scala/ultra/caches/icache/Icache.scala:19:27, :46:15, :58:9, :72:27, :78:18
-      automatic logic [3:0]        _GEN_11;	// src/main/scala/ultra/caches/icache/Icache.scala:19:27, :46:15, :58:9, :72:27
-      automatic logic [3:0][1:0]   _GEN_12;	// src/main/scala/ultra/caches/icache/Icache.scala:46:15, :49:28, :58:9, :72:27
-      _GEN_5 = _tagRam_io_out_rdata[11] & _tagRam_io_out_rdata[10:0] == iReqBuf_pc[21:11];	// src/main/scala/ultra/caches/icache/Icache.scala:25:22, :37:24, :56:{28,47}, :57:{30,45,59}
-      _GEN_6 = _GEN_5 | ~io_bus_in_rrdy;	// src/main/scala/ultra/caches/icache/Icache.scala:19:27, :56:47, :58:9, :63:29
+      automatic logic              _GEN_5;	// src/main/scala/ultra/caches/icache/Icache.scala:62:47
+      automatic logic              _GEN_6;	// src/main/scala/ultra/caches/icache/Icache.scala:19:27, :64:9, :69:29
+      automatic logic              _GEN_7 = _GEN_1 | ~_GEN_3;	// src/main/scala/ultra/caches/icache/Icache.scala:18:30, :29:32, :52:15, :85:29, :87:21
+      automatic logic [3:0][31:0]  _GEN_8;	// src/main/scala/ultra/caches/icache/Icache.scala:15:25, :52:15, :64:9
+      automatic logic [3:0][255:0] _GEN_9;	// src/main/scala/ultra/caches/icache/Icache.scala:18:30, :52:15, :64:9
+      automatic logic [3:0][31:0]  _GEN_10;	// src/main/scala/ultra/caches/icache/Icache.scala:19:27, :52:15, :64:9, :78:27, :84:18
+      automatic logic [3:0]        _GEN_11;	// src/main/scala/ultra/caches/icache/Icache.scala:19:27, :52:15, :64:9, :78:27
+      automatic logic [3:0][1:0]   _GEN_12;	// src/main/scala/ultra/caches/icache/Icache.scala:52:15, :55:28, :64:9, :78:27
+      _GEN_5 = _tagRam_io_out_rdata[11] & _tagRam_io_out_rdata[10:0] == iReqBuf_pc[21:11];	// src/main/scala/ultra/caches/icache/Icache.scala:27:22, :39:24, :62:{28,47}, :63:{30,45,59}
+      _GEN_6 = _GEN_5 | ~io_bus_in_rrdy;	// src/main/scala/ultra/caches/icache/Icache.scala:19:27, :62:47, :64:9, :69:29
       _GEN_8 =
         {{_GEN_7 ? pcOutReg : iReqBuf_pc},
          {pcOutReg},
          {_GEN_5 ? iReqBuf_pc : pcOutReg},
-         {pcOutReg}};	// src/main/scala/ultra/caches/icache/Icache.scala:15:25, :18:30, :37:24, :44:14, :46:15, :56:47, :58:9
-      pcOutReg <= _GEN_8[stat];	// src/main/scala/ultra/caches/icache/Icache.scala:15:25, :38:21, :46:15, :58:9
+         {pcOutReg}};	// src/main/scala/ultra/caches/icache/Icache.scala:15:25, :18:30, :39:24, :50:14, :52:15, :62:47, :64:9
+      pcOutReg <= _GEN_8[stat];	// src/main/scala/ultra/caches/icache/Icache.scala:15:25, :40:21, :52:15, :64:9
       _GEN_9 =
         {{_GEN_7 ? rspns2coreReg_rdata : io_bus_in_rdata},
          {rspns2coreReg_rdata},
          {_GEN_5 ? _dataRam_io_out_rdata : rspns2coreReg_rdata},
-         {rspns2coreReg_rdata}};	// src/main/scala/ultra/caches/icache/Icache.scala:18:30, :31:23, :42:25, :46:15, :56:47, :58:9
-      rspns2coreReg_rdata <= _GEN_9[stat];	// src/main/scala/ultra/caches/icache/Icache.scala:18:30, :38:21, :46:15, :58:9
+         {rspns2coreReg_rdata}};	// src/main/scala/ultra/caches/icache/Icache.scala:18:30, :33:23, :48:25, :52:15, :62:47, :64:9
+      rspns2coreReg_rdata <= _GEN_9[stat];	// src/main/scala/ultra/caches/icache/Icache.scala:18:30, :40:21, :52:15, :64:9
       rspns2coreReg_rvalid <=
         ~_GEN
         & (_GEN_0
              ? _GEN_5 | rspns2coreReg_rvalid
-             : ~_GEN_1 & _GEN_3 | rspns2coreReg_rvalid);	// src/main/scala/ultra/caches/icache/Icache.scala:18:30, :27:32, :41:26, :46:15, :48:28, :56:47, :58:9, :79:29, :81:21
+             : ~_GEN_1 & _GEN_3 | rspns2coreReg_rvalid);	// src/main/scala/ultra/caches/icache/Icache.scala:18:30, :29:32, :47:26, :52:15, :54:28, :62:47, :64:9, :85:29, :87:21
       _GEN_10 =
         {{32'h80000000},
          {io_bus_in_rrdy ? iReqBuf_pc : req2busReg_pc},
          {_GEN_6 ? req2busReg_pc : iReqBuf_pc},
-         {req2busReg_pc}};	// src/main/scala/ultra/bus/UltraBusUtils.scala:19:13, src/main/scala/ultra/caches/icache/Icache.scala:19:27, :37:24, :46:15, :58:9, :63:29, :65:22, :72:27, :78:18
-      req2busReg_pc <= _GEN_10[stat];	// src/main/scala/ultra/caches/icache/Icache.scala:19:27, :38:21, :46:15, :58:9, :72:27, :78:18
+         {req2busReg_pc}};	// src/main/scala/ultra/bus/UltraBusUtils.scala:19:13, src/main/scala/ultra/caches/icache/Icache.scala:19:27, :39:24, :52:15, :64:9, :69:29, :71:22, :78:27, :84:18
+      req2busReg_pc <= _GEN_10[stat];	// src/main/scala/ultra/caches/icache/Icache.scala:19:27, :40:21, :52:15, :64:9, :78:27, :84:18
       _GEN_11 =
         {{~(&stat) & req2busReg_rreq},
          {io_bus_in_rrdy ? iReqBuf_rreq : req2busReg_rreq},
          {_GEN_6 ? req2busReg_rreq : iReqBuf_rreq},
-         {req2busReg_rreq}};	// src/main/scala/ultra/caches/icache/Icache.scala:19:27, :37:24, :38:21, :46:15, :58:9, :63:29, :65:22, :72:27, :78:18
-      req2busReg_rreq <= _GEN_11[stat];	// src/main/scala/ultra/caches/icache/Icache.scala:19:27, :38:21, :46:15, :58:9, :72:27
-      if (_GEN & io_core_in_rreq) begin	// src/main/scala/ultra/caches/icache/Icache.scala:37:24, :46:15, :49:28, :51:17
-        iReqBuf_pc <= io_core_in_pc;	// src/main/scala/ultra/caches/icache/Icache.scala:37:24
-        iReqBuf_rreq <= io_core_in_rreq;	// src/main/scala/ultra/caches/icache/Icache.scala:37:24
+         {req2busReg_rreq}};	// src/main/scala/ultra/caches/icache/Icache.scala:19:27, :39:24, :40:21, :52:15, :64:9, :69:29, :71:22, :78:27, :84:18
+      req2busReg_rreq <= _GEN_11[stat];	// src/main/scala/ultra/caches/icache/Icache.scala:19:27, :40:21, :52:15, :64:9, :78:27
+      if (_GEN & io_core_in_rreq) begin	// src/main/scala/ultra/caches/icache/Icache.scala:39:24, :52:15, :55:28, :57:17
+        iReqBuf_pc <= io_core_in_pc;	// src/main/scala/ultra/caches/icache/Icache.scala:39:24
+        iReqBuf_rreq <= io_core_in_rreq;	// src/main/scala/ultra/caches/icache/Icache.scala:39:24
       end
       _GEN_12 =
         {{_GEN_3 ? 2'h0 : stat},
          {io_bus_in_rrdy ? 2'h3 : stat},
          {_GEN_5 ? 2'h0 : {1'h1, io_bus_in_rrdy}},
-         {io_core_in_rreq ? 2'h1 : stat}};	// src/main/scala/ultra/bus/UltraBusUtils.scala:26:15, src/main/scala/ultra/caches/icache/Icache.scala:27:32, :38:21, :46:15, :49:28, :50:14, :56:47, :58:9, :60:14, :63:29, :64:16, :67:16, :72:27, :73:14, :79:29, :81:21, :84:14
-      stat <= _GEN_12[stat];	// src/main/scala/ultra/caches/icache/Icache.scala:38:21, :46:15, :49:28, :58:9, :72:27
+         {io_core_in_rreq ? 2'h1 : stat}};	// src/main/scala/ultra/bus/UltraBusUtils.scala:26:15, src/main/scala/ultra/caches/icache/Icache.scala:29:32, :40:21, :52:15, :55:28, :56:14, :62:47, :64:9, :66:14, :69:29, :70:16, :73:16, :78:27, :79:14, :85:29, :87:21, :90:14
+      stat <= _GEN_12[stat];	// src/main/scala/ultra/caches/icache/Icache.scala:40:21, :52:15, :55:28, :64:9, :78:27
     end
   end // always @(posedge)
   `ifdef ENABLE_INITIAL_REG_	// src/main/scala/ultra/caches/icache/Icache.scala:11:7
@@ -2527,29 +2529,29 @@ module Icache(	// src/main/scala/ultra/caches/icache/Icache.scala:11:7
         rspns2coreReg_rvalid = _RANDOM[4'h9][1];	// src/main/scala/ultra/caches/icache/Icache.scala:11:7, :18:30
         req2busReg_pc = {_RANDOM[4'h9][31:2], _RANDOM[4'hA][1:0]};	// src/main/scala/ultra/caches/icache/Icache.scala:11:7, :18:30, :19:27
         req2busReg_rreq = _RANDOM[4'hA][2];	// src/main/scala/ultra/caches/icache/Icache.scala:11:7, :19:27
-        iReqBuf_pc = {_RANDOM[4'hA][31:3], _RANDOM[4'hB][2:0]};	// src/main/scala/ultra/caches/icache/Icache.scala:11:7, :19:27, :37:24
-        iReqBuf_rreq = _RANDOM[4'hB][3];	// src/main/scala/ultra/caches/icache/Icache.scala:11:7, :37:24
-        stat = _RANDOM[4'hB][5:4];	// src/main/scala/ultra/caches/icache/Icache.scala:11:7, :37:24, :38:21
+        iReqBuf_pc = {_RANDOM[4'hA][31:3], _RANDOM[4'hB][2:0]};	// src/main/scala/ultra/caches/icache/Icache.scala:11:7, :19:27, :39:24
+        iReqBuf_rreq = _RANDOM[4'hB][3];	// src/main/scala/ultra/caches/icache/Icache.scala:11:7, :39:24
+        stat = _RANDOM[4'hB][5:4];	// src/main/scala/ultra/caches/icache/Icache.scala:11:7, :39:24, :40:21
       `endif // RANDOMIZE_REG_INIT
     end // initial
     `ifdef FIRRTL_AFTER_INITIAL	// src/main/scala/ultra/caches/icache/Icache.scala:11:7
       `FIRRTL_AFTER_INITIAL	// src/main/scala/ultra/caches/icache/Icache.scala:11:7
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
-  BlockMem tagRam (	// src/main/scala/ultra/caches/icache/Icache.scala:25:22
+  BlockMem tagRam (	// src/main/scala/ultra/caches/icache/Icache.scala:27:22
     .clock        (clock),
     .reset        (reset),
-    .io_in_wen    (cacheWen),	// src/main/scala/ultra/caches/icache/Icache.scala:23:29, :46:15
-    .io_in_wdata  (_GEN_4 ? 12'h0 : {1'h1, iReqBuf_pc[21:11]}),	// src/main/scala/ultra/bus/UltraBusUtils.scala:26:15, src/main/scala/ultra/caches/icache/Icache.scala:27:32, :37:24, :46:15, :81:{33,46}
-    .io_in_addr   (io_core_in_pc[10:5]),	// src/main/scala/ultra/caches/icache/Icache.scala:26:37
+    .io_in_wen    (cacheWen),	// src/main/scala/ultra/caches/icache/Icache.scala:23:29, :52:15
+    .io_in_wdata  (_GEN_4 ? 12'h0 : {1'h1, iReqBuf_pc[21:11]}),	// src/main/scala/ultra/bus/UltraBusUtils.scala:26:15, src/main/scala/ultra/caches/icache/Icache.scala:29:32, :39:24, :52:15, :87:{33,46}
+    .io_in_addr   (cacheAddr),	// src/main/scala/ultra/caches/icache/Icache.scala:41:17, :42:15, :44:15
     .io_out_rdata (_tagRam_io_out_rdata)
   );
-  BlockMem_1 dataRam (	// src/main/scala/ultra/caches/icache/Icache.scala:31:23
+  BlockMem_1 dataRam (	// src/main/scala/ultra/caches/icache/Icache.scala:33:23
     .clock        (clock),
     .reset        (reset),
-    .io_in_wen    (cacheWen),	// src/main/scala/ultra/caches/icache/Icache.scala:23:29, :46:15
-    .io_in_wdata  (_GEN_4 ? 256'h0 : io_bus_in_rdata),	// src/main/scala/ultra/caches/icache/Icache.scala:27:32, :33:30, :46:15
-    .io_in_addr   (io_core_in_pc[10:5]),	// src/main/scala/ultra/caches/icache/Icache.scala:26:37
+    .io_in_wen    (cacheWen),	// src/main/scala/ultra/caches/icache/Icache.scala:23:29, :52:15
+    .io_in_wdata  (_GEN_4 ? 256'h0 : io_bus_in_rdata),	// src/main/scala/ultra/caches/icache/Icache.scala:29:32, :35:30, :52:15
+    .io_in_addr   (cacheAddr),	// src/main/scala/ultra/caches/icache/Icache.scala:41:17, :42:15, :44:15
     .io_out_rdata (_dataRam_io_out_rdata)
   );
   assign io_core_out_rdata = rspns2coreReg_rdata;	// src/main/scala/ultra/caches/icache/Icache.scala:11:7, :18:30

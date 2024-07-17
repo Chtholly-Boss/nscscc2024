@@ -76,10 +76,18 @@ class UltraBus extends Module{
       dstat === D.E_LOAD_SINGLE
   )
   val isData2BaseRam = WireDefault(
-    dHasReq && io.dChannel.in.addr(31,22) === baseSramAddr
+    (dHasReq && io.dChannel.in.addr(31,22) === baseSramAddr) ||
+      dstat === D.B_WAIT ||
+      dstat === D.B_STORE ||
+      dstat === D.B_LOAD_LINE ||
+      dstat === D.B_LOAD_SINGLE
   )
   val isData2ExtRam = WireDefault(
-    dHasReq && io.dChannel.in.addr(31,22) === extSramAddr
+    (dHasReq && io.dChannel.in.addr(31,22) === extSramAddr) ||
+      dstat === D.E_WAIT ||
+      dstat === D.E_LOAD_LINE ||
+      dstat === D.E_LOAD_SINGLE ||
+      dstat === D.E_STORE
   )
   val isData2Uart = WireDefault(
     dHasReq && io.dChannel.in.addr(31,24) === uartAddr

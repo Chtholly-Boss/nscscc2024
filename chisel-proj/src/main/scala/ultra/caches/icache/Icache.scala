@@ -35,9 +35,6 @@ class Icache extends Module {
   dataRam.io.in.wdata := dataWdata
 
   val iReqBuf = RegInit(initInstReq)
-  when(io.core.in.rreq){
-    iReqBuf := io.core.in
-  }
   val stat = RegInit(IS.IDLE)
 
   def reqDone(data:Bits) = {
@@ -51,6 +48,7 @@ class Icache extends Module {
       rspns2coreReg.rvalid := false.B
       when(io.core.in.rreq){
         stat := IS.TAG_CHECK
+        iReqBuf := io.core.in
       }
     }
     is(IS.TAG_CHECK){

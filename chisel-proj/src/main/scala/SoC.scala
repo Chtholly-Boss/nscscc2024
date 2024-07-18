@@ -1,5 +1,5 @@
 import chisel3._
-import ultra.UltraCpu
+import ultra._
 import ultra.bus.sram.{BaseSram, ExtSram}
 import ultra.bus.sram.SramPorts._
 
@@ -14,7 +14,7 @@ class SoC extends Module {
       val rspns = new SramResponse
     })
   })
-  val cpu = Module(new UltraCpu)
+  val cpu = Module(new Cpu)
   val baseRam = Module(new BaseSram("./func/bintests/lab3.txt"))
   val extRam = Module(new ExtSram("./func/bintests/matrix.txt"))
 

@@ -30,23 +30,44 @@ class AlphaExePlugin extends Module {
   import ExePluginState._
   val expStat = RegInit(IDLE)
 
-  rspns2coreRef.rrdy := expStat === IDLE
-  rspns2coreRef.wrdy := expStat === IDLE
-    switch(expStat){
+  /**
+   * Believe me,it would work
+   * the rvalid and wdone signal from bus is synchronous,that is,
+   * when plugin receive one of them,the bus dstat is IDLE,which can process another req
+   */
+  rspns2coreRef.rrdy :=
+    (expStat === IDLE) ||
+      (expStat === LOADING && io.bus.in.rvalid) ||
+      (expStat === STORING && io.bus.in.wdone)
+  rspns2coreRef.wrdy :=
+    (expStat === IDLE) ||
+      (expStat === STORING && io.bus.in.wdone) ||
+      (expStat === LOADING && io.bus.in.rvalid)
+
+  def processStore() = {
+    expStat := STORE_CACHE
+    req2busRef.wreq := true.B
+    req2busRef.addr := io.core.in.addr
+    req2busRef.wdata := io.core.in.wdata
+  }
+  def processLoad() = {
+    expStat := LOADING
+    req2busRef.byteSelN := io.core.in.byteSelN
+    req2busRef.rreq := true.B
+    req2busRef.addr := io.core.in.addr
+    req2busRef.rtype := io.core.in.uncache
+  }
+  def processReq(coreReq:ExeAsideOut) = {
+    when(coreReq.rreq){
+      processLoad()
+    }
+    when(coreReq.wreq){
+      processStore()
+    }
+  }
+  switch(expStat){
     is(IDLE){
-      when(io.core.in.rreq){
-        expStat := LOADING
-        req2busRef.byteSelN := io.core.in.byteSelN
-        req2busRef.rreq := true.B
-        req2busRef.addr := io.core.in.addr
-        req2busRef.rtype := io.core.in.uncache
-      }
-      when(io.core.in.wreq){
-        expStat := STORE_CACHE
-        req2busRef.wreq := true.B
-        req2busRef.addr := io.core.in.addr
-        req2busRef.wdata := io.core.in.wdata
-      }
+      processReq(io.core.in)
     }
     is(STORE_CACHE){
       expStat := STORING
@@ -58,6 +79,7 @@ class AlphaExePlugin extends Module {
     is(STORING){
       when(io.bus.in.wdone){
         expStat := IDLE
+        processReq(io.core.in)
       }
     }
     is(LOADING){
@@ -65,6 +87,7 @@ class AlphaExePlugin extends Module {
         expStat := IDLE
         rspns2coreRef.rvalid := io.bus.in.rvalid
         rspns2coreRef.rdata := io.bus.in.rdata(31,0)
+        processReq(io.core.in)
       }
     }
   }

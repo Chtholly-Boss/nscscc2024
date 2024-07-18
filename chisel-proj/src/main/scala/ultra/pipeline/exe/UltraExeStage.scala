@@ -5,6 +5,7 @@ import UltraExePorts.ExeIo
 import UltraExeUtils._
 import UltraExeParams.{ExeType => tp}
 import UltraExeParams._
+import ultra.pipeline.exe.UltraExePorts.ExeAsidePorts.ExeAsideOut
 class UltraExeStage extends Module {
   val io = IO(new ExeIo)
   // alias the decode info
@@ -18,8 +19,7 @@ class UltraExeStage extends Module {
     IDLE,
     LOAD_BLOCK,
     LOADING,
-    STORE_BLOCK,
-    STORING
+    STORE_BLOCK
     = Value
   }
   import ExeState._
@@ -135,47 +135,23 @@ class UltraExeStage extends Module {
   asideOutWire.addr := alu.io.out.res
   asideOutWire.rreq := decode.bits.exeOp.opType === tp.load
   asideOutWire.wreq := decode.bits.exeOp.opType === tp.store
-  asideOutWire.byteSelN := "b0000".U
   asideOutWire.wdata := regRight
-  val asideOutBuf = RegInit(initExeAsideOut)
-  def selByte(addr:UInt):UInt = {
-    val byteSelN = WireDefault(0.U(4.W))
-    switch(addr(1,0)){
-      is("b00".U){
-        byteSelN := "b1110".U
-      }
-      is("b01".U){
-        byteSelN := "b1101".U
-      }
-      is("b10".U){
-        byteSelN := "b1011".U
-      }
-      is("b11".U){
-        byteSelN := "b0111".U
-      }
-    }
-    byteSelN
+  when(
+    decode.bits.exeOp.opFunc === Store.st_b ||
+      decode.bits.exeOp.opFunc === Load.ld_b
+  ){
+    asideOutWire.byteSelN := selByte(asideOutWire.addr)
+  }.otherwise{
+    asideOutWire.byteSelN := "b0000".U
   }
-  def selByteInWords(byteSelN:UInt,data:UInt):UInt = {
-    val res = WireDefault(0.U(32.W))
-    switch(byteSelN){
-      is("b1110".U){
-        res := data(7,0)
-      }
-      is("b1101".U){
-        res := data(15,8)
-      }
-      is("b1011".U){
-        res := data(23,16)
-      }
-      is("b0111".U){
-        res := data(31,24)
-      }
-      is("b0000".U){
-        res := data
-      }
-    }
-    res
+  val asideOutBuf = RegInit(initExeAsideOut)
+  def processStore(req:ExeAsideOut) = {
+    exstat := IDLE
+    io.aside.out := req
+  }
+  def processLoad(req:ExeAsideOut) = {
+    exstat := LOADING
+    io.aside.out := req
   }
   // Select a path based on opType
   def exePathSelect() = {
@@ -191,30 +167,16 @@ class UltraExeStage extends Module {
       }
       is(tp.load){
         asideOutBuf := asideOutWire
-        when(decode.bits.exeOp.opFunc === Load.ld_b){
-          asideOutBuf.byteSelN := selByte(asideOutWire.addr)
-        }
         when(io.aside.in.rrdy){
-          io.aside.out := asideOutWire
-          when(decode.bits.exeOp.opFunc === Load.ld_b){
-            io.aside.out.byteSelN := selByte(asideOutWire.addr)
-          }
-          exstat := LOADING
+          processLoad(asideOutWire)
         }.otherwise{
           exstat := LOAD_BLOCK
         }
       }
       is(tp.store){
         asideOutBuf := asideOutWire
-        when(decode.bits.exeOp.opFunc === Store.st_b){
-          asideOutBuf.byteSelN := selByte(asideOutWire.addr)
-        }
         when(io.aside.in.wrdy){
-          exstat := STORING
-          io.aside.out := asideOutWire
-          when(decode.bits.exeOp.opFunc === Store.st_b){
-            io.aside.out.byteSelN := selByte(asideOutWire.addr)
-          }
+          processStore(asideOutWire)
         }.otherwise{
           exstat := STORE_BLOCK
         }
@@ -235,8 +197,7 @@ class UltraExeStage extends Module {
     is(LOAD_BLOCK){
       default()
       when(io.aside.in.rrdy){
-        exstat := LOADING
-        io.aside.out := asideOutBuf
+        processLoad(asideOutBuf)
       }.otherwise{
         exstat := LOAD_BLOCK
       }
@@ -255,22 +216,9 @@ class UltraExeStage extends Module {
     is(STORE_BLOCK){
       default()
       when(io.aside.in.wrdy){
-        exstat := STORING
-        io.aside.out := asideOutBuf
+        processStore(asideOutBuf)
       }.otherwise{
         exstat := STORE_BLOCK
-      }
-    }
-    is(STORING){
-      default()
-      when(io.aside.in.wdone){
-        when(decode.req){
-          io.pipe.decode.out.ack := true.B
-          curWctrlBuf.bits := decode.bits.wCtrl
-          exePathSelect()
-        }
-      }.otherwise{
-        exstat := STORING
       }
     }
   }

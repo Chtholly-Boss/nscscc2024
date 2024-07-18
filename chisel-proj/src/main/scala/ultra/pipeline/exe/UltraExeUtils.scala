@@ -1,5 +1,6 @@
 package ultra.pipeline.exe
 import chisel3._
+import chisel3.util._
 import ultra.pipeline.regfile.RegfileUtils._
 import UltraExePorts.ExeAsidePorts._
 import UltraExePorts.AluPorts._
@@ -57,5 +58,44 @@ object UltraExeUtils {
     init.isMispredict := false.B
     init.npc := 0.U
     init
+  }
+  def selByte(addr:UInt):UInt = {
+    val byteSelN = WireDefault(0.U(4.W))
+    switch(addr(1,0)){
+      is("b00".U){
+        byteSelN := "b1110".U
+      }
+      is("b01".U){
+        byteSelN := "b1101".U
+      }
+      is("b10".U){
+        byteSelN := "b1011".U
+      }
+      is("b11".U){
+        byteSelN := "b0111".U
+      }
+    }
+    byteSelN
+  }
+  def selByteInWords(byteSelN:UInt,data:UInt):UInt = {
+    val res = WireDefault(0.U(32.W))
+    switch(byteSelN){
+      is("b1110".U){
+        res := data(7,0)
+      }
+      is("b1101".U){
+        res := data(15,8)
+      }
+      is("b1011".U){
+        res := data(23,16)
+      }
+      is("b0111".U){
+        res := data(31,24)
+      }
+      is("b0000".U){
+        res := data
+      }
+    }
+    res
   }
 }

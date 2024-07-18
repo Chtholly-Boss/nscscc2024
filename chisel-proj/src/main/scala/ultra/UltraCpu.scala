@@ -2,8 +2,7 @@ package ultra
 import chisel3._
 import ultra.bus.UltraBus
 import ultra.bus.sram.SramPorts._
-import ultra.caches.FetchPlugin
-import ultra.caches.ExePlugin
+import ultra.caches._
 import ultra.pipeline.fetch.UltraFetchStage
 import ultra.pipeline.regfile.Regfile
 import ultra.pipeline.decode.UltraDecodeStage
@@ -50,7 +49,7 @@ class UltraCpu extends Module {
   decodeStage.io.pipe.fetch.out <> fetchStage.io.pipe.in
 
   val exeStage = Module(new UltraExeStage)
-  val exePlugin = Module(new ExePlugin)
+  val exePlugin = Module(new AlphaExePlugin)
   exeStage.io.aside.in <> exePlugin.io.core.out
   exeStage.io.aside.out <> exePlugin.io.core.in
   exePlugin.io.bus.out <> bus.io.dChannel.in

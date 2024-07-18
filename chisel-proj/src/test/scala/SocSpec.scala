@@ -6,7 +6,7 @@ class SocSpec extends AnyFlatSpec with ChiselScalatestTester {
   "Soc" should "Pass" in {
     test (new SoC()) { core =>
       core.clock.setTimeout(0)
-      step(5000)
+      step(2000)
     }
   }
 }

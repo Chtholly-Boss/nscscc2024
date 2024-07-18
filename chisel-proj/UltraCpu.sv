@@ -59,18 +59,17 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
                  reset,	// src/main/scala/ultra/bus/UltraBus.scala:10:7
   input  [31:0]  io_iChannel_in_pc,	// src/main/scala/ultra/bus/UltraBus.scala:11:14
   input          io_iChannel_in_rreq,	// src/main/scala/ultra/bus/UltraBus.scala:11:14
-  output [255:0] io_iChannel_out_rdata,	// src/main/scala/ultra/bus/UltraBus.scala:11:14
+  output [511:0] io_iChannel_out_rdata,	// src/main/scala/ultra/bus/UltraBus.scala:11:14
   output         io_iChannel_out_rrdy,	// src/main/scala/ultra/bus/UltraBus.scala:11:14
                  io_iChannel_out_rvalid,	// src/main/scala/ultra/bus/UltraBus.scala:11:14
   input          io_dChannel_in_rreq,	// src/main/scala/ultra/bus/UltraBus.scala:11:14
+                 io_dChannel_in_rtype,	// src/main/scala/ultra/bus/UltraBus.scala:11:14
                  io_dChannel_in_wreq,	// src/main/scala/ultra/bus/UltraBus.scala:11:14
   input  [3:0]   io_dChannel_in_byteSelN,	// src/main/scala/ultra/bus/UltraBus.scala:11:14
   input  [31:0]  io_dChannel_in_addr,	// src/main/scala/ultra/bus/UltraBus.scala:11:14
                  io_dChannel_in_wdata,	// src/main/scala/ultra/bus/UltraBus.scala:11:14
   output [63:0]  io_dChannel_out_rdata,	// src/main/scala/ultra/bus/UltraBus.scala:11:14
-  output         io_dChannel_out_rrdy,	// src/main/scala/ultra/bus/UltraBus.scala:11:14
-                 io_dChannel_out_rvalid,	// src/main/scala/ultra/bus/UltraBus.scala:11:14
-                 io_dChannel_out_wrdy,	// src/main/scala/ultra/bus/UltraBus.scala:11:14
+  output         io_dChannel_out_rvalid,	// src/main/scala/ultra/bus/UltraBus.scala:11:14
                  io_dChannel_out_wdone,	// src/main/scala/ultra/bus/UltraBus.scala:11:14
   input  [31:0]  io_baseRam_in_rData,	// src/main/scala/ultra/bus/UltraBus.scala:11:14
   output [31:0]  io_baseRam_out_wData,	// src/main/scala/ultra/bus/UltraBus.scala:11:14
@@ -106,7 +105,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
   reg          extramReqReg_oe;	// src/main/scala/ultra/bus/UltraBus.scala:37:29
   reg          extramReqReg_we;	// src/main/scala/ultra/bus/UltraBus.scala:37:29
   reg  [31:0]  iReqReg_pc;	// src/main/scala/ultra/bus/UltraBus.scala:44:24
-  reg  [255:0] iRspnsReg_rdata;	// src/main/scala/ultra/bus/UltraBus.scala:48:26
+  reg  [511:0] iRspnsReg_rdata;	// src/main/scala/ultra/bus/UltraBus.scala:48:26
   reg          iRspnsReg_rrdy;	// src/main/scala/ultra/bus/UltraBus.scala:48:26
   reg          iRspnsReg_rvalid;	// src/main/scala/ultra/bus/UltraBus.scala:48:26
   wire         dHasReq = io_dChannel_in_rreq | io_dChannel_in_wreq;	// src/main/scala/ultra/bus/UltraBus.scala:51:25
@@ -117,20 +116,18 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
   reg  [31:0]  dReqReg_addr;	// src/main/scala/ultra/bus/UltraBus.scala:53:24
   reg  [31:0]  dReqReg_wdata;	// src/main/scala/ultra/bus/UltraBus.scala:53:24
   reg  [63:0]  dRspnsReg_rdata;	// src/main/scala/ultra/bus/UltraBus.scala:57:26
-  reg          dRspnsReg_rrdy;	// src/main/scala/ultra/bus/UltraBus.scala:57:26
   reg          dRspnsReg_rvalid;	// src/main/scala/ultra/bus/UltraBus.scala:57:26
-  reg          dRspnsReg_wrdy;	// src/main/scala/ultra/bus/UltraBus.scala:57:26
   reg          dRspnsReg_wdone;	// src/main/scala/ultra/bus/UltraBus.scala:57:26
   reg  [1:0]   istat;	// src/main/scala/ultra/bus/UltraBus.scala:62:22
   reg  [3:0]   dstat;	// src/main/scala/ultra/bus/UltraBus.scala:65:22
   wire         isData2Uart = dHasReq & io_dChannel_in_addr[31:24] == 8'hBF;	// src/main/scala/ultra/bus/UltraBus.scala:51:25, :93:{13,35,43}
-  reg  [3:0]   iWordCnt_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg  [1:0]   iCycleCnt_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg  [255:0] idata;	// src/main/scala/ultra/bus/UltraBus.scala:99:22
+  reg  [4:0]   iWordCnt_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
+  reg          wrap;	// src/main/scala/chisel3/util/Counter.scala:61:40
+  reg  [511:0] idata;	// src/main/scala/ultra/bus/UltraBus.scala:99:22
   reg  [1:0]   dWordCnt_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg  [1:0]   dCycleCnt_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
+  reg          wrap_2;	// src/main/scala/chisel3/util/Counter.scala:61:40
   reg  [63:0]  dData;	// src/main/scala/ultra/bus/UltraBus.scala:156:22
-  wire         _GEN = dstat == 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:65:22, :220:16
+  wire         _GEN = dstat == 4'h0;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :126:57, :220:16
   wire         _GEN_0 = io_dChannel_in_addr[3:0] == 4'hC;	// src/main/scala/ultra/bus/UltraBus.scala:254:{35,41}
   wire         _GEN_1 = io_dChannel_in_addr[3:0] == 4'h8;	// src/main/scala/ultra/bus/UltraBus.scala:74:11, :254:{35,41}
   wire         _GEN_2 = _GEN & isData2Uart;	// src/main/scala/ultra/bus/UltraBus.scala:25:29, :93:13, :220:16, :223:16, :252:24, :254:41
@@ -140,37 +137,35 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
       baseramReqReg_wData <= 32'h0;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, src/main/scala/ultra/bus/sram/SramUtils.scala:14:16
       baseramReqReg_addr <= 20'h0;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, src/main/scala/ultra/bus/sram/SramUtils.scala:13:15
       baseramReqReg_byteSelN <= 4'hF;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, src/main/scala/ultra/bus/sram/SramUtils.scala:12:19
-      baseramReqReg_ce <= 1'h1;	// src/main/scala/ultra/bus/UltraBus.scala:11:14, :36:30, :37:29, :118:17, :180:22, :183:23, :187:23, :200:23, :203:22, :207:22
-      baseramReqReg_oe <= 1'h1;	// src/main/scala/ultra/bus/UltraBus.scala:11:14, :36:30, :37:29, :118:17, :180:22, :183:23, :187:23, :200:23, :203:22, :207:22
-      baseramReqReg_we <= 1'h1;	// src/main/scala/ultra/bus/UltraBus.scala:11:14, :36:30, :37:29, :118:17, :180:22, :183:23, :187:23, :200:23, :203:22, :207:22
+      baseramReqReg_ce <= 1'h1;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, src/main/scala/ultra/bus/sram/SramUtils.scala:9:13
+      baseramReqReg_oe <= 1'h1;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, src/main/scala/ultra/bus/sram/SramUtils.scala:9:13
+      baseramReqReg_we <= 1'h1;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, src/main/scala/ultra/bus/sram/SramUtils.scala:9:13
       extramReqReg_wData <= 32'h0;	// src/main/scala/ultra/bus/UltraBus.scala:37:29, src/main/scala/ultra/bus/sram/SramUtils.scala:14:16
       extramReqReg_addr <= 20'h0;	// src/main/scala/ultra/bus/UltraBus.scala:37:29, src/main/scala/ultra/bus/sram/SramUtils.scala:13:15
       extramReqReg_byteSelN <= 4'hF;	// src/main/scala/ultra/bus/UltraBus.scala:37:29, src/main/scala/ultra/bus/sram/SramUtils.scala:12:19
-      extramReqReg_ce <= 1'h1;	// src/main/scala/ultra/bus/UltraBus.scala:11:14, :37:29, :118:17, :180:22, :183:23, :187:23, :200:23, :203:22, :207:22
-      extramReqReg_oe <= 1'h1;	// src/main/scala/ultra/bus/UltraBus.scala:11:14, :37:29, :118:17, :180:22, :183:23, :187:23, :200:23, :203:22, :207:22
-      extramReqReg_we <= 1'h1;	// src/main/scala/ultra/bus/UltraBus.scala:11:14, :37:29, :118:17, :180:22, :183:23, :187:23, :200:23, :203:22, :207:22
+      extramReqReg_ce <= 1'h1;	// src/main/scala/ultra/bus/UltraBus.scala:37:29, src/main/scala/ultra/bus/sram/SramUtils.scala:9:13
+      extramReqReg_oe <= 1'h1;	// src/main/scala/ultra/bus/UltraBus.scala:37:29, src/main/scala/ultra/bus/sram/SramUtils.scala:9:13
+      extramReqReg_we <= 1'h1;	// src/main/scala/ultra/bus/UltraBus.scala:37:29, src/main/scala/ultra/bus/sram/SramUtils.scala:9:13
       iReqReg_pc <= 32'h80000000;	// src/main/scala/ultra/bus/UltraBus.scala:44:24, src/main/scala/ultra/bus/UltraBusUtils.scala:19:13
-      iRspnsReg_rdata <= 256'h0;	// src/main/scala/ultra/bus/UltraBus.scala:48:26, :99:22
-      iRspnsReg_rrdy <= 1'h1;	// src/main/scala/ultra/bus/UltraBus.scala:11:14, :37:29, :48:26, :118:17, :180:22, :183:23, :187:23, :200:23, :203:22, :207:22
-      iRspnsReg_rvalid <= 1'h0;	// src/main/scala/ultra/bus/UltraBus.scala:48:26, :180:22, :200:23
-      dReqReg_rreq <= 1'h0;	// src/main/scala/ultra/bus/UltraBus.scala:53:24, :180:22, :200:23
-      dReqReg_rtype <= 1'h0;	// src/main/scala/ultra/bus/UltraBus.scala:53:24, :180:22, :200:23
-      dReqReg_wreq <= 1'h0;	// src/main/scala/ultra/bus/UltraBus.scala:53:24, :180:22, :200:23
-      dReqReg_byteSelN <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:53:24
+      iRspnsReg_rdata <= 512'h0;	// src/main/scala/ultra/bus/UltraBus.scala:48:26, :99:22
+      iRspnsReg_rrdy <= 1'h1;	// src/main/scala/ultra/bus/UltraBus.scala:48:26, src/main/scala/ultra/bus/sram/SramUtils.scala:9:13
+      iRspnsReg_rvalid <= 1'h0;	// src/main/scala/ultra/bus/UltraBus.scala:24:29, :48:26
+      dReqReg_rreq <= 1'h0;	// src/main/scala/ultra/bus/UltraBus.scala:24:29, :53:24
+      dReqReg_rtype <= 1'h0;	// src/main/scala/ultra/bus/UltraBus.scala:24:29, :53:24
+      dReqReg_wreq <= 1'h0;	// src/main/scala/ultra/bus/UltraBus.scala:24:29, :53:24
+      dReqReg_byteSelN <= 4'h0;	// src/main/scala/ultra/bus/UltraBus.scala:53:24, :126:57
       dReqReg_addr <= 32'h0;	// src/main/scala/ultra/bus/UltraBus.scala:53:24, src/main/scala/ultra/bus/sram/SramUtils.scala:14:16
       dReqReg_wdata <= 32'h0;	// src/main/scala/ultra/bus/UltraBus.scala:53:24, src/main/scala/ultra/bus/sram/SramUtils.scala:14:16
       dRspnsReg_rdata <= 64'h0;	// src/main/scala/ultra/bus/UltraBus.scala:57:26, :156:22
-      dRspnsReg_rrdy <= 1'h1;	// src/main/scala/ultra/bus/UltraBus.scala:11:14, :37:29, :57:26, :118:17, :180:22, :183:23, :187:23, :200:23, :203:22, :207:22
-      dRspnsReg_rvalid <= 1'h0;	// src/main/scala/ultra/bus/UltraBus.scala:57:26, :180:22, :200:23
-      dRspnsReg_wrdy <= 1'h1;	// src/main/scala/ultra/bus/UltraBus.scala:11:14, :37:29, :57:26, :118:17, :180:22, :183:23, :187:23, :200:23, :203:22, :207:22
-      dRspnsReg_wdone <= 1'h0;	// src/main/scala/ultra/bus/UltraBus.scala:57:26, :180:22, :200:23
+      dRspnsReg_rvalid <= 1'h0;	// src/main/scala/ultra/bus/UltraBus.scala:24:29, :57:26
+      dRspnsReg_wdone <= 1'h0;	// src/main/scala/ultra/bus/UltraBus.scala:24:29, :57:26
       istat <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:62:22
-      dstat <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:65:22
-      iWordCnt_value <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
-      iCycleCnt_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
-      idata <= 256'h0;	// src/main/scala/ultra/bus/UltraBus.scala:99:22
+      dstat <= 4'h0;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :126:57
+      iWordCnt_value <= 5'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
+      wrap <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:24:29
+      idata <= 512'h0;	// src/main/scala/ultra/bus/UltraBus.scala:99:22
       dWordCnt_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
-      dCycleCnt_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
+      wrap_2 <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:24:29
       dData <= 64'h0;	// src/main/scala/ultra/bus/UltraBus.scala:156:22
     end
     else begin	// src/main/scala/ultra/bus/UltraBus.scala:10:7
@@ -195,7 +190,6 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
       automatic logic            _GEN_11;	// src/main/scala/ultra/bus/UltraBus.scala:48:26, :112:20, :118:17, :131:41
       automatic logic            _GEN_12;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :131:41, :133:23
       automatic logic            _GEN_13;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :131:41, :133:23
-      automatic logic            wrap;	// src/main/scala/chisel3/util/Counter.scala:73:24
       automatic logic [19:0]     _baseramReqReg_addr_T;	// src/main/scala/ultra/bus/UltraBus.scala:137:52
       automatic logic            _GEN_14;	// src/main/scala/ultra/bus/UltraBus.scala:118:17
       automatic logic [19:0]     baseramReqReg_sig_1_addr;	// src/main/scala/ultra/bus/UltraBus.scala:146:48
@@ -206,34 +200,33 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
       automatic logic            _GEN_19;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :118:17, :143:43
       automatic logic            _GEN_20;	// src/main/scala/ultra/bus/UltraBus.scala:118:17, :121:21
       automatic logic [3:0][1:0] _GEN_21;	// src/main/scala/ultra/bus/UltraBus.scala:62:22, :118:17, :121:21, :131:41, :143:43
-      _isData2BaseRam_T_9 = dstat == 4'h3;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :69:13, :180:22, :182:15
+      _isData2BaseRam_T_9 = dstat == 4'h3;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :69:13, :182:15
       _isData2BaseRam_T_7 = dstat == 4'h4;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :70:13, :186:15
       _isData2BaseRam_T_5 = dstat == 4'h7;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :71:13, :195:11
       baseramBusy =
         istat == 2'h2 | _isData2BaseRam_T_9 | _isData2BaseRam_T_7 | _isData2BaseRam_T_5;	// src/main/scala/ultra/bus/UltraBus.scala:62:22, :68:11, :69:13, :70:{13,31}, :71:13
       _isData2ExtRam_T_9 = dstat == 4'h8;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :74:11
       _isData2ExtRam_T_5 = dstat == 4'h6;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :75:13, :206:15
-      _isData2ExtRam_T_7 = dstat == 4'h5;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :76:13, :200:23, :202:15
+      _isData2ExtRam_T_7 = dstat == 4'h5;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :76:13, :202:15
       extramBusy = _isData2ExtRam_T_9 | _isData2ExtRam_T_5 | _isData2ExtRam_T_7;	// src/main/scala/ultra/bus/UltraBus.scala:74:11, :75:{13,31}, :76:13
       isData2BaseRam =
         dHasReq & io_dChannel_in_addr[31:22] == 10'h200 | dstat == 4'h1
         | _isData2BaseRam_T_5 | _isData2BaseRam_T_7 | _isData2BaseRam_T_9;	// src/main/scala/ultra/bus/UltraBus.scala:51:25, :65:22, :69:13, :70:13, :71:13, :79:{14,36,44}, :80:13, :82:31, :228:17
       _GEN_4 = istat == 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:62:22, :118:17
       _GEN_5 = isData2BaseRam | baseramBusy;	// src/main/scala/ultra/bus/UltraBus.scala:70:31, :82:31, :123:29
-      baseramReqReg_sig_addr = {io_iChannel_in_pc[21:5], 3'h0};	// src/main/scala/ultra/bus/UltraBus.scala:126:{39,57}
+      baseramReqReg_sig_addr = {io_iChannel_in_pc[21:6], 4'h0};	// src/main/scala/ultra/bus/UltraBus.scala:126:{39,57}
       _GEN_6 = _GEN_5 ? 2'h1 : 2'h2;	// src/main/scala/ultra/bus/UltraBus.scala:68:11, :101:11, :123:{29,45}, :124:17
       _GEN_7 = ~io_iChannel_in_rreq | _GEN_5;	// src/main/scala/ultra/bus/UltraBus.scala:99:22, :121:21, :123:{29,45}
       _GEN_8 = _GEN_7 & baseramReqReg_oe;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :99:22, :121:21, :123:45
       _GEN_9 = io_iChannel_in_rreq & ~_GEN_5 | baseramReqReg_we;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :105:19, :121:21, :123:{29,45}
       _GEN_10 = istat == 2'h2;	// src/main/scala/ultra/bus/UltraBus.scala:62:22, :68:11, :118:17
-      wrap_1 = iWordCnt_value == 4'h8;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:74:11, :131:27
+      wrap_1 = iWordCnt_value == 5'h10;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:131:27
       _GEN_11 = _GEN_10 & wrap_1;	// src/main/scala/ultra/bus/UltraBus.scala:48:26, :112:20, :118:17, :131:{27,41}
       _GEN_12 = wrap_1 | baseramReqReg_oe;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :131:{27,41}, :133:23
       _GEN_13 = wrap_1 | baseramReqReg_we;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :131:{27,41}, :133:23
-      wrap = iCycleCnt_value == 2'h2;	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24, src/main/scala/ultra/bus/UltraBus.scala:68:11
       _baseramReqReg_addr_T = baseramReqReg_addr + 20'h1;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :137:52
       _GEN_14 = istat == 2'h1;	// src/main/scala/ultra/bus/UltraBus.scala:62:22, :118:17, :124:17
-      baseramReqReg_sig_1_addr = {iReqReg_pc[21:5], 3'h0};	// src/main/scala/ultra/bus/UltraBus.scala:44:24, :126:57, :146:{30,48}
+      baseramReqReg_sig_1_addr = {iReqReg_pc[21:6], 4'h0};	// src/main/scala/ultra/bus/UltraBus.scala:44:24, :126:57, :146:{30,48}
       _GEN_15 = ~_GEN_14 | _GEN_5;	// src/main/scala/ultra/bus/UltraBus.scala:99:22, :118:17, :123:29, :143:43
       _GEN_16 =
         _GEN_4
@@ -244,28 +237,29 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
       _GEN_19 = _GEN_14 & ~_GEN_5 | baseramReqReg_we;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :105:19, :118:17, :123:{29,45}, :143:43
       _GEN_20 = _GEN_4 ? _GEN_9 : _GEN_10 ? _GEN_13 : _GEN_19;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :118:17, :121:21, :123:45, :131:41, :133:23, :143:43
       if (_GEN) begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16
-        automatic logic isData2ExtRam;	// src/main/scala/ultra/bus/UltraBus.scala:89:33
-        automatic logic _GEN_22;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :225:27, :227:26, :228:17, :233:37
-        automatic logic _GEN_23;	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/UltraBus.scala:230:37, :233:37
-        automatic logic _GEN_24;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:225:27, :227:26
-        automatic logic _GEN_25;	// src/main/scala/ultra/bus/UltraBus.scala:118:17, :225:27, :227:26
-        automatic logic _GEN_26;	// src/main/scala/ultra/bus/UltraBus.scala:225:27, :239:26, :241:25
-        automatic logic _GEN_27;	// src/main/scala/ultra/bus/UltraBus.scala:37:29, :239:26, :241:25
-        automatic logic _GEN_28;	// src/main/scala/ultra/bus/UltraBus.scala:239:26, :252:24, :254:41
+        automatic logic       isData2ExtRam;	// src/main/scala/ultra/bus/UltraBus.scala:89:33
+        automatic logic [3:0] _GEN_22;	// src/main/scala/ultra/bus/UltraBus.scala:180:22, :182:15
+        automatic logic       _GEN_23;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:225:27, :227:26
+        automatic logic       _GEN_24;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :225:27, :227:26, :228:17, :233:37
+        automatic logic       _GEN_25;	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/UltraBus.scala:230:37, :233:37
+        automatic logic       _GEN_26;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:225:27, :227:26
+        automatic logic       _GEN_27;	// src/main/scala/ultra/bus/UltraBus.scala:118:17, :225:27, :227:26
+        automatic logic [3:0] _GEN_28;	// src/main/scala/ultra/bus/UltraBus.scala:200:23, :202:15
+        automatic logic       _GEN_29;	// src/main/scala/ultra/bus/UltraBus.scala:225:27, :239:26, :241:25
+        automatic logic       _GEN_30;	// src/main/scala/ultra/bus/UltraBus.scala:225:27, :239:26, :241:25
         isData2ExtRam =
           dHasReq & io_dChannel_in_addr[31:22] == 10'h201 | dstat == 4'h2
           | _isData2ExtRam_T_5 | _isData2ExtRam_T_7 | _isData2ExtRam_T_9;	// src/main/scala/ultra/bus/UltraBus.scala:51:25, :65:22, :74:11, :75:13, :76:13, :79:36, :86:{14,44}, :87:13, :89:33, :242:17
-        _GEN_22 = isData2BaseRam & baseramBusy;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :70:31, :82:31, :225:27, :227:26, :228:17, :233:37
-        _GEN_23 = io_dChannel_in_wreq | io_dChannel_in_rreq;	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/UltraBus.scala:230:37, :233:37
-        _GEN_24 = ~isData2BaseRam | baseramBusy | ~_GEN_23;	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/UltraBus.scala:70:31, :82:31, :225:27, :227:26, :230:37, :233:37
-        _GEN_25 = ~isData2BaseRam | baseramBusy;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:70:31, :82:31, :118:17, :225:27, :227:26
-        _GEN_26 = ~isData2ExtRam | extramBusy;	// src/main/scala/ultra/bus/UltraBus.scala:75:31, :89:33, :159:20, :225:27, :239:26, :241:25
-        _GEN_27 = ~isData2ExtRam | extramBusy | ~_GEN_23;	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/UltraBus.scala:37:29, :75:31, :89:33, :159:20, :225:27, :227:26, :230:37, :233:37, :239:26, :241:25
-        _GEN_28 =
-          isData2Uart
-            ? _GEN_0 | _GEN_1 & (io_dChannel_in_wreq | io_dChannel_in_rreq)
-            : ~isData2ExtRam & ~isData2BaseRam;	// src/main/scala/ultra/bus/UltraBus.scala:24:29, :82:31, :89:33, :93:13, :159:20, :166:20, :173:20, :222:17, :225:27, :239:26, :252:24, :254:41, :259:38, :263:38, src/main/scala/ultra/bus/sram/SramUtils.scala:9:13
-        if (_GEN_25) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17, :225:27, :227:26
+        _GEN_22 = io_dChannel_in_rtype ? 4'h3 : 4'h4;	// src/main/scala/ultra/bus/UltraBus.scala:180:22, :182:15, :186:15
+        _GEN_23 = ~isData2BaseRam | baseramBusy | ~io_dChannel_in_rreq;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:70:31, :82:31, :118:17, :180:22, :183:23, :187:23, :225:27, :227:26, :230:37
+        _GEN_24 = isData2BaseRam & baseramBusy;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :70:31, :82:31, :225:27, :227:26, :228:17, :233:37
+        _GEN_25 = io_dChannel_in_wreq | io_dChannel_in_rreq;	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/UltraBus.scala:230:37, :233:37
+        _GEN_26 = ~isData2BaseRam | baseramBusy | ~_GEN_25;	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/UltraBus.scala:70:31, :82:31, :225:27, :227:26, :230:37, :233:37
+        _GEN_27 = ~isData2BaseRam | baseramBusy;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:70:31, :82:31, :118:17, :225:27, :227:26
+        _GEN_28 = io_dChannel_in_rtype ? 4'h5 : 4'h6;	// src/main/scala/ultra/bus/UltraBus.scala:200:23, :202:15, :206:15
+        _GEN_29 = ~isData2ExtRam | extramBusy;	// src/main/scala/ultra/bus/UltraBus.scala:75:31, :89:33, :225:27, :239:26, :241:25
+        _GEN_30 = ~isData2ExtRam | extramBusy | ~_GEN_25;	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/UltraBus.scala:75:31, :89:33, :225:27, :230:37, :233:37, :239:26, :241:25
+        if (_GEN_27) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17, :225:27, :227:26
           if (_GEN_4) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17
             if (_GEN_7) begin	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :99:22, :121:21, :123:45
             end
@@ -279,7 +273,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
               baseramReqReg_wData <= 32'h0;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, src/main/scala/ultra/bus/sram/SramUtils.scala:14:16
               baseramReqReg_addr <= 20'h0;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, src/main/scala/ultra/bus/sram/SramUtils.scala:13:15
             end
-            else if (wrap)	// src/main/scala/chisel3/util/Counter.scala:73:24
+            else if (wrap)	// src/main/scala/chisel3/util/Counter.scala:61:40
               baseramReqReg_addr <= _baseramReqReg_addr_T;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :137:52
           end
           else if (_GEN_15) begin	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :99:22, :118:17, :143:43
@@ -295,7 +289,10 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
         end
         else if (io_dChannel_in_rreq) begin	// src/main/scala/ultra/bus/UltraBus.scala:11:14
           baseramReqReg_wData <= 32'h0;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, src/main/scala/ultra/bus/sram/SramUtils.scala:14:16
-          baseramReqReg_addr <= io_dChannel_in_addr[21:2];	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :183:43
+          baseramReqReg_addr <=
+            io_dChannel_in_rtype
+              ? io_dChannel_in_addr[21:2]
+              : {io_dChannel_in_addr[21:3], 1'h0};	// src/main/scala/ultra/bus/UltraBus.scala:24:29, :36:30, :180:22, :183:{23,43}, :187:{43,61}
         end
         else if (_GEN_4) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17
           if (_GEN_7) begin	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :99:22, :121:21, :123:45
@@ -310,7 +307,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
             baseramReqReg_wData <= 32'h0;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, src/main/scala/ultra/bus/sram/SramUtils.scala:14:16
             baseramReqReg_addr <= 20'h0;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, src/main/scala/ultra/bus/sram/SramUtils.scala:13:15
           end
-          else if (wrap)	// src/main/scala/chisel3/util/Counter.scala:73:24
+          else if (wrap)	// src/main/scala/chisel3/util/Counter.scala:61:40
             baseramReqReg_addr <= _baseramReqReg_addr_T;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :137:52
         end
         else if (_GEN_15) begin	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :99:22, :118:17, :143:43
@@ -319,12 +316,12 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
           baseramReqReg_wData <= 32'h0;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, src/main/scala/ultra/bus/sram/SramUtils.scala:14:16
           baseramReqReg_addr <= baseramReqReg_sig_1_addr;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :146:48
         end
-        if (_GEN_24) begin	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:118:17, :225:27, :227:26
+        if (_GEN_26) begin	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:118:17, :225:27, :227:26
           if (_GEN_4) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17
             if (_GEN_7) begin	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :99:22, :121:21, :123:45
             end
             else	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :121:21, :123:45
-              baseramReqReg_byteSelN <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:36:30
+              baseramReqReg_byteSelN <= 4'h0;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :126:57
           end
           else if (_GEN_10) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17
             if (wrap_1)	// src/main/scala/ultra/bus/UltraBus.scala:131:27
@@ -333,12 +330,12 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
           else if (_GEN_15) begin	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :99:22, :118:17, :143:43
           end
           else	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :118:17, :143:43
-            baseramReqReg_byteSelN <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:36:30
+            baseramReqReg_byteSelN <= 4'h0;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :126:57
         end
         else	// src/main/scala/ultra/bus/UltraBus.scala:118:17, :225:27, :227:26
           baseramReqReg_byteSelN <= io_dChannel_in_byteSelN;	// src/main/scala/ultra/bus/UltraBus.scala:36:30
-        baseramReqReg_ce <= _GEN_24 & _GEN_16;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:36:30, :118:17, :121:21, :225:27, :227:26
-        if (_GEN_25) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17, :225:27, :227:26
+        baseramReqReg_ce <= _GEN_26 & _GEN_16;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:36:30, :118:17, :121:21, :225:27, :227:26
+        if (_GEN_27) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17, :225:27, :227:26
           if (_GEN_4) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17
             baseramReqReg_oe <= _GEN_8;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :121:21, :123:45
             baseramReqReg_we <= _GEN_9;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :121:21, :123:45
@@ -356,7 +353,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
           baseramReqReg_oe <= io_dChannel_in_wreq | ~io_dChannel_in_rreq & _GEN_18;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :118:17, :121:21, :180:22, :183:23, :187:23, :197:19, :230:37, :233:37
           baseramReqReg_we <= ~io_dChannel_in_wreq & (io_dChannel_in_rreq | _GEN_20);	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :118:17, :121:21, :180:22, :183:23, :187:23, :197:19, :230:37, :233:37
         end
-        if (_GEN_26) begin	// src/main/scala/ultra/bus/UltraBus.scala:37:29, :225:27, :239:26, :241:25
+        if (_GEN_29) begin	// src/main/scala/ultra/bus/UltraBus.scala:37:29, :225:27, :239:26, :241:25
         end
         else if (io_dChannel_in_wreq) begin	// src/main/scala/ultra/bus/UltraBus.scala:11:14
           extramReqReg_wData <= io_dChannel_in_wdata;	// src/main/scala/ultra/bus/UltraBus.scala:37:29
@@ -364,14 +361,17 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
         end
         else if (io_dChannel_in_rreq) begin	// src/main/scala/ultra/bus/UltraBus.scala:11:14
           extramReqReg_wData <= 32'h0;	// src/main/scala/ultra/bus/UltraBus.scala:37:29, src/main/scala/ultra/bus/sram/SramUtils.scala:14:16
-          extramReqReg_addr <= io_dChannel_in_addr[21:2];	// src/main/scala/ultra/bus/UltraBus.scala:37:29, :203:42
+          extramReqReg_addr <=
+            io_dChannel_in_rtype
+              ? io_dChannel_in_addr[21:2]
+              : {io_dChannel_in_addr[21:3], 1'h0};	// src/main/scala/ultra/bus/UltraBus.scala:24:29, :37:29, :200:23, :203:{22,42}, :207:{42,60}
         end
-        if (_GEN_27) begin	// src/main/scala/ultra/bus/UltraBus.scala:37:29, :239:26, :241:25
+        if (_GEN_30) begin	// src/main/scala/ultra/bus/UltraBus.scala:37:29, :225:27, :239:26, :241:25
         end
         else	// src/main/scala/ultra/bus/UltraBus.scala:37:29, :239:26, :241:25
           extramReqReg_byteSelN <= io_dChannel_in_byteSelN;	// src/main/scala/ultra/bus/UltraBus.scala:37:29
-        extramReqReg_ce <= _GEN_27 & extramReqReg_ce;	// src/main/scala/ultra/bus/UltraBus.scala:37:29, :239:26, :241:25
-        if (_GEN_26) begin	// src/main/scala/ultra/bus/UltraBus.scala:37:29, :225:27, :239:26, :241:25
+        extramReqReg_ce <= _GEN_30 & extramReqReg_ce;	// src/main/scala/ultra/bus/UltraBus.scala:37:29, :225:27, :239:26, :241:25
+        if (_GEN_29) begin	// src/main/scala/ultra/bus/UltraBus.scala:37:29, :225:27, :239:26, :241:25
         end
         else begin	// src/main/scala/ultra/bus/UltraBus.scala:37:29, :239:26, :241:25
           extramReqReg_oe <= io_dChannel_in_wreq | ~io_dChannel_in_rreq & extramReqReg_oe;	// src/main/scala/ultra/bus/UltraBus.scala:37:29, :118:17, :180:22, :183:23, :187:23, :200:23, :203:22, :207:22, :217:18, :230:37, :244:36, :247:36
@@ -386,23 +386,21 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
                      ? 64'h0
                      : {56'h0, _UartReceiver_RxD_data})
             : 64'h0;	// src/main/scala/ultra/bus/UltraBus.scala:19:31, :20:28, :28:7, :57:26, :93:13, :118:17, :156:22, :169:21, :180:22, :183:23, :187:23, :222:17, :230:37, :252:24, :254:41, :263:38
-        dRspnsReg_rrdy <= _GEN_28;	// src/main/scala/ultra/bus/UltraBus.scala:57:26, :239:26, :252:24, :254:41
         dRspnsReg_rvalid <=
           isData2Uart & (_GEN_0 | _GEN_1 & ~io_dChannel_in_wreq & io_dChannel_in_rreq);	// src/main/scala/ultra/bus/UltraBus.scala:57:26, :93:13, :162:22, :168:22, :197:19, :230:37, :233:37, :239:26, :252:24, :254:41, :263:38
-        dRspnsReg_wrdy <= _GEN_28;	// src/main/scala/ultra/bus/UltraBus.scala:57:26, :239:26, :252:24, :254:41
         dRspnsReg_wdone <= isData2Uart & _GEN_3;	// src/main/scala/ultra/bus/UltraBus.scala:57:26, :93:13, :224:16, :239:26, :252:24, :254:41
         if (isData2Uart) begin	// src/main/scala/ultra/bus/UltraBus.scala:93:13
           if (_GEN_0)	// src/main/scala/ultra/bus/UltraBus.scala:254:41
-            dstat <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:65:22
+            dstat <= 4'h0;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :126:57
           else if (_GEN_1) begin	// src/main/scala/ultra/bus/UltraBus.scala:254:41
-            if (_GEN_23)	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/UltraBus.scala:230:37, :233:37
-              dstat <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:65:22
+            if (_GEN_25)	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/UltraBus.scala:230:37, :233:37
+              dstat <= 4'h0;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :126:57
             else if (isData2ExtRam) begin	// src/main/scala/ultra/bus/UltraBus.scala:89:33
               if (extramBusy)	// src/main/scala/ultra/bus/UltraBus.scala:75:31
                 dstat <= 4'h2;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :242:17
               else if (io_dChannel_in_wreq)	// src/main/scala/ultra/bus/UltraBus.scala:11:14
                 dstat <= 4'h8;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :74:11
-              else if (_GEN_22)	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :225:27, :227:26, :228:17, :233:37
+              else if (_GEN_24)	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :225:27, :227:26, :228:17, :233:37
                 dstat <= 4'h1;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :228:17
             end
             else if (isData2BaseRam) begin	// src/main/scala/ultra/bus/UltraBus.scala:82:31
@@ -418,8 +416,8 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
             else if (io_dChannel_in_wreq)	// src/main/scala/ultra/bus/UltraBus.scala:11:14
               dstat <= 4'h8;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :74:11
             else if (io_dChannel_in_rreq)	// src/main/scala/ultra/bus/UltraBus.scala:11:14
-              dstat <= 4'h5;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :200:23, :202:15
-            else if (_GEN_22)	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :225:27, :227:26, :228:17, :233:37
+              dstat <= _GEN_28;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :200:23, :202:15
+            else if (_GEN_24)	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :225:27, :227:26, :228:17, :233:37
               dstat <= 4'h1;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :228:17
           end
           else if (isData2BaseRam) begin	// src/main/scala/ultra/bus/UltraBus.scala:82:31
@@ -428,7 +426,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
             else if (io_dChannel_in_wreq)	// src/main/scala/ultra/bus/UltraBus.scala:11:14
               dstat <= 4'h7;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :195:11
             else if (io_dChannel_in_rreq)	// src/main/scala/ultra/bus/UltraBus.scala:11:14
-              dstat <= 4'h3;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :180:22, :182:15
+              dstat <= _GEN_22;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :180:22, :182:15
           end
         end
         else if (isData2ExtRam) begin	// src/main/scala/ultra/bus/UltraBus.scala:89:33
@@ -437,8 +435,8 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
           else if (io_dChannel_in_wreq)	// src/main/scala/ultra/bus/UltraBus.scala:11:14
             dstat <= 4'h8;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :74:11
           else if (io_dChannel_in_rreq)	// src/main/scala/ultra/bus/UltraBus.scala:11:14
-            dstat <= 4'h5;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :200:23, :202:15
-          else if (_GEN_22)	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :225:27, :227:26, :228:17, :233:37
+            dstat <= _GEN_28;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :200:23, :202:15
+          else if (_GEN_24)	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :225:27, :227:26, :228:17, :233:37
             dstat <= 4'h1;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :228:17
         end
         else if (isData2BaseRam) begin	// src/main/scala/ultra/bus/UltraBus.scala:82:31
@@ -447,71 +445,60 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
           else if (io_dChannel_in_wreq)	// src/main/scala/ultra/bus/UltraBus.scala:11:14
             dstat <= 4'h7;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :195:11
           else if (io_dChannel_in_rreq)	// src/main/scala/ultra/bus/UltraBus.scala:11:14
-            dstat <= 4'h3;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :180:22, :182:15
+            dstat <= _GEN_22;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :180:22, :182:15
         end
-        if (_GEN_26) begin	// src/main/scala/ultra/bus/UltraBus.scala:225:27, :239:26, :241:25
-          automatic logic _GEN_29;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:225:27, :227:26
-          _GEN_29 = ~isData2BaseRam | baseramBusy | ~io_dChannel_in_rreq;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:70:31, :82:31, :118:17, :180:22, :183:23, :187:23, :225:27, :227:26, :230:37
-          if (_GEN_29) begin	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:225:27, :227:26
+        if (_GEN_29) begin	// src/main/scala/ultra/bus/UltraBus.scala:225:27, :239:26, :241:25
+          if (_GEN_23) begin	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:225:27, :227:26
           end
           else	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:225:27, :227:26
             dWordCnt_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
-          if (_GEN_24) begin	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:225:27, :227:26
-          end
-          else	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:225:27, :227:26
-            dCycleCnt_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
-          if (_GEN_29) begin	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:156:22, :225:27, :227:26
+        end
+        else if (io_dChannel_in_rreq)	// src/main/scala/ultra/bus/UltraBus.scala:11:14
+          dWordCnt_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
+        wrap_2 <= _GEN_30 & _GEN_26 & wrap_2;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:225:27, :227:26, :239:26, :241:25
+        if (_GEN_29) begin	// src/main/scala/ultra/bus/UltraBus.scala:225:27, :239:26, :241:25
+          if (_GEN_23) begin	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:156:22, :225:27, :227:26
           end
           else	// src/main/scala/ultra/bus/UltraBus.scala:156:22, :225:27, :227:26
             dData <= 64'h0;	// src/main/scala/ultra/bus/UltraBus.scala:156:22
         end
-        else begin	// src/main/scala/ultra/bus/UltraBus.scala:225:27, :239:26, :241:25
-          if (io_dChannel_in_rreq)	// src/main/scala/ultra/bus/UltraBus.scala:11:14
-            dWordCnt_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
-          if (_GEN_23 | ~_GEN_24)	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/UltraBus.scala:225:27, :227:26, :230:37, :233:37, :244:36, :247:36
-            dCycleCnt_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
-          if (io_dChannel_in_rreq)	// src/main/scala/ultra/bus/UltraBus.scala:11:14
-            dData <= 64'h0;	// src/main/scala/ultra/bus/UltraBus.scala:156:22
-        end
+        else if (io_dChannel_in_rreq)	// src/main/scala/ultra/bus/UltraBus.scala:11:14
+          dData <= 64'h0;	// src/main/scala/ultra/bus/UltraBus.scala:156:22
       end
       else begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16
-        automatic logic _GEN_30;	// src/main/scala/ultra/bus/UltraBus.scala:220:16
-        automatic logic _GEN_31;	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/UltraBus.scala:274:28, :277:28
-        automatic logic _GEN_32;	// src/main/scala/ultra/bus/UltraBus.scala:197:19, :274:28, :277:28
-        automatic logic _GEN_33;	// src/main/scala/ultra/bus/UltraBus.scala:220:16
+        automatic logic _GEN_31;	// src/main/scala/ultra/bus/UltraBus.scala:220:16
+        automatic logic _GEN_32;	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/UltraBus.scala:274:28, :277:28
+        automatic logic _GEN_33;	// src/main/scala/ultra/bus/UltraBus.scala:197:19, :274:28, :277:28
         automatic logic _GEN_34;	// src/main/scala/ultra/bus/UltraBus.scala:220:16
         automatic logic _GEN_35;	// src/main/scala/ultra/bus/UltraBus.scala:220:16
         automatic logic _GEN_36;	// src/main/scala/ultra/bus/UltraBus.scala:220:16
-        automatic logic _GEN_37;	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/UltraBus.scala:307:24, :308:27, :311:27
-        automatic logic _GEN_38;	// src/main/scala/ultra/bus/UltraBus.scala:220:16
-        automatic logic wrap_6;	// src/main/scala/chisel3/util/Counter.scala:73:24
+        automatic logic _GEN_37;	// src/main/scala/ultra/bus/UltraBus.scala:220:16
+        automatic logic _GEN_38;	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/UltraBus.scala:307:24, :308:27, :311:27
         automatic logic _GEN_39;	// src/main/scala/ultra/bus/UltraBus.scala:220:16
-        automatic logic wrap_7;	// src/main/scala/chisel3/util/Counter.scala:73:24
         automatic logic _GEN_40;	// src/main/scala/ultra/bus/UltraBus.scala:220:16
+        automatic logic _GEN_41;	// src/main/scala/ultra/bus/UltraBus.scala:220:16
         automatic logic wrap_9;	// src/main/scala/ultra/bus/UltraBus.scala:329:27
-        automatic logic _GEN_41;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :165:11, :220:16, :329:40
-        automatic logic _GEN_42;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :172:11, :220:16, :317:28, :323:28
-        automatic logic wrap_8;	// src/main/scala/chisel3/util/Counter.scala:73:24
-        _GEN_30 = dstat == 4'h1;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :220:16, :228:17
-        _GEN_31 = dReqReg_wreq | dReqReg_rreq;	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/UltraBus.scala:53:24, :274:28, :277:28
-        _GEN_32 = dReqReg_wreq | dReqReg_rreq;	// src/main/scala/ultra/bus/UltraBus.scala:53:24, :197:19, :274:28, :277:28
-        _GEN_33 = dstat == 4'h7;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :195:11, :220:16
-        _GEN_34 = dstat == 4'h3;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :180:22, :182:15, :220:16
-        _GEN_35 = dstat == 4'h4;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :186:15, :220:16
-        _GEN_36 = dstat == 4'h2;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :220:16, :242:17
-        _GEN_37 = ~extramBusy & _GEN_31;	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/UltraBus.scala:75:31, :274:28, :277:28, :307:{12,24}, :308:27, :311:27
-        _GEN_38 = dstat == 4'h8;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :74:11, :220:16
-        wrap_6 = dCycleCnt_value == 2'h2;	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24, src/main/scala/ultra/bus/UltraBus.scala:68:11
-        _GEN_39 = dstat == 4'h5;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :200:23, :202:15, :220:16
-        wrap_7 = dCycleCnt_value == 2'h2;	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24, src/main/scala/ultra/bus/UltraBus.scala:68:11
-        _GEN_40 = dstat == 4'h6;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :206:15, :220:16
+        automatic logic _GEN_42;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :165:11, :220:16, :329:40
+        automatic logic _GEN_43;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :172:11, :220:16, :283:28, :317:28, :323:28
+        automatic logic _GEN_44;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :172:11, :220:16, :283:28, :317:28, :323:28
+        _GEN_31 = dstat == 4'h1;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :220:16, :228:17
+        _GEN_32 = dReqReg_wreq | dReqReg_rreq;	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/UltraBus.scala:53:24, :274:28, :277:28
+        _GEN_33 = dReqReg_wreq | dReqReg_rreq;	// src/main/scala/ultra/bus/UltraBus.scala:53:24, :197:19, :274:28, :277:28
+        _GEN_34 = dstat == 4'h7;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :195:11, :220:16
+        _GEN_35 = dstat == 4'h3;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :182:15, :220:16
+        _GEN_36 = dstat == 4'h4;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :186:15, :220:16
+        _GEN_37 = dstat == 4'h2;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :220:16, :242:17
+        _GEN_38 = ~extramBusy & _GEN_32;	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/UltraBus.scala:75:31, :274:28, :277:28, :307:{12,24}, :308:27, :311:27
+        _GEN_39 = dstat == 4'h8;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :74:11, :220:16
+        _GEN_40 = dstat == 4'h5;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :202:15, :220:16
+        _GEN_41 = dstat == 4'h6;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :206:15, :220:16
         wrap_9 = dWordCnt_value == 2'h2;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:68:11, :329:27
-        _GEN_41 = _GEN_40 & wrap_9;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :165:11, :220:16, :329:{27,40}
-        _GEN_42 = _GEN_38 ? wrap_6 : _GEN_39 ? wrap_7 : _GEN_41;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/UltraBus.scala:65:22, :165:11, :172:11, :220:16, :317:28, :323:28, :329:40
-        wrap_8 = dCycleCnt_value == 2'h2;	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24, src/main/scala/ultra/bus/UltraBus.scala:68:11
-        if (_GEN_30) begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16
-          automatic logic _GEN_43;	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/UltraBus.scala:273:25, :274:28, :277:28
-          _GEN_43 = ~baseramBusy & _GEN_31;	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/UltraBus.scala:70:31, :273:{12,25}, :274:28, :277:28
+        _GEN_42 = _GEN_41 & wrap_9;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :165:11, :220:16, :329:{27,40}
+        _GEN_43 = _GEN_39 | _GEN_40;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :172:11, :220:16, :283:28, :317:28, :323:28
+        _GEN_44 = _GEN_43 ? wrap_2 : _GEN_42;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:65:22, :165:11, :172:11, :220:16, :283:28, :317:28, :323:28, :329:40
+        if (_GEN_31) begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16
+          automatic logic _GEN_45;	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/UltraBus.scala:273:25, :274:28, :277:28
+          _GEN_45 = ~baseramBusy & _GEN_32;	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/UltraBus.scala:70:31, :273:{12,25}, :274:28, :277:28
           if (baseramBusy) begin	// src/main/scala/ultra/bus/UltraBus.scala:70:31
             if (_GEN_4) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17
               if (_GEN_7) begin	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :99:22, :121:21, :123:45
@@ -528,7 +515,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
                 baseramReqReg_wData <= 32'h0;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, src/main/scala/ultra/bus/sram/SramUtils.scala:14:16
                 baseramReqReg_addr <= 20'h0;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, src/main/scala/ultra/bus/sram/SramUtils.scala:13:15
               end
-              else if (wrap)	// src/main/scala/chisel3/util/Counter.scala:73:24
+              else if (wrap)	// src/main/scala/chisel3/util/Counter.scala:61:40
                 baseramReqReg_addr <= _baseramReqReg_addr_T;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :137:52
               baseramReqReg_oe <= _GEN_12;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :131:41, :133:23
               baseramReqReg_we <= _GEN_13;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :131:41, :133:23
@@ -552,7 +539,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
             else if (dReqReg_rreq) begin	// src/main/scala/ultra/bus/UltraBus.scala:53:24
               baseramReqReg_wData <= 32'h0;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, src/main/scala/ultra/bus/sram/SramUtils.scala:14:16
               baseramReqReg_addr <=
-                dReqReg_rtype ? dReqReg_addr[21:2] : {dReqReg_addr[21:3], 1'h0};	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :53:24, :180:22, :183:{23,43}, :187:{43,61}, :200:23
+                dReqReg_rtype ? dReqReg_addr[21:2] : {dReqReg_addr[21:3], 1'h0};	// src/main/scala/ultra/bus/UltraBus.scala:24:29, :36:30, :53:24, :180:22, :183:{23,43}, :187:{43,61}
             end
             else if (_GEN_4) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17
               if (_GEN_7) begin	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :99:22, :121:21, :123:45
@@ -567,7 +554,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
                 baseramReqReg_wData <= 32'h0;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, src/main/scala/ultra/bus/sram/SramUtils.scala:14:16
                 baseramReqReg_addr <= 20'h0;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, src/main/scala/ultra/bus/sram/SramUtils.scala:13:15
               end
-              else if (wrap)	// src/main/scala/chisel3/util/Counter.scala:73:24
+              else if (wrap)	// src/main/scala/chisel3/util/Counter.scala:61:40
                 baseramReqReg_addr <= _baseramReqReg_addr_T;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :137:52
             end
             else if (_GEN_15) begin	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :99:22, :118:17, :143:43
@@ -583,12 +570,12 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
             else if (dReqReg_rreq)	// src/main/scala/ultra/bus/UltraBus.scala:53:24
               dstat <= dReqReg_rtype ? 4'h3 : 4'h4;	// src/main/scala/ultra/bus/UltraBus.scala:53:24, :65:22, :180:22, :182:15, :186:15
           end
-          if (baseramBusy | ~_GEN_32) begin	// src/main/scala/ultra/bus/UltraBus.scala:70:31, :118:17, :197:19, :273:25, :274:28, :277:28
+          if (baseramBusy | ~_GEN_33) begin	// src/main/scala/ultra/bus/UltraBus.scala:70:31, :118:17, :197:19, :273:25, :274:28, :277:28
             if (_GEN_4) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17
               if (_GEN_7) begin	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :99:22, :121:21, :123:45
               end
               else	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :121:21, :123:45
-                baseramReqReg_byteSelN <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:36:30
+                baseramReqReg_byteSelN <= 4'h0;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :126:57
             end
             else if (_GEN_10) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17
               if (wrap_1)	// src/main/scala/ultra/bus/UltraBus.scala:131:27
@@ -597,32 +584,29 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
             else if (_GEN_15) begin	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :99:22, :118:17, :143:43
             end
             else	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :118:17, :143:43
-              baseramReqReg_byteSelN <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:36:30
+              baseramReqReg_byteSelN <= 4'h0;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :126:57
           end
           else	// src/main/scala/ultra/bus/UltraBus.scala:118:17, :273:25, :277:28
             baseramReqReg_byteSelN <= dReqReg_byteSelN;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :53:24
-          baseramReqReg_ce <= ~_GEN_43 & _GEN_16;	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/UltraBus.scala:36:30, :118:17, :121:21, :180:22, :183:23, :187:23, :197:19, :273:25, :274:28, :277:28
+          baseramReqReg_ce <= ~_GEN_45 & _GEN_16;	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/UltraBus.scala:36:30, :118:17, :121:21, :180:22, :183:23, :187:23, :197:19, :273:25, :274:28, :277:28
           if (~baseramBusy & dReqReg_rreq) begin	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/UltraBus.scala:53:24, :70:31, :273:{12,25}, :274:28
             dWordCnt_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
             dData <= 64'h0;	// src/main/scala/ultra/bus/UltraBus.scala:156:22
           end
-          if (_GEN_43)	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/UltraBus.scala:273:25, :274:28, :277:28
-            dCycleCnt_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
+          wrap_2 <= ~_GEN_45 & wrap_2;	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/UltraBus.scala:273:25, :274:28, :277:28
         end
         else begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16
-          automatic logic wrap_2;	// src/main/scala/chisel3/util/Counter.scala:73:24
-          automatic logic wrap_3;	// src/main/scala/chisel3/util/Counter.scala:73:24
+          automatic logic _GEN_46;	// src/main/scala/ultra/bus/UltraBus.scala:57:26, :175:22, :283:28
           automatic logic wrap_5;	// src/main/scala/ultra/bus/UltraBus.scala:295:27
-          automatic logic _GEN_44;	// src/main/scala/ultra/bus/UltraBus.scala:118:17, :220:16, :295:40, :297:23
-          automatic logic _GEN_45;	// src/main/scala/ultra/bus/UltraBus.scala:118:17, :220:16, :283:28, :285:23, :289:28
-          automatic logic wrap_4;	// src/main/scala/chisel3/util/Counter.scala:73:24
-          wrap_2 = dCycleCnt_value == 2'h2;	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24, src/main/scala/ultra/bus/UltraBus.scala:68:11
-          wrap_3 = dCycleCnt_value == 2'h2;	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24, src/main/scala/ultra/bus/UltraBus.scala:68:11
+          automatic logic _GEN_47;	// src/main/scala/ultra/bus/UltraBus.scala:118:17, :220:16, :295:40, :297:23
+          automatic logic _GEN_48;	// src/main/scala/ultra/bus/UltraBus.scala:118:17, :220:16, :283:28, :285:23, :289:28
+          automatic logic _GEN_49;	// src/main/scala/ultra/bus/UltraBus.scala:118:17, :220:16, :283:28, :285:23, :289:28
+          _GEN_46 = ~wrap_2 & dRspnsReg_rvalid;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:57:26, :175:22, :283:28
           wrap_5 = dWordCnt_value == 2'h2;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:68:11, :295:27
-          _GEN_44 = _GEN_35 & wrap_5;	// src/main/scala/ultra/bus/UltraBus.scala:118:17, :220:16, :295:{27,40}, :297:23
-          _GEN_45 = _GEN_33 ? wrap_2 : _GEN_34 ? wrap_3 : _GEN_44;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/UltraBus.scala:118:17, :220:16, :283:28, :285:23, :289:28, :291:23, :295:40, :297:23
-          wrap_4 = dCycleCnt_value == 2'h2;	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24, src/main/scala/ultra/bus/UltraBus.scala:68:11
-          if (_GEN_45)	// src/main/scala/ultra/bus/UltraBus.scala:118:17, :220:16, :283:28, :285:23, :289:28
+          _GEN_47 = _GEN_36 & wrap_5;	// src/main/scala/ultra/bus/UltraBus.scala:118:17, :220:16, :295:{27,40}, :297:23
+          _GEN_48 = _GEN_34 | _GEN_35;	// src/main/scala/ultra/bus/UltraBus.scala:118:17, :220:16, :283:28, :285:23, :289:28
+          _GEN_49 = _GEN_48 ? wrap_2 : _GEN_47;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:118:17, :220:16, :283:28, :285:23, :289:28, :295:40, :297:23
+          if (_GEN_49)	// src/main/scala/ultra/bus/UltraBus.scala:118:17, :220:16, :283:28, :285:23, :289:28
             baseramReqReg_wData <= 32'h0;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, src/main/scala/ultra/bus/sram/SramUtils.scala:14:16
           else if (_GEN_4) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17
             if (_GEN_7) begin	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :99:22, :121:21, :123:45
@@ -638,189 +622,71 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
           end
           else	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :118:17, :143:43
             baseramReqReg_wData <= 32'h0;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, src/main/scala/ultra/bus/sram/SramUtils.scala:14:16
-          if (_GEN_33) begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16
-            if (wrap_2) begin	// src/main/scala/chisel3/util/Counter.scala:73:24
+          if (_GEN_48) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17, :220:16, :283:28, :285:23, :289:28
+            if (wrap_2)	// src/main/scala/chisel3/util/Counter.scala:61:40
               baseramReqReg_addr <= 20'h0;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, src/main/scala/ultra/bus/sram/SramUtils.scala:13:15
-              dRspnsReg_rdata <= 64'h0;	// src/main/scala/ultra/bus/UltraBus.scala:57:26, :156:22
-              dstat <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:65:22
-              dCycleCnt_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
+            else if (_GEN_4) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17
+              if (_GEN_7) begin	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :99:22, :121:21, :123:45
+              end
+              else	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :121:21, :123:45
+                baseramReqReg_addr <= baseramReqReg_sig_addr;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :126:57
             end
-            else begin	// src/main/scala/chisel3/util/Counter.scala:73:24
-              if (_GEN_4) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17
-                if (_GEN_7) begin	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :99:22, :121:21, :123:45
-                end
-                else	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :121:21, :123:45
-                  baseramReqReg_addr <= baseramReqReg_sig_addr;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :126:57
-              end
-              else if (_GEN_10) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17
-                if (wrap_1)	// src/main/scala/ultra/bus/UltraBus.scala:131:27
-                  baseramReqReg_addr <= 20'h0;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, src/main/scala/ultra/bus/sram/SramUtils.scala:13:15
-                else if (wrap)	// src/main/scala/chisel3/util/Counter.scala:73:24
-                  baseramReqReg_addr <= _baseramReqReg_addr_T;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :137:52
-              end
-              else if (_GEN_15) begin	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :99:22, :118:17, :143:43
-              end
-              else	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :118:17, :143:43
-                baseramReqReg_addr <= baseramReqReg_sig_1_addr;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :146:48
-              dCycleCnt_value <= dCycleCnt_value + 2'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24, src/main/scala/ultra/bus/UltraBus.scala:124:17
-            end
-            baseramReqReg_ce <= wrap_2 | _GEN_16;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/UltraBus.scala:36:30, :118:17, :121:21, :283:28, :285:23
-            baseramReqReg_oe <= wrap_2 | _GEN_18;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/UltraBus.scala:36:30, :118:17, :121:21, :283:28, :285:23
-            baseramReqReg_we <= wrap_2 | _GEN_20;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/UltraBus.scala:36:30, :118:17, :121:21, :283:28, :285:23
-            dRspnsReg_rrdy <= wrap_2 | dRspnsReg_rrdy;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/UltraBus.scala:57:26, :173:20, :283:28
-            dRspnsReg_rvalid <= ~wrap_2 & dRspnsReg_rvalid;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/UltraBus.scala:57:26, :175:22, :283:28
-            dRspnsReg_wrdy <= wrap_2 | dRspnsReg_wrdy;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/UltraBus.scala:57:26, :174:20, :283:28
-            dRspnsReg_wdone <= wrap_2 | dRspnsReg_wdone;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/UltraBus.scala:57:26, :176:21, :283:28
-          end
-          else begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16
-            if (_GEN_34) begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16
-              if (wrap_3) begin	// src/main/scala/chisel3/util/Counter.scala:73:24
+            else if (_GEN_10) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17
+              if (wrap_1)	// src/main/scala/ultra/bus/UltraBus.scala:131:27
                 baseramReqReg_addr <= 20'h0;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, src/main/scala/ultra/bus/sram/SramUtils.scala:13:15
-                dRspnsReg_rdata <= {32'h0, io_baseRam_in_rData};	// src/main/scala/ultra/bus/UltraBus.scala:57:26, :169:21, src/main/scala/ultra/bus/sram/SramUtils.scala:14:16
-                dstat <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:65:22
-                dCycleCnt_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
-              end
-              else begin	// src/main/scala/chisel3/util/Counter.scala:73:24
-                if (_GEN_4) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17
-                  if (_GEN_7) begin	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :99:22, :121:21, :123:45
-                  end
-                  else	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :121:21, :123:45
-                    baseramReqReg_addr <= baseramReqReg_sig_addr;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :126:57
-                end
-                else if (_GEN_10) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17
-                  if (wrap_1)	// src/main/scala/ultra/bus/UltraBus.scala:131:27
-                    baseramReqReg_addr <= 20'h0;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, src/main/scala/ultra/bus/sram/SramUtils.scala:13:15
-                  else if (wrap)	// src/main/scala/chisel3/util/Counter.scala:73:24
-                    baseramReqReg_addr <= _baseramReqReg_addr_T;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :137:52
-                end
-                else if (_GEN_15) begin	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :99:22, :118:17, :143:43
-                end
-                else	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :118:17, :143:43
-                  baseramReqReg_addr <= baseramReqReg_sig_1_addr;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :146:48
-                dCycleCnt_value <= dCycleCnt_value + 2'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24, src/main/scala/ultra/bus/UltraBus.scala:124:17
-              end
-              baseramReqReg_ce <= wrap_3 | _GEN_16;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/UltraBus.scala:36:30, :118:17, :121:21, :289:28, :291:23
-              baseramReqReg_oe <= wrap_3 | _GEN_18;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/UltraBus.scala:36:30, :118:17, :121:21, :289:28, :291:23
-              baseramReqReg_we <= wrap_3 | _GEN_20;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/UltraBus.scala:36:30, :118:17, :121:21, :289:28, :291:23
-              dRspnsReg_rrdy <= wrap_3 | dRspnsReg_rrdy;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/UltraBus.scala:57:26, :166:20, :289:28
-              dRspnsReg_rvalid <= wrap_3 | dRspnsReg_rvalid;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/UltraBus.scala:57:26, :168:22, :289:28
-              dRspnsReg_wrdy <= wrap_3 | dRspnsReg_wrdy;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/UltraBus.scala:57:26, :167:20, :289:28
+              else if (wrap)	// src/main/scala/chisel3/util/Counter.scala:61:40
+                baseramReqReg_addr <= _baseramReqReg_addr_T;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :137:52
             end
-            else begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16
-              if (_GEN_35) begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16
-                if (wrap_5) begin	// src/main/scala/ultra/bus/UltraBus.scala:295:27
-                  baseramReqReg_addr <= 20'h0;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, src/main/scala/ultra/bus/sram/SramUtils.scala:13:15
-                  dRspnsReg_rdata <= dData;	// src/main/scala/ultra/bus/UltraBus.scala:57:26, :156:22
-                  dstat <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:65:22
-                end
-                else if (wrap_4) begin	// src/main/scala/chisel3/util/Counter.scala:73:24
-                  baseramReqReg_addr <= baseramReqReg_addr + 20'h1;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :137:52, :301:52
-                  dCycleCnt_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
-                end
-                else begin	// src/main/scala/chisel3/util/Counter.scala:73:24
-                  if (_GEN_4) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17
-                    if (_GEN_7) begin	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :99:22, :121:21, :123:45
-                    end
-                    else	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :121:21, :123:45
-                      baseramReqReg_addr <= baseramReqReg_sig_addr;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :126:57
-                  end
-                  else if (_GEN_10) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17
-                    if (wrap_1)	// src/main/scala/ultra/bus/UltraBus.scala:131:27
-                      baseramReqReg_addr <= 20'h0;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, src/main/scala/ultra/bus/sram/SramUtils.scala:13:15
-                    else if (wrap)	// src/main/scala/chisel3/util/Counter.scala:73:24
-                      baseramReqReg_addr <= _baseramReqReg_addr_T;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :137:52
-                  end
-                  else if (_GEN_15) begin	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :99:22, :118:17, :143:43
-                  end
-                  else	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :118:17, :143:43
-                    baseramReqReg_addr <= baseramReqReg_sig_1_addr;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :146:48
-                  dCycleCnt_value <= dCycleCnt_value + 2'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24, src/main/scala/ultra/bus/UltraBus.scala:124:17
-                end
-                dRspnsReg_rrdy <= wrap_5 | dRspnsReg_rrdy;	// src/main/scala/ultra/bus/UltraBus.scala:57:26, :166:20, :295:{27,40}
-                dRspnsReg_rvalid <= wrap_5 | dRspnsReg_rvalid;	// src/main/scala/ultra/bus/UltraBus.scala:57:26, :168:22, :295:{27,40}
-                dRspnsReg_wrdy <= wrap_5 | dRspnsReg_wrdy;	// src/main/scala/ultra/bus/UltraBus.scala:57:26, :167:20, :295:{27,40}
-              end
-              else begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16
-                if (_GEN_4) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17
-                  if (_GEN_7) begin	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :99:22, :121:21, :123:45
-                  end
-                  else	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :121:21, :123:45
-                    baseramReqReg_addr <= baseramReqReg_sig_addr;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :126:57
-                end
-                else if (_GEN_10) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17
-                  if (wrap_1)	// src/main/scala/ultra/bus/UltraBus.scala:131:27
-                    baseramReqReg_addr <= 20'h0;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, src/main/scala/ultra/bus/sram/SramUtils.scala:13:15
-                  else if (wrap)	// src/main/scala/chisel3/util/Counter.scala:73:24
-                    baseramReqReg_addr <= _baseramReqReg_addr_T;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :137:52
-                end
-                else if (_GEN_15) begin	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :99:22, :118:17, :143:43
-                end
-                else	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :118:17, :143:43
-                  baseramReqReg_addr <= baseramReqReg_sig_1_addr;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :146:48
-                if (_GEN_36) begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16
-                  if (~extramBusy) begin	// src/main/scala/ultra/bus/UltraBus.scala:75:31
-                    if (dReqReg_wreq)	// src/main/scala/ultra/bus/UltraBus.scala:53:24
-                      dstat <= 4'h8;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :74:11
-                    else if (dReqReg_rreq)	// src/main/scala/ultra/bus/UltraBus.scala:53:24
-                      dstat <= dReqReg_rtype ? 4'h5 : 4'h6;	// src/main/scala/ultra/bus/UltraBus.scala:53:24, :65:22, :200:23, :202:15, :206:15
-                  end
-                  if (_GEN_37)	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/UltraBus.scala:307:24, :308:27, :311:27
-                    dCycleCnt_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
-                end
-                else begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16
-                  if (_GEN_38) begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16
-                    if (wrap_6) begin	// src/main/scala/chisel3/util/Counter.scala:73:24
-                      dRspnsReg_rdata <= 64'h0;	// src/main/scala/ultra/bus/UltraBus.scala:57:26, :156:22
-                      dCycleCnt_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
-                    end
-                    else	// src/main/scala/chisel3/util/Counter.scala:73:24
-                      dCycleCnt_value <= dCycleCnt_value + 2'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24, src/main/scala/ultra/bus/UltraBus.scala:124:17
-                    dRspnsReg_rrdy <= wrap_6 | dRspnsReg_rrdy;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/UltraBus.scala:57:26, :173:20, :317:28
-                    dRspnsReg_rvalid <= ~wrap_6 & dRspnsReg_rvalid;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/UltraBus.scala:57:26, :175:22, :317:28
-                    dRspnsReg_wrdy <= wrap_6 | dRspnsReg_wrdy;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/UltraBus.scala:57:26, :174:20, :317:28
-                  end
-                  else if (_GEN_39) begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16
-                    if (wrap_7) begin	// src/main/scala/chisel3/util/Counter.scala:73:24
-                      dRspnsReg_rdata <= {32'h0, io_extRam_in_rData};	// src/main/scala/ultra/bus/UltraBus.scala:57:26, :169:21, src/main/scala/ultra/bus/sram/SramUtils.scala:14:16
-                      dCycleCnt_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
-                    end
-                    else	// src/main/scala/chisel3/util/Counter.scala:73:24
-                      dCycleCnt_value <= dCycleCnt_value + 2'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24, src/main/scala/ultra/bus/UltraBus.scala:124:17
-                    dRspnsReg_rrdy <= wrap_7 | dRspnsReg_rrdy;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/UltraBus.scala:57:26, :166:20, :323:28
-                    dRspnsReg_rvalid <= wrap_7 | dRspnsReg_rvalid;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/UltraBus.scala:57:26, :168:22, :323:28
-                    dRspnsReg_wrdy <= wrap_7 | dRspnsReg_wrdy;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/UltraBus.scala:57:26, :167:20, :323:28
-                  end
-                  else begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16
-                    if (_GEN_41)	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :165:11, :220:16, :329:40
-                      dRspnsReg_rdata <= dData;	// src/main/scala/ultra/bus/UltraBus.scala:57:26, :156:22
-                    dRspnsReg_rrdy <= _GEN_41 | dRspnsReg_rrdy;	// src/main/scala/ultra/bus/UltraBus.scala:57:26, :65:22, :165:11, :166:20, :220:16, :329:40
-                    dRspnsReg_rvalid <= _GEN_41 | dRspnsReg_rvalid;	// src/main/scala/ultra/bus/UltraBus.scala:57:26, :65:22, :165:11, :168:22, :220:16, :329:40
-                    dRspnsReg_wrdy <= _GEN_41 | dRspnsReg_wrdy;	// src/main/scala/ultra/bus/UltraBus.scala:57:26, :65:22, :165:11, :167:20, :220:16, :329:40
-                    if (~_GEN_40 | wrap_9) begin	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:220:16, :329:{27,40}
-                    end
-                    else if (wrap_8)	// src/main/scala/chisel3/util/Counter.scala:73:24
-                      dCycleCnt_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
-                    else	// src/main/scala/chisel3/util/Counter.scala:73:24
-                      dCycleCnt_value <= dCycleCnt_value + 2'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24, src/main/scala/ultra/bus/UltraBus.scala:124:17
-                  end
-                  if (_GEN_42)	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :172:11, :220:16, :317:28, :323:28
-                    dstat <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:65:22
-                end
-              end
-              baseramReqReg_ce <= _GEN_44 | _GEN_16;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :118:17, :121:21, :220:16, :295:40, :297:23
-              baseramReqReg_oe <= _GEN_44 | _GEN_18;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :118:17, :121:21, :220:16, :295:40, :297:23
-              baseramReqReg_we <= _GEN_44 | _GEN_20;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :118:17, :121:21, :220:16, :295:40, :297:23
+            else if (_GEN_15) begin	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :99:22, :118:17, :143:43
             end
-            dRspnsReg_wdone <=
-              ~(_GEN_34 | _GEN_35 | _GEN_36) & _GEN_38 & wrap_6 | dRspnsReg_wdone;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/UltraBus.scala:57:26, :220:16
+            else	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :118:17, :143:43
+              baseramReqReg_addr <= baseramReqReg_sig_1_addr;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :146:48
           end
-          if (_GEN_45)	// src/main/scala/ultra/bus/UltraBus.scala:118:17, :220:16, :283:28, :285:23, :289:28
+          else if (_GEN_36) begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16
+            if (wrap_5)	// src/main/scala/ultra/bus/UltraBus.scala:295:27
+              baseramReqReg_addr <= 20'h0;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, src/main/scala/ultra/bus/sram/SramUtils.scala:13:15
+            else if (wrap_2)	// src/main/scala/chisel3/util/Counter.scala:61:40
+              baseramReqReg_addr <= baseramReqReg_addr + 20'h1;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :137:52, :301:52
+            else if (_GEN_4) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17
+              if (_GEN_7) begin	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :99:22, :121:21, :123:45
+              end
+              else	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :121:21, :123:45
+                baseramReqReg_addr <= baseramReqReg_sig_addr;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :126:57
+            end
+            else if (_GEN_10) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17
+              if (wrap_1)	// src/main/scala/ultra/bus/UltraBus.scala:131:27
+                baseramReqReg_addr <= 20'h0;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, src/main/scala/ultra/bus/sram/SramUtils.scala:13:15
+              else if (wrap)	// src/main/scala/chisel3/util/Counter.scala:61:40
+                baseramReqReg_addr <= _baseramReqReg_addr_T;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :137:52
+            end
+            else if (_GEN_15) begin	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :99:22, :118:17, :143:43
+            end
+            else	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :118:17, :143:43
+              baseramReqReg_addr <= baseramReqReg_sig_1_addr;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :146:48
+          end
+          else if (_GEN_4) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17
+            if (_GEN_7) begin	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :99:22, :121:21, :123:45
+            end
+            else	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :121:21, :123:45
+              baseramReqReg_addr <= baseramReqReg_sig_addr;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :126:57
+          end
+          else if (_GEN_10) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17
+            if (wrap_1)	// src/main/scala/ultra/bus/UltraBus.scala:131:27
+              baseramReqReg_addr <= 20'h0;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, src/main/scala/ultra/bus/sram/SramUtils.scala:13:15
+            else if (wrap)	// src/main/scala/chisel3/util/Counter.scala:61:40
+              baseramReqReg_addr <= _baseramReqReg_addr_T;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :137:52
+          end
+          else if (_GEN_15) begin	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :99:22, :118:17, :143:43
+          end
+          else	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :118:17, :143:43
+            baseramReqReg_addr <= baseramReqReg_sig_1_addr;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :146:48
+          if (_GEN_49)	// src/main/scala/ultra/bus/UltraBus.scala:118:17, :220:16, :283:28, :285:23, :289:28
             baseramReqReg_byteSelN <= 4'hF;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, src/main/scala/ultra/bus/sram/SramUtils.scala:12:19
           else if (_GEN_4) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17
             if (_GEN_7) begin	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :99:22, :121:21, :123:45
             end
             else	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :121:21, :123:45
-              baseramReqReg_byteSelN <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:36:30
+              baseramReqReg_byteSelN <= 4'h0;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :126:57
           end
           else if (_GEN_10) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17
             if (wrap_1)	// src/main/scala/ultra/bus/UltraBus.scala:131:27
@@ -829,23 +695,100 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
           else if (_GEN_15) begin	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :99:22, :118:17, :143:43
           end
           else	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :118:17, :143:43
-            baseramReqReg_byteSelN <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:36:30
-          if (~(_GEN_33 | _GEN_34)) begin	// src/main/scala/ultra/bus/UltraBus.scala:156:22, :220:16
+            baseramReqReg_byteSelN <= 4'h0;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :126:57
+          if (_GEN_48) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17, :220:16, :283:28, :285:23, :289:28
+            baseramReqReg_ce <= wrap_2 | _GEN_16;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:36:30, :118:17, :121:21, :283:28, :285:23
+            baseramReqReg_oe <= wrap_2 | _GEN_18;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:36:30, :118:17, :121:21, :283:28, :285:23
+            baseramReqReg_we <= wrap_2 | _GEN_20;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:36:30, :118:17, :121:21, :283:28, :285:23
+          end
+          else begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16, :283:28
+            baseramReqReg_ce <= _GEN_47 | _GEN_16;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :118:17, :121:21, :220:16, :295:40, :297:23
+            baseramReqReg_oe <= _GEN_47 | _GEN_18;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :118:17, :121:21, :220:16, :295:40, :297:23
+            baseramReqReg_we <= _GEN_47 | _GEN_20;	// src/main/scala/ultra/bus/UltraBus.scala:36:30, :118:17, :121:21, :220:16, :295:40, :297:23
+          end
+          if (_GEN_34) begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16
+            if (wrap_2)	// src/main/scala/chisel3/util/Counter.scala:61:40
+              dRspnsReg_rdata <= 64'h0;	// src/main/scala/ultra/bus/UltraBus.scala:57:26, :156:22
+            dRspnsReg_rvalid <= _GEN_46;	// src/main/scala/ultra/bus/UltraBus.scala:57:26, :175:22, :283:28
+            dRspnsReg_wdone <= wrap_2 | dRspnsReg_wdone;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:57:26, :176:21, :283:28
+            wrap_2 <= wrap_2 - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
+          end
+          else begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16
+            automatic logic _GEN_50;	// src/main/scala/ultra/bus/UltraBus.scala:57:26, :168:22, :289:28
+            _GEN_50 = wrap_2 | dRspnsReg_rvalid;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:57:26, :168:22, :289:28
             if (_GEN_35) begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16
-              if (wrap_5 | ~wrap_4) begin	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/UltraBus.scala:156:22, :295:{27,40}, :299:30
+              if (wrap_2)	// src/main/scala/chisel3/util/Counter.scala:61:40
+                dRspnsReg_rdata <= {32'h0, io_baseRam_in_rData};	// src/main/scala/ultra/bus/UltraBus.scala:57:26, :169:21, src/main/scala/ultra/bus/sram/SramUtils.scala:14:16
+              dRspnsReg_rvalid <= _GEN_50;	// src/main/scala/ultra/bus/UltraBus.scala:57:26, :168:22, :289:28
+              wrap_2 <= wrap_2 - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
+            end
+            else if (_GEN_36) begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16
+              if (wrap_5)	// src/main/scala/ultra/bus/UltraBus.scala:295:27
+                dRspnsReg_rdata <= dData;	// src/main/scala/ultra/bus/UltraBus.scala:57:26, :156:22
+              else	// src/main/scala/ultra/bus/UltraBus.scala:295:27
+                wrap_2 <= wrap_2 - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
+              dRspnsReg_rvalid <= wrap_5 | dRspnsReg_rvalid;	// src/main/scala/ultra/bus/UltraBus.scala:57:26, :168:22, :295:{27,40}
+            end
+            else if (_GEN_37)	// src/main/scala/ultra/bus/UltraBus.scala:220:16
+              wrap_2 <= ~_GEN_38 & wrap_2;	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/UltraBus.scala:307:24, :308:27, :311:27
+            else if (_GEN_39) begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16
+              if (wrap_2)	// src/main/scala/chisel3/util/Counter.scala:61:40
+                dRspnsReg_rdata <= 64'h0;	// src/main/scala/ultra/bus/UltraBus.scala:57:26, :156:22
+              dRspnsReg_rvalid <= _GEN_46;	// src/main/scala/ultra/bus/UltraBus.scala:57:26, :175:22, :283:28
+              wrap_2 <= wrap_2 - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
+            end
+            else if (_GEN_40) begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16
+              if (wrap_2)	// src/main/scala/chisel3/util/Counter.scala:61:40
+                dRspnsReg_rdata <= {32'h0, io_extRam_in_rData};	// src/main/scala/ultra/bus/UltraBus.scala:57:26, :169:21, src/main/scala/ultra/bus/sram/SramUtils.scala:14:16
+              dRspnsReg_rvalid <= _GEN_50;	// src/main/scala/ultra/bus/UltraBus.scala:57:26, :168:22, :289:28
+              wrap_2 <= wrap_2 - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
+            end
+            else begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16
+              if (_GEN_42)	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :165:11, :220:16, :329:40
+                dRspnsReg_rdata <= dData;	// src/main/scala/ultra/bus/UltraBus.scala:57:26, :156:22
+              dRspnsReg_rvalid <= _GEN_42 | dRspnsReg_rvalid;	// src/main/scala/ultra/bus/UltraBus.scala:57:26, :65:22, :165:11, :168:22, :220:16, :329:40
+              if (~_GEN_41 | wrap_9) begin	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:220:16, :329:{27,40}
+              end
+              else	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:220:16, :329:40
+                wrap_2 <= wrap_2 - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
+            end
+            dRspnsReg_wdone <=
+              ~(_GEN_35 | _GEN_36 | _GEN_37) & _GEN_39 & wrap_2 | dRspnsReg_wdone;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:57:26, :220:16
+          end
+          if (_GEN_48) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17, :220:16, :283:28, :285:23, :289:28
+            if (wrap_2)	// src/main/scala/chisel3/util/Counter.scala:61:40
+              dstat <= 4'h0;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :126:57
+          end
+          else if (_GEN_36) begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16
+            if (wrap_5)	// src/main/scala/ultra/bus/UltraBus.scala:295:27
+              dstat <= 4'h0;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :126:57
+          end
+          else if (_GEN_37) begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16
+            if (~extramBusy) begin	// src/main/scala/ultra/bus/UltraBus.scala:75:31
+              if (dReqReg_wreq)	// src/main/scala/ultra/bus/UltraBus.scala:53:24
+                dstat <= 4'h8;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :74:11
+              else if (dReqReg_rreq)	// src/main/scala/ultra/bus/UltraBus.scala:53:24
+                dstat <= dReqReg_rtype ? 4'h5 : 4'h6;	// src/main/scala/ultra/bus/UltraBus.scala:53:24, :65:22, :200:23, :202:15, :206:15
+            end
+          end
+          else if (_GEN_44)	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :172:11, :220:16, :283:28, :317:28, :323:28
+            dstat <= 4'h0;	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :126:57
+          if (~(_GEN_34 | _GEN_35)) begin	// src/main/scala/ultra/bus/UltraBus.scala:156:22, :220:16
+            if (_GEN_36) begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16
+              if (wrap_5 | ~wrap_2) begin	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:57:26, :156:22, :175:22, :283:28, :295:{27,40}, :299:30
               end
               else begin	// src/main/scala/ultra/bus/UltraBus.scala:156:22, :295:40, :299:30
                 dWordCnt_value <= dWordCnt_value + 2'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24, src/main/scala/ultra/bus/UltraBus.scala:124:17
                 dData <= {io_baseRam_in_rData, dData[63:32]};	// src/main/scala/ultra/bus/UltraBus.scala:156:22, :300:{40,48}
               end
             end
-            else if (_GEN_36) begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16
+            else if (_GEN_37) begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16
               if (~extramBusy & dReqReg_rreq) begin	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/UltraBus.scala:53:24, :75:31, :307:{12,24}, :308:27
                 dWordCnt_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
                 dData <= 64'h0;	// src/main/scala/ultra/bus/UltraBus.scala:156:22
               end
             end
-            else if (_GEN_38 | _GEN_39 | ~_GEN_40 | wrap_9 | ~wrap_8) begin	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24, src/main/scala/ultra/bus/UltraBus.scala:156:22, :220:16, :329:{27,40}, :333:30
+            else if (_GEN_39 | _GEN_40 | ~_GEN_41 | wrap_9 | ~wrap_2) begin	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:57:26, :156:22, :175:22, :220:16, :283:28, :329:{27,40}
             end
             else begin	// src/main/scala/ultra/bus/UltraBus.scala:156:22, :220:16
               dWordCnt_value <= dWordCnt_value + 2'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24, src/main/scala/ultra/bus/UltraBus.scala:124:17
@@ -853,8 +796,8 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
             end
           end
         end
-        if (~(_GEN_30 | _GEN_33 | _GEN_34 | _GEN_35)) begin	// src/main/scala/ultra/bus/UltraBus.scala:37:29, :220:16
-          if (_GEN_36) begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16
+        if (~(_GEN_31 | _GEN_34 | _GEN_35 | _GEN_36)) begin	// src/main/scala/ultra/bus/UltraBus.scala:37:29, :220:16
+          if (_GEN_37) begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16
             if (~extramBusy) begin	// src/main/scala/ultra/bus/UltraBus.scala:75:31
               if (dReqReg_wreq) begin	// src/main/scala/ultra/bus/UltraBus.scala:53:24
                 extramReqReg_wData <= dReqReg_wdata;	// src/main/scala/ultra/bus/UltraBus.scala:37:29, :53:24
@@ -863,102 +806,99 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
               else if (dReqReg_rreq) begin	// src/main/scala/ultra/bus/UltraBus.scala:53:24
                 extramReqReg_wData <= 32'h0;	// src/main/scala/ultra/bus/UltraBus.scala:37:29, src/main/scala/ultra/bus/sram/SramUtils.scala:14:16
                 extramReqReg_addr <=
-                  dReqReg_rtype ? dReqReg_addr[21:2] : {dReqReg_addr[21:3], 1'h0};	// src/main/scala/ultra/bus/UltraBus.scala:37:29, :53:24, :180:22, :200:23, :203:{22,42}, :207:{42,60}
+                  dReqReg_rtype ? dReqReg_addr[21:2] : {dReqReg_addr[21:3], 1'h0};	// src/main/scala/ultra/bus/UltraBus.scala:24:29, :37:29, :53:24, :200:23, :203:{22,42}, :207:{42,60}
               end
               extramReqReg_oe <= dReqReg_wreq | ~dReqReg_rreq & extramReqReg_oe;	// src/main/scala/ultra/bus/UltraBus.scala:37:29, :53:24, :118:17, :180:22, :183:23, :187:23, :200:23, :203:22, :207:22, :217:18, :274:28, :308:27, :311:27
               extramReqReg_we <= ~dReqReg_wreq & (dReqReg_rreq | extramReqReg_we);	// src/main/scala/ultra/bus/UltraBus.scala:37:29, :53:24, :197:19, :200:23, :203:22, :207:22, :217:18, :274:28, :277:28, :308:27, :311:27
             end
-            if (extramBusy | ~_GEN_32) begin	// src/main/scala/ultra/bus/UltraBus.scala:37:29, :75:31, :118:17, :197:19, :273:25, :274:28, :277:28, :307:24, :311:27
+            if (extramBusy | ~_GEN_33) begin	// src/main/scala/ultra/bus/UltraBus.scala:37:29, :75:31, :118:17, :197:19, :273:25, :274:28, :277:28, :307:24, :311:27
             end
             else	// src/main/scala/ultra/bus/UltraBus.scala:37:29, :307:24, :311:27
               extramReqReg_byteSelN <= dReqReg_byteSelN;	// src/main/scala/ultra/bus/UltraBus.scala:37:29, :53:24
-            extramReqReg_ce <= ~_GEN_37 & extramReqReg_ce;	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/UltraBus.scala:37:29, :200:23, :203:22, :207:22, :217:18, :307:24, :308:27, :311:27
+            extramReqReg_ce <= ~_GEN_38 & extramReqReg_ce;	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/UltraBus.scala:37:29, :200:23, :203:22, :207:22, :217:18, :307:24, :308:27, :311:27
           end
           else begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16
-            if (_GEN_42)	// src/main/scala/ultra/bus/UltraBus.scala:37:29, :65:22, :172:11, :220:16, :317:28, :319:22, :323:28
+            if (_GEN_44)	// src/main/scala/ultra/bus/UltraBus.scala:37:29, :65:22, :172:11, :220:16, :283:28, :317:28, :319:22, :323:28
               extramReqReg_wData <= 32'h0;	// src/main/scala/ultra/bus/UltraBus.scala:37:29, src/main/scala/ultra/bus/sram/SramUtils.scala:14:16
-            if (_GEN_38) begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16
-              if (wrap_6)	// src/main/scala/chisel3/util/Counter.scala:73:24
+            if (_GEN_43) begin	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :172:11, :220:16, :283:28, :317:28, :323:28
+              if (wrap_2)	// src/main/scala/chisel3/util/Counter.scala:61:40
                 extramReqReg_addr <= 20'h0;	// src/main/scala/ultra/bus/UltraBus.scala:37:29, src/main/scala/ultra/bus/sram/SramUtils.scala:13:15
-              extramReqReg_ce <= wrap_6 | extramReqReg_ce;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/UltraBus.scala:37:29, :317:28, :319:22
-              extramReqReg_oe <= wrap_6 | extramReqReg_oe;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/UltraBus.scala:37:29, :317:28, :319:22
-              extramReqReg_we <= wrap_6 | extramReqReg_we;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/UltraBus.scala:37:29, :317:28, :319:22
             end
-            else if (_GEN_39) begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16
-              if (wrap_7)	// src/main/scala/chisel3/util/Counter.scala:73:24
+            else if (_GEN_41) begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16
+              if (wrap_9)	// src/main/scala/ultra/bus/UltraBus.scala:329:27
                 extramReqReg_addr <= 20'h0;	// src/main/scala/ultra/bus/UltraBus.scala:37:29, src/main/scala/ultra/bus/sram/SramUtils.scala:13:15
-              extramReqReg_ce <= wrap_7 | extramReqReg_ce;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/UltraBus.scala:37:29, :323:28, :325:22
-              extramReqReg_oe <= wrap_7 | extramReqReg_oe;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/UltraBus.scala:37:29, :323:28, :325:22
-              extramReqReg_we <= wrap_7 | extramReqReg_we;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/UltraBus.scala:37:29, :323:28, :325:22
+              else if (wrap_2)	// src/main/scala/chisel3/util/Counter.scala:61:40
+                extramReqReg_addr <= extramReqReg_addr + 20'h1;	// src/main/scala/ultra/bus/UltraBus.scala:37:29, :137:52, :335:50
             end
-            else begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16
-              if (_GEN_40) begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16
-                if (wrap_9)	// src/main/scala/ultra/bus/UltraBus.scala:329:27
-                  extramReqReg_addr <= 20'h0;	// src/main/scala/ultra/bus/UltraBus.scala:37:29, src/main/scala/ultra/bus/sram/SramUtils.scala:13:15
-                else if (wrap_8)	// src/main/scala/chisel3/util/Counter.scala:73:24
-                  extramReqReg_addr <= extramReqReg_addr + 20'h1;	// src/main/scala/ultra/bus/UltraBus.scala:37:29, :137:52, :335:50
-              end
-              extramReqReg_ce <= _GEN_41 | extramReqReg_ce;	// src/main/scala/ultra/bus/UltraBus.scala:37:29, :65:22, :165:11, :220:16, :329:40, :331:22
-              extramReqReg_oe <= _GEN_41 | extramReqReg_oe;	// src/main/scala/ultra/bus/UltraBus.scala:37:29, :65:22, :165:11, :220:16, :329:40, :331:22
-              extramReqReg_we <= _GEN_41 | extramReqReg_we;	// src/main/scala/ultra/bus/UltraBus.scala:37:29, :65:22, :165:11, :220:16, :329:40, :331:22
-            end
-            if (_GEN_42)	// src/main/scala/ultra/bus/UltraBus.scala:37:29, :65:22, :172:11, :220:16, :317:28, :319:22, :323:28
+            if (_GEN_44)	// src/main/scala/ultra/bus/UltraBus.scala:37:29, :65:22, :172:11, :220:16, :283:28, :317:28, :319:22, :323:28
               extramReqReg_byteSelN <= 4'hF;	// src/main/scala/ultra/bus/UltraBus.scala:37:29, src/main/scala/ultra/bus/sram/SramUtils.scala:12:19
+            if (_GEN_43) begin	// src/main/scala/ultra/bus/UltraBus.scala:65:22, :172:11, :220:16, :283:28, :317:28, :323:28
+              extramReqReg_ce <= wrap_2 | extramReqReg_ce;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:37:29, :317:28, :319:22
+              extramReqReg_oe <= wrap_2 | extramReqReg_oe;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:37:29, :317:28, :319:22
+              extramReqReg_we <= wrap_2 | extramReqReg_we;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:37:29, :317:28, :319:22
+            end
+            else begin	// src/main/scala/ultra/bus/UltraBus.scala:220:16, :317:28
+              extramReqReg_ce <= _GEN_42 | extramReqReg_ce;	// src/main/scala/ultra/bus/UltraBus.scala:37:29, :65:22, :165:11, :220:16, :329:40, :331:22
+              extramReqReg_oe <= _GEN_42 | extramReqReg_oe;	// src/main/scala/ultra/bus/UltraBus.scala:37:29, :65:22, :165:11, :220:16, :329:40, :331:22
+              extramReqReg_we <= _GEN_42 | extramReqReg_we;	// src/main/scala/ultra/bus/UltraBus.scala:37:29, :65:22, :165:11, :220:16, :329:40, :331:22
+            end
           end
         end
       end
       if (io_iChannel_in_rreq)	// src/main/scala/ultra/bus/UltraBus.scala:11:14
         iReqReg_pc <= io_iChannel_in_pc;	// src/main/scala/ultra/bus/UltraBus.scala:44:24
       if (_GEN_4) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17
-        iRspnsReg_rdata <= 256'h0;	// src/main/scala/ultra/bus/UltraBus.scala:48:26, :99:22
+        iRspnsReg_rdata <= 512'h0;	// src/main/scala/ultra/bus/UltraBus.scala:48:26, :99:22
         iRspnsReg_rrdy <= ~io_iChannel_in_rreq;	// src/main/scala/ultra/bus/UltraBus.scala:24:29, :48:26, :108:20, :120:17, :121:21, src/main/scala/ultra/bus/sram/SramUtils.scala:9:13
+        if (_GEN_7) begin	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:99:22, :121:21, :123:45
+        end
+        else	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:121:21, :123:45
+          iWordCnt_value <= 5'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
+        wrap <= _GEN_7 & wrap;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:99:22, :121:21, :123:45
         if (_GEN_7) begin	// src/main/scala/ultra/bus/UltraBus.scala:99:22, :121:21, :123:45
         end
-        else begin	// src/main/scala/ultra/bus/UltraBus.scala:99:22, :121:21, :123:45
-          iWordCnt_value <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
-          iCycleCnt_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
-          idata <= 256'h0;	// src/main/scala/ultra/bus/UltraBus.scala:99:22
-        end
+        else	// src/main/scala/ultra/bus/UltraBus.scala:99:22, :121:21, :123:45
+          idata <= 512'h0;	// src/main/scala/ultra/bus/UltraBus.scala:99:22
       end
       else begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17
         if (_GEN_11)	// src/main/scala/ultra/bus/UltraBus.scala:48:26, :112:20, :118:17, :131:41
           iRspnsReg_rdata <= idata;	// src/main/scala/ultra/bus/UltraBus.scala:48:26, :99:22
         iRspnsReg_rrdy <= _GEN_11 | iRspnsReg_rrdy;	// src/main/scala/ultra/bus/UltraBus.scala:48:26, :112:20, :118:17, :131:41
         if (_GEN_10) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17
-          automatic logic _GEN_46;	// src/main/scala/ultra/bus/UltraBus.scala:99:22, :131:41, :135:32
-          _GEN_46 = wrap_1 | ~wrap;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/UltraBus.scala:99:22, :131:{27,41}, :135:32
-          if (_GEN_46) begin	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:99:22, :131:41, :135:32
+          automatic logic _GEN_51;	// src/main/scala/ultra/bus/UltraBus.scala:99:22, :131:41, :135:32
+          _GEN_51 = wrap_1 | ~wrap;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:99:22, :131:{27,41}, :135:32
+          if (_GEN_51) begin	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:99:22, :131:41, :135:32
           end
           else	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:131:41, :135:32
-            iWordCnt_value <= iWordCnt_value + 4'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24, src/main/scala/ultra/bus/UltraBus.scala:228:17
-          if (~wrap_1) begin	// src/main/scala/ultra/bus/UltraBus.scala:131:27
-            if (wrap)	// src/main/scala/chisel3/util/Counter.scala:73:24
-              iCycleCnt_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
-            else	// src/main/scala/chisel3/util/Counter.scala:73:24
-              iCycleCnt_value <= iCycleCnt_value + 2'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24, src/main/scala/ultra/bus/UltraBus.scala:124:17
-          end
-          if (_GEN_46) begin	// src/main/scala/ultra/bus/UltraBus.scala:99:22, :131:41, :135:32
+            iWordCnt_value <= iWordCnt_value + 5'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
+          if (~wrap_1)	// src/main/scala/ultra/bus/UltraBus.scala:131:27
+            wrap <= wrap - 1'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
+          if (_GEN_51) begin	// src/main/scala/ultra/bus/UltraBus.scala:99:22, :131:41, :135:32
           end
           else	// src/main/scala/ultra/bus/UltraBus.scala:99:22, :131:41, :135:32
-            idata <= {io_baseRam_in_rData, idata[255:32]};	// src/main/scala/ultra/bus/UltraBus.scala:99:22, :136:{40,48}
+            idata <= {io_baseRam_in_rData, idata[511:32]};	// src/main/scala/ultra/bus/UltraBus.scala:99:22, :136:{40,48}
         end
-        else if (_GEN_15) begin	// src/main/scala/ultra/bus/UltraBus.scala:99:22, :118:17, :143:43
-        end
-        else begin	// src/main/scala/ultra/bus/UltraBus.scala:99:22, :118:17, :143:43
-          iWordCnt_value <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
-          iCycleCnt_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
-          idata <= 256'h0;	// src/main/scala/ultra/bus/UltraBus.scala:99:22
+        else begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17
+          if (_GEN_15) begin	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:99:22, :118:17, :143:43
+          end
+          else	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:118:17, :143:43
+            iWordCnt_value <= 5'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
+          wrap <= _GEN_15 & wrap;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:99:22, :118:17, :143:43
+          if (_GEN_15) begin	// src/main/scala/ultra/bus/UltraBus.scala:99:22, :118:17, :143:43
+          end
+          else	// src/main/scala/ultra/bus/UltraBus.scala:99:22, :118:17, :143:43
+            idata <= 512'h0;	// src/main/scala/ultra/bus/UltraBus.scala:99:22
         end
       end
       iRspnsReg_rvalid <= ~_GEN_4 & (_GEN_11 | iRspnsReg_rvalid);	// src/main/scala/ultra/bus/UltraBus.scala:48:26, :112:20, :113:22, :118:17, :121:21, :131:41
       if (dHasReq) begin	// src/main/scala/ultra/bus/UltraBus.scala:51:25
         dReqReg_rreq <= io_dChannel_in_rreq;	// src/main/scala/ultra/bus/UltraBus.scala:53:24
+        dReqReg_rtype <= io_dChannel_in_rtype;	// src/main/scala/ultra/bus/UltraBus.scala:53:24
         dReqReg_wreq <= io_dChannel_in_wreq;	// src/main/scala/ultra/bus/UltraBus.scala:53:24
         dReqReg_byteSelN <= io_dChannel_in_byteSelN;	// src/main/scala/ultra/bus/UltraBus.scala:53:24
         dReqReg_addr <= io_dChannel_in_addr;	// src/main/scala/ultra/bus/UltraBus.scala:53:24
         dReqReg_wdata <= io_dChannel_in_wdata;	// src/main/scala/ultra/bus/UltraBus.scala:53:24
       end
-      dReqReg_rtype <= dHasReq | dReqReg_rtype;	// src/main/scala/ultra/bus/UltraBus.scala:51:25, :53:24, :54:17, :55:13
       _GEN_21 =
         {{istat},
          {wrap_1 ? 2'h0 : istat},
@@ -972,67 +912,81 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
       `FIRRTL_BEFORE_INITIAL	// src/main/scala/ultra/bus/UltraBus.scala:10:7
     `endif // FIRRTL_BEFORE_INITIAL
     initial begin	// src/main/scala/ultra/bus/UltraBus.scala:10:7
-      automatic logic [31:0] _RANDOM[0:27];	// src/main/scala/ultra/bus/UltraBus.scala:10:7
+      automatic logic [31:0] _RANDOM[0:43];	// src/main/scala/ultra/bus/UltraBus.scala:10:7
       `ifdef INIT_RANDOM_PROLOG_	// src/main/scala/ultra/bus/UltraBus.scala:10:7
         `INIT_RANDOM_PROLOG_	// src/main/scala/ultra/bus/UltraBus.scala:10:7
       `endif // INIT_RANDOM_PROLOG_
       `ifdef RANDOMIZE_REG_INIT	// src/main/scala/ultra/bus/UltraBus.scala:10:7
-        for (logic [4:0] i = 5'h0; i < 5'h1C; i += 5'h1) begin
+        for (logic [5:0] i = 6'h0; i < 6'h2C; i += 6'h1) begin
           _RANDOM[i] = `RANDOM;	// src/main/scala/ultra/bus/UltraBus.scala:10:7
         end	// src/main/scala/ultra/bus/UltraBus.scala:10:7
-        baseramReqReg_wData = _RANDOM[5'h0];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :36:30
-        baseramReqReg_addr = _RANDOM[5'h1][19:0];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :36:30
-        baseramReqReg_byteSelN = _RANDOM[5'h1][23:20];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :36:30
-        baseramReqReg_ce = _RANDOM[5'h1][24];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :36:30
-        baseramReqReg_oe = _RANDOM[5'h1][25];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :36:30
-        baseramReqReg_we = _RANDOM[5'h1][26];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :36:30
-        extramReqReg_wData = {_RANDOM[5'h1][31:27], _RANDOM[5'h2][26:0]};	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :36:30, :37:29
-        extramReqReg_addr = {_RANDOM[5'h2][31:27], _RANDOM[5'h3][14:0]};	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :37:29
-        extramReqReg_byteSelN = _RANDOM[5'h3][18:15];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :37:29
-        extramReqReg_ce = _RANDOM[5'h3][19];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :37:29
-        extramReqReg_oe = _RANDOM[5'h3][20];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :37:29
-        extramReqReg_we = _RANDOM[5'h3][21];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :37:29
-        iReqReg_pc = {_RANDOM[5'h3][31:22], _RANDOM[5'h4][21:0]};	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :37:29, :44:24
+        baseramReqReg_wData = _RANDOM[6'h0];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :36:30
+        baseramReqReg_addr = _RANDOM[6'h1][19:0];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :36:30
+        baseramReqReg_byteSelN = _RANDOM[6'h1][23:20];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :36:30
+        baseramReqReg_ce = _RANDOM[6'h1][24];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :36:30
+        baseramReqReg_oe = _RANDOM[6'h1][25];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :36:30
+        baseramReqReg_we = _RANDOM[6'h1][26];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :36:30
+        extramReqReg_wData = {_RANDOM[6'h1][31:27], _RANDOM[6'h2][26:0]};	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :36:30, :37:29
+        extramReqReg_addr = {_RANDOM[6'h2][31:27], _RANDOM[6'h3][14:0]};	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :37:29
+        extramReqReg_byteSelN = _RANDOM[6'h3][18:15];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :37:29
+        extramReqReg_ce = _RANDOM[6'h3][19];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :37:29
+        extramReqReg_oe = _RANDOM[6'h3][20];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :37:29
+        extramReqReg_we = _RANDOM[6'h3][21];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :37:29
+        iReqReg_pc = {_RANDOM[6'h3][31:22], _RANDOM[6'h4][21:0]};	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :37:29, :44:24
         iRspnsReg_rdata =
-          {_RANDOM[5'h4][31:23],
-           _RANDOM[5'h5],
-           _RANDOM[5'h6],
-           _RANDOM[5'h7],
-           _RANDOM[5'h8],
-           _RANDOM[5'h9],
-           _RANDOM[5'hA],
-           _RANDOM[5'hB],
-           _RANDOM[5'hC][22:0]};	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :44:24, :48:26
-        iRspnsReg_rrdy = _RANDOM[5'hC][23];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :48:26
-        iRspnsReg_rvalid = _RANDOM[5'hC][24];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :48:26
-        dReqReg_rreq = _RANDOM[5'hC][25];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :48:26, :53:24
-        dReqReg_rtype = _RANDOM[5'hC][26];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :48:26, :53:24
-        dReqReg_wreq = _RANDOM[5'hC][27];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :48:26, :53:24
-        dReqReg_byteSelN = _RANDOM[5'hC][31:28];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :48:26, :53:24
-        dReqReg_addr = _RANDOM[5'hD];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :53:24
-        dReqReg_wdata = _RANDOM[5'hE];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :53:24
-        dRspnsReg_rdata = {_RANDOM[5'hF], _RANDOM[5'h10]};	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :57:26
-        dRspnsReg_rrdy = _RANDOM[5'h11][0];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :57:26
-        dRspnsReg_rvalid = _RANDOM[5'h11][1];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :57:26
-        dRspnsReg_wrdy = _RANDOM[5'h11][2];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :57:26
-        dRspnsReg_wdone = _RANDOM[5'h11][3];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :57:26
-        istat = _RANDOM[5'h11][5:4];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :57:26, :62:22
-        dstat = _RANDOM[5'h11][9:6];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :57:26, :65:22
-        iWordCnt_value = _RANDOM[5'h11][13:10];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:10:7, :57:26
-        iCycleCnt_value = _RANDOM[5'h11][15:14];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:10:7, :57:26
+          {_RANDOM[6'h4][31:23],
+           _RANDOM[6'h5],
+           _RANDOM[6'h6],
+           _RANDOM[6'h7],
+           _RANDOM[6'h8],
+           _RANDOM[6'h9],
+           _RANDOM[6'hA],
+           _RANDOM[6'hB],
+           _RANDOM[6'hC],
+           _RANDOM[6'hD],
+           _RANDOM[6'hE],
+           _RANDOM[6'hF],
+           _RANDOM[6'h10],
+           _RANDOM[6'h11],
+           _RANDOM[6'h12],
+           _RANDOM[6'h13],
+           _RANDOM[6'h14][22:0]};	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :44:24, :48:26
+        iRspnsReg_rrdy = _RANDOM[6'h14][23];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :48:26
+        iRspnsReg_rvalid = _RANDOM[6'h14][24];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :48:26
+        dReqReg_rreq = _RANDOM[6'h14][25];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :48:26, :53:24
+        dReqReg_rtype = _RANDOM[6'h14][26];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :48:26, :53:24
+        dReqReg_wreq = _RANDOM[6'h14][27];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :48:26, :53:24
+        dReqReg_byteSelN = _RANDOM[6'h14][31:28];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :48:26, :53:24
+        dReqReg_addr = _RANDOM[6'h15];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :53:24
+        dReqReg_wdata = _RANDOM[6'h16];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :53:24
+        dRspnsReg_rdata = {_RANDOM[6'h17], _RANDOM[6'h18]};	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :57:26
+        dRspnsReg_rvalid = _RANDOM[6'h19][1];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :57:26
+        dRspnsReg_wdone = _RANDOM[6'h19][3];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :57:26
+        istat = _RANDOM[6'h19][5:4];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :57:26, :62:22
+        dstat = _RANDOM[6'h19][9:6];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :57:26, :65:22
+        iWordCnt_value = _RANDOM[6'h19][14:10];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:10:7, :57:26
+        wrap = _RANDOM[6'h19][15];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:10:7, :57:26
         idata =
-          {_RANDOM[5'h11][31:16],
-           _RANDOM[5'h12],
-           _RANDOM[5'h13],
-           _RANDOM[5'h14],
-           _RANDOM[5'h15],
-           _RANDOM[5'h16],
-           _RANDOM[5'h17],
-           _RANDOM[5'h18],
-           _RANDOM[5'h19][15:0]};	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :57:26, :99:22
-        dWordCnt_value = _RANDOM[5'h19][17:16];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:10:7, :99:22
-        dCycleCnt_value = _RANDOM[5'h19][19:18];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:10:7, :99:22
-        dData = {_RANDOM[5'h19][31:20], _RANDOM[5'h1A], _RANDOM[5'h1B][19:0]};	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :99:22, :156:22
+          {_RANDOM[6'h19][31:16],
+           _RANDOM[6'h1A],
+           _RANDOM[6'h1B],
+           _RANDOM[6'h1C],
+           _RANDOM[6'h1D],
+           _RANDOM[6'h1E],
+           _RANDOM[6'h1F],
+           _RANDOM[6'h20],
+           _RANDOM[6'h21],
+           _RANDOM[6'h22],
+           _RANDOM[6'h23],
+           _RANDOM[6'h24],
+           _RANDOM[6'h25],
+           _RANDOM[6'h26],
+           _RANDOM[6'h27],
+           _RANDOM[6'h28],
+           _RANDOM[6'h29][15:0]};	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :57:26, :99:22
+        dWordCnt_value = _RANDOM[6'h29][17:16];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:10:7, :99:22
+        wrap_2 = _RANDOM[6'h29][18];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:10:7, :99:22
+        dData = {_RANDOM[6'h29][31:19], _RANDOM[6'h2A], _RANDOM[6'h2B][18:0]};	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :99:22, :156:22
       `endif // RANDOMIZE_REG_INIT
     end // initial
     `ifdef FIRRTL_AFTER_INITIAL	// src/main/scala/ultra/bus/UltraBus.scala:10:7
@@ -1040,7 +994,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
   async_transmitter #(
-    .ClkFrequency(140000000)
+    .ClkFrequency(120000000)
   ) UartTransmitter (	// src/main/scala/ultra/bus/UltraBus.scala:19:31
     .clk       (clock),
     .TxD_start (_GEN_2 & _GEN_3),	// src/main/scala/ultra/bus/UltraBus.scala:24:29, :25:29, :220:16, :223:16, :224:16, :252:24, :254:41
@@ -1052,7 +1006,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
     .TxD_busy  (_UartTransmitter_TxD_busy)
   );
   async_receiver #(
-    .ClkFrequency(140000000)
+    .ClkFrequency(120000000)
   ) UartReceiver (	// src/main/scala/ultra/bus/UltraBus.scala:20:28
     .clk            (clock),
     .RxD            (io_uart_rxd),
@@ -1064,9 +1018,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
   assign io_iChannel_out_rrdy = iRspnsReg_rrdy;	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :48:26
   assign io_iChannel_out_rvalid = iRspnsReg_rvalid;	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :48:26
   assign io_dChannel_out_rdata = dRspnsReg_rdata;	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :57:26
-  assign io_dChannel_out_rrdy = dRspnsReg_rrdy;	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :57:26
   assign io_dChannel_out_rvalid = dRspnsReg_rvalid;	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :57:26
-  assign io_dChannel_out_wrdy = dRspnsReg_wrdy;	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :57:26
   assign io_dChannel_out_wdone = dRspnsReg_wdone;	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :57:26
   assign io_baseRam_out_wData = baseramReqReg_wData;	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :36:30
   assign io_baseRam_out_addr = baseramReqReg_addr;	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :36:30
@@ -1200,327 +1152,87 @@ module BlockMem(	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7
   input         clock,	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7
                 reset,	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7
                 io_in_wen,	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:8:14
-  input  [11:0] io_in_wdata,	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:8:14
-  input  [5:0]  io_in_addr,	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:8:14
-  output [11:0] io_out_rdata	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:8:14
+  input  [12:0] io_in_wdata,	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:8:14
+  input  [3:0]  io_in_addr,	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:8:14
+  output [12:0] io_out_rdata	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:8:14
 );
 
-  reg [11:0] regs_0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_1;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_2;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_3;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_4;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_5;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_6;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_7;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_8;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_9;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_10;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_11;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_12;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_13;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_14;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_15;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_16;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_17;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_18;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_19;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_20;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_21;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_22;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_23;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_24;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_25;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_26;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_27;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_28;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_29;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_30;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_31;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_32;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_33;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_34;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_35;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_36;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_37;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_38;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_39;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_40;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_41;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_42;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_43;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_44;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_45;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_46;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_47;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_48;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_49;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_50;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_51;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_52;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_53;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_54;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_55;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_56;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_57;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_58;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_59;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_60;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_61;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_62;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] regs_63;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [11:0] outReg;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:13:23
+  reg [12:0] regs_0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
+  reg [12:0] regs_1;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
+  reg [12:0] regs_2;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
+  reg [12:0] regs_3;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
+  reg [12:0] regs_4;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
+  reg [12:0] regs_5;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
+  reg [12:0] regs_6;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
+  reg [12:0] regs_7;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
+  reg [12:0] regs_8;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
+  reg [12:0] regs_9;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
+  reg [12:0] regs_10;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
+  reg [12:0] regs_11;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
+  reg [12:0] regs_12;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
+  reg [12:0] regs_13;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
+  reg [12:0] regs_14;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
+  reg [12:0] regs_15;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
+  reg [12:0] outReg;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:13:23
   always @(posedge clock) begin	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7
     if (reset) begin	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7
-      regs_0 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_1 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_2 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_3 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_4 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_5 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_6 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_7 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_8 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_9 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_10 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_11 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_12 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_13 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_14 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_15 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_16 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_17 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_18 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_19 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_20 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_21 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_22 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_23 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_24 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_25 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_26 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_27 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_28 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_29 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_30 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_31 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_32 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_33 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_34 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_35 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_36 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_37 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_38 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_39 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_40 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_41 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_42 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_43 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_44 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_45 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_46 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_47 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_48 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_49 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_50 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_51 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_52 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_53 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_54 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_55 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_56 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_57 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_58 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_59 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_60 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_61 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_62 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_63 <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      outReg <= 12'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:29, :13:23
+      regs_0 <= 13'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
+      regs_1 <= 13'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
+      regs_2 <= 13'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
+      regs_3 <= 13'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
+      regs_4 <= 13'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
+      regs_5 <= 13'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
+      regs_6 <= 13'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
+      regs_7 <= 13'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
+      regs_8 <= 13'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
+      regs_9 <= 13'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
+      regs_10 <= 13'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
+      regs_11 <= 13'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
+      regs_12 <= 13'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
+      regs_13 <= 13'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
+      regs_14 <= 13'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
+      regs_15 <= 13'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
+      outReg <= 13'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:29, :13:23
     end
     else begin	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7
-      if (io_in_wen & io_in_addr == 6'h0)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
+      if (io_in_wen & io_in_addr == 4'h0)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
         regs_0 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h1)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
+      if (io_in_wen & io_in_addr == 4'h1)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
         regs_1 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h2)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
+      if (io_in_wen & io_in_addr == 4'h2)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
         regs_2 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h3)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
+      if (io_in_wen & io_in_addr == 4'h3)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
         regs_3 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h4)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
+      if (io_in_wen & io_in_addr == 4'h4)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
         regs_4 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h5)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
+      if (io_in_wen & io_in_addr == 4'h5)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
         regs_5 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h6)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
+      if (io_in_wen & io_in_addr == 4'h6)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
         regs_6 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h7)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
+      if (io_in_wen & io_in_addr == 4'h7)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
         regs_7 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h8)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
+      if (io_in_wen & io_in_addr == 4'h8)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
         regs_8 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h9)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
+      if (io_in_wen & io_in_addr == 4'h9)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
         regs_9 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'hA)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
+      if (io_in_wen & io_in_addr == 4'hA)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
         regs_10 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'hB)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
+      if (io_in_wen & io_in_addr == 4'hB)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
         regs_11 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'hC)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
+      if (io_in_wen & io_in_addr == 4'hC)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
         regs_12 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'hD)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
+      if (io_in_wen & io_in_addr == 4'hD)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
         regs_13 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'hE)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
+      if (io_in_wen & io_in_addr == 4'hE)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
         regs_14 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'hF)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_15 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h10)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_16 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h11)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_17 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h12)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_18 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h13)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_19 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h14)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_20 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h15)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_21 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h16)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_22 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h17)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_23 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h18)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_24 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h19)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_25 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h1A)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_26 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h1B)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_27 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h1C)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_28 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h1D)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_29 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h1E)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_30 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h1F)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_31 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h20)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_32 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h21)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_33 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h22)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_34 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h23)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_35 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h24)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_36 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h25)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_37 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h26)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_38 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h27)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_39 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h28)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_40 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h29)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_41 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h2A)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_42 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h2B)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_43 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h2C)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_44 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h2D)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_45 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h2E)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_46 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h2F)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_47 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h30)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_48 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h31)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_49 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h32)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_50 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h33)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_51 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h34)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_52 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h35)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_53 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h36)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_54 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h37)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_55 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h38)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_56 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h39)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_57 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h3A)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_58 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h3B)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_59 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h3C)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_60 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h3D)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_61 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h3E)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_62 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
       if (io_in_wen & (&io_in_addr))	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_63 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
+        regs_15 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
       if (io_in_wen) begin	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:8:14
       end
       else begin	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:8:14
-        automatic logic [63:0][11:0] _GEN;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:18:12
+        automatic logic [15:0][12:0] _GEN;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:18:12
         _GEN =
-          {{regs_63},
-           {regs_62},
-           {regs_61},
-           {regs_60},
-           {regs_59},
-           {regs_58},
-           {regs_57},
-           {regs_56},
-           {regs_55},
-           {regs_54},
-           {regs_53},
-           {regs_52},
-           {regs_51},
-           {regs_50},
-           {regs_49},
-           {regs_48},
-           {regs_47},
-           {regs_46},
-           {regs_45},
-           {regs_44},
-           {regs_43},
-           {regs_42},
-           {regs_41},
-           {regs_40},
-           {regs_39},
-           {regs_38},
-           {regs_37},
-           {regs_36},
-           {regs_35},
-           {regs_34},
-           {regs_33},
-           {regs_32},
-           {regs_31},
-           {regs_30},
-           {regs_29},
-           {regs_28},
-           {regs_27},
-           {regs_26},
-           {regs_25},
-           {regs_24},
-           {regs_23},
-           {regs_22},
-           {regs_21},
-           {regs_20},
-           {regs_19},
-           {regs_18},
-           {regs_17},
-           {regs_16},
-           {regs_15},
+          {{regs_15},
            {regs_14},
            {regs_13},
            {regs_12},
@@ -1545,79 +1257,31 @@ module BlockMem(	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7
       `FIRRTL_BEFORE_INITIAL	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7
     `endif // FIRRTL_BEFORE_INITIAL
     initial begin	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7
-      automatic logic [31:0] _RANDOM[0:24];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7
+      automatic logic [31:0] _RANDOM[0:6];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7
       `ifdef INIT_RANDOM_PROLOG_	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7
         `INIT_RANDOM_PROLOG_	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7
       `endif // INIT_RANDOM_PROLOG_
       `ifdef RANDOMIZE_REG_INIT	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7
-        for (logic [4:0] i = 5'h0; i < 5'h19; i += 5'h1) begin
+        for (logic [2:0] i = 3'h0; i < 3'h7; i += 3'h1) begin
           _RANDOM[i] = `RANDOM;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7
         end	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7
-        regs_0 = _RANDOM[5'h0][11:0];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_1 = _RANDOM[5'h0][23:12];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_2 = {_RANDOM[5'h0][31:24], _RANDOM[5'h1][3:0]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_3 = _RANDOM[5'h1][15:4];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_4 = _RANDOM[5'h1][27:16];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_5 = {_RANDOM[5'h1][31:28], _RANDOM[5'h2][7:0]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_6 = _RANDOM[5'h2][19:8];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_7 = _RANDOM[5'h2][31:20];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_8 = _RANDOM[5'h3][11:0];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_9 = _RANDOM[5'h3][23:12];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_10 = {_RANDOM[5'h3][31:24], _RANDOM[5'h4][3:0]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_11 = _RANDOM[5'h4][15:4];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_12 = _RANDOM[5'h4][27:16];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_13 = {_RANDOM[5'h4][31:28], _RANDOM[5'h5][7:0]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_14 = _RANDOM[5'h5][19:8];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_15 = _RANDOM[5'h5][31:20];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_16 = _RANDOM[5'h6][11:0];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_17 = _RANDOM[5'h6][23:12];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_18 = {_RANDOM[5'h6][31:24], _RANDOM[5'h7][3:0]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_19 = _RANDOM[5'h7][15:4];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_20 = _RANDOM[5'h7][27:16];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_21 = {_RANDOM[5'h7][31:28], _RANDOM[5'h8][7:0]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_22 = _RANDOM[5'h8][19:8];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_23 = _RANDOM[5'h8][31:20];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_24 = _RANDOM[5'h9][11:0];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_25 = _RANDOM[5'h9][23:12];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_26 = {_RANDOM[5'h9][31:24], _RANDOM[5'hA][3:0]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_27 = _RANDOM[5'hA][15:4];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_28 = _RANDOM[5'hA][27:16];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_29 = {_RANDOM[5'hA][31:28], _RANDOM[5'hB][7:0]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_30 = _RANDOM[5'hB][19:8];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_31 = _RANDOM[5'hB][31:20];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_32 = _RANDOM[5'hC][11:0];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_33 = _RANDOM[5'hC][23:12];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_34 = {_RANDOM[5'hC][31:24], _RANDOM[5'hD][3:0]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_35 = _RANDOM[5'hD][15:4];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_36 = _RANDOM[5'hD][27:16];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_37 = {_RANDOM[5'hD][31:28], _RANDOM[5'hE][7:0]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_38 = _RANDOM[5'hE][19:8];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_39 = _RANDOM[5'hE][31:20];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_40 = _RANDOM[5'hF][11:0];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_41 = _RANDOM[5'hF][23:12];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_42 = {_RANDOM[5'hF][31:24], _RANDOM[5'h10][3:0]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_43 = _RANDOM[5'h10][15:4];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_44 = _RANDOM[5'h10][27:16];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_45 = {_RANDOM[5'h10][31:28], _RANDOM[5'h11][7:0]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_46 = _RANDOM[5'h11][19:8];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_47 = _RANDOM[5'h11][31:20];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_48 = _RANDOM[5'h12][11:0];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_49 = _RANDOM[5'h12][23:12];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_50 = {_RANDOM[5'h12][31:24], _RANDOM[5'h13][3:0]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_51 = _RANDOM[5'h13][15:4];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_52 = _RANDOM[5'h13][27:16];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_53 = {_RANDOM[5'h13][31:28], _RANDOM[5'h14][7:0]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_54 = _RANDOM[5'h14][19:8];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_55 = _RANDOM[5'h14][31:20];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_56 = _RANDOM[5'h15][11:0];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_57 = _RANDOM[5'h15][23:12];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_58 = {_RANDOM[5'h15][31:24], _RANDOM[5'h16][3:0]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_59 = _RANDOM[5'h16][15:4];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_60 = _RANDOM[5'h16][27:16];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_61 = {_RANDOM[5'h16][31:28], _RANDOM[5'h17][7:0]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_62 = _RANDOM[5'h17][19:8];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_63 = _RANDOM[5'h17][31:20];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        outReg = _RANDOM[5'h18][11:0];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :13:23
+        regs_0 = _RANDOM[3'h0][12:0];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
+        regs_1 = _RANDOM[3'h0][25:13];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
+        regs_2 = {_RANDOM[3'h0][31:26], _RANDOM[3'h1][6:0]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
+        regs_3 = _RANDOM[3'h1][19:7];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
+        regs_4 = {_RANDOM[3'h1][31:20], _RANDOM[3'h2][0]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
+        regs_5 = _RANDOM[3'h2][13:1];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
+        regs_6 = _RANDOM[3'h2][26:14];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
+        regs_7 = {_RANDOM[3'h2][31:27], _RANDOM[3'h3][7:0]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
+        regs_8 = _RANDOM[3'h3][20:8];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
+        regs_9 = {_RANDOM[3'h3][31:21], _RANDOM[3'h4][1:0]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
+        regs_10 = _RANDOM[3'h4][14:2];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
+        regs_11 = _RANDOM[3'h4][27:15];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
+        regs_12 = {_RANDOM[3'h4][31:28], _RANDOM[3'h5][8:0]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
+        regs_13 = _RANDOM[3'h5][21:9];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
+        regs_14 = {_RANDOM[3'h5][31:22], _RANDOM[3'h6][2:0]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
+        regs_15 = _RANDOM[3'h6][15:3];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
+        outReg = _RANDOM[3'h6][28:16];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21, :13:23
       `endif // RANDOMIZE_REG_INIT
     end // initial
     `ifdef FIRRTL_AFTER_INITIAL	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7
@@ -1631,327 +1295,87 @@ module BlockMem_1(	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7
   input          clock,	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7
                  reset,	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7
                  io_in_wen,	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:8:14
-  input  [255:0] io_in_wdata,	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:8:14
-  input  [5:0]   io_in_addr,	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:8:14
-  output [255:0] io_out_rdata	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:8:14
+  input  [511:0] io_in_wdata,	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:8:14
+  input  [3:0]   io_in_addr,	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:8:14
+  output [511:0] io_out_rdata	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:8:14
 );
 
-  reg [255:0] regs_0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_1;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_2;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_3;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_4;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_5;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_6;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_7;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_8;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_9;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_10;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_11;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_12;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_13;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_14;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_15;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_16;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_17;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_18;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_19;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_20;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_21;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_22;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_23;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_24;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_25;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_26;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_27;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_28;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_29;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_30;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_31;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_32;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_33;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_34;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_35;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_36;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_37;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_38;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_39;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_40;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_41;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_42;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_43;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_44;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_45;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_46;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_47;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_48;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_49;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_50;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_51;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_52;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_53;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_54;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_55;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_56;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_57;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_58;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_59;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_60;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_61;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_62;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] regs_63;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-  reg [255:0] outReg;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:13:23
+  reg [511:0] regs_0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
+  reg [511:0] regs_1;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
+  reg [511:0] regs_2;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
+  reg [511:0] regs_3;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
+  reg [511:0] regs_4;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
+  reg [511:0] regs_5;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
+  reg [511:0] regs_6;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
+  reg [511:0] regs_7;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
+  reg [511:0] regs_8;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
+  reg [511:0] regs_9;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
+  reg [511:0] regs_10;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
+  reg [511:0] regs_11;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
+  reg [511:0] regs_12;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
+  reg [511:0] regs_13;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
+  reg [511:0] regs_14;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
+  reg [511:0] regs_15;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
+  reg [511:0] outReg;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:13:23
   always @(posedge clock) begin	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7
     if (reset) begin	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7
-      regs_0 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_1 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_2 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_3 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_4 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_5 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_6 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_7 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_8 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_9 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_10 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_11 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_12 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_13 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_14 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_15 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_16 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_17 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_18 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_19 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_20 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_21 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_22 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_23 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_24 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_25 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_26 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_27 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_28 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_29 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_30 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_31 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_32 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_33 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_34 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_35 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_36 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_37 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_38 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_39 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_40 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_41 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_42 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_43 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_44 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_45 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_46 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_47 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_48 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_49 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_50 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_51 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_52 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_53 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_54 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_55 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_56 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_57 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_58 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_59 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_60 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_61 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_62 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      regs_63 <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
-      outReg <= 256'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:29, :13:23
+      regs_0 <= 512'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
+      regs_1 <= 512'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
+      regs_2 <= 512'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
+      regs_3 <= 512'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
+      regs_4 <= 512'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
+      regs_5 <= 512'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
+      regs_6 <= 512'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
+      regs_7 <= 512'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
+      regs_8 <= 512'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
+      regs_9 <= 512'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
+      regs_10 <= 512'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
+      regs_11 <= 512'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
+      regs_12 <= 512'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
+      regs_13 <= 512'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
+      regs_14 <= 512'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
+      regs_15 <= 512'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:{21,29}
+      outReg <= 512'h0;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:29, :13:23
     end
     else begin	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7
-      if (io_in_wen & io_in_addr == 6'h0)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
+      if (io_in_wen & io_in_addr == 4'h0)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
         regs_0 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h1)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
+      if (io_in_wen & io_in_addr == 4'h1)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
         regs_1 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h2)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
+      if (io_in_wen & io_in_addr == 4'h2)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
         regs_2 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h3)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
+      if (io_in_wen & io_in_addr == 4'h3)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
         regs_3 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h4)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
+      if (io_in_wen & io_in_addr == 4'h4)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
         regs_4 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h5)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
+      if (io_in_wen & io_in_addr == 4'h5)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
         regs_5 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h6)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
+      if (io_in_wen & io_in_addr == 4'h6)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
         regs_6 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h7)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
+      if (io_in_wen & io_in_addr == 4'h7)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
         regs_7 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h8)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
+      if (io_in_wen & io_in_addr == 4'h8)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
         regs_8 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h9)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
+      if (io_in_wen & io_in_addr == 4'h9)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
         regs_9 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'hA)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
+      if (io_in_wen & io_in_addr == 4'hA)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
         regs_10 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'hB)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
+      if (io_in_wen & io_in_addr == 4'hB)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
         regs_11 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'hC)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
+      if (io_in_wen & io_in_addr == 4'hC)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
         regs_12 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'hD)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
+      if (io_in_wen & io_in_addr == 4'hD)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
         regs_13 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'hE)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
+      if (io_in_wen & io_in_addr == 4'hE)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
         regs_14 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'hF)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_15 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h10)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_16 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h11)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_17 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h12)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_18 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h13)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_19 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h14)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_20 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h15)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_21 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h16)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_22 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h17)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_23 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h18)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_24 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h19)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_25 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h1A)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_26 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h1B)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_27 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h1C)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_28 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h1D)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_29 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h1E)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_30 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h1F)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_31 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h20)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_32 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h21)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_33 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h22)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_34 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h23)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_35 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h24)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_36 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h25)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_37 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h26)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_38 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h27)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_39 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h28)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_40 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h29)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_41 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h2A)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_42 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h2B)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_43 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h2C)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_44 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h2D)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_45 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h2E)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_46 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h2F)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_47 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h30)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_48 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h31)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_49 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h32)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_50 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h33)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_51 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h34)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_52 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h35)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_53 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h36)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_54 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h37)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_55 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h38)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_56 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h39)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_57 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h3A)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_58 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h3B)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_59 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h3C)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_60 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h3D)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_61 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
-      if (io_in_wen & io_in_addr == 6'h3E)	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_62 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
       if (io_in_wen & (&io_in_addr))	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21, :15:20, :16:22
-        regs_63 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
+        regs_15 <= io_in_wdata;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:12:21
       if (io_in_wen) begin	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:8:14
       end
       else begin	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:8:14
-        automatic logic [63:0][255:0] _GEN;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:18:12
+        automatic logic [15:0][511:0] _GEN;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:18:12
         _GEN =
-          {{regs_63},
-           {regs_62},
-           {regs_61},
-           {regs_60},
-           {regs_59},
-           {regs_58},
-           {regs_57},
-           {regs_56},
-           {regs_55},
-           {regs_54},
-           {regs_53},
-           {regs_52},
-           {regs_51},
-           {regs_50},
-           {regs_49},
-           {regs_48},
-           {regs_47},
-           {regs_46},
-           {regs_45},
-           {regs_44},
-           {regs_43},
-           {regs_42},
-           {regs_41},
-           {regs_40},
-           {regs_39},
-           {regs_38},
-           {regs_37},
-           {regs_36},
-           {regs_35},
-           {regs_34},
-           {regs_33},
-           {regs_32},
-           {regs_31},
-           {regs_30},
-           {regs_29},
-           {regs_28},
-           {regs_27},
-           {regs_26},
-           {regs_25},
-           {regs_24},
-           {regs_23},
-           {regs_22},
-           {regs_21},
-           {regs_20},
-           {regs_19},
-           {regs_18},
-           {regs_17},
-           {regs_16},
-           {regs_15},
+          {{regs_15},
            {regs_14},
            {regs_13},
            {regs_12},
@@ -1976,599 +1400,303 @@ module BlockMem_1(	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7
       `FIRRTL_BEFORE_INITIAL	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7
     `endif // FIRRTL_BEFORE_INITIAL
     initial begin	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7
-      automatic logic [31:0] _RANDOM[0:519];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7
+      automatic logic [31:0] _RANDOM[0:271];	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7
       `ifdef INIT_RANDOM_PROLOG_	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7
         `INIT_RANDOM_PROLOG_	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7
       `endif // INIT_RANDOM_PROLOG_
       `ifdef RANDOMIZE_REG_INIT	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7
-        for (logic [9:0] i = 10'h0; i < 10'h208; i += 10'h1) begin
+        for (logic [8:0] i = 9'h0; i < 9'h110; i += 9'h1) begin
           _RANDOM[i] = `RANDOM;	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7
         end	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7
         regs_0 =
-          {_RANDOM[10'h0],
-           _RANDOM[10'h1],
-           _RANDOM[10'h2],
-           _RANDOM[10'h3],
-           _RANDOM[10'h4],
-           _RANDOM[10'h5],
-           _RANDOM[10'h6],
-           _RANDOM[10'h7]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
+          {_RANDOM[9'h0],
+           _RANDOM[9'h1],
+           _RANDOM[9'h2],
+           _RANDOM[9'h3],
+           _RANDOM[9'h4],
+           _RANDOM[9'h5],
+           _RANDOM[9'h6],
+           _RANDOM[9'h7],
+           _RANDOM[9'h8],
+           _RANDOM[9'h9],
+           _RANDOM[9'hA],
+           _RANDOM[9'hB],
+           _RANDOM[9'hC],
+           _RANDOM[9'hD],
+           _RANDOM[9'hE],
+           _RANDOM[9'hF]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
         regs_1 =
-          {_RANDOM[10'h8],
-           _RANDOM[10'h9],
-           _RANDOM[10'hA],
-           _RANDOM[10'hB],
-           _RANDOM[10'hC],
-           _RANDOM[10'hD],
-           _RANDOM[10'hE],
-           _RANDOM[10'hF]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
+          {_RANDOM[9'h10],
+           _RANDOM[9'h11],
+           _RANDOM[9'h12],
+           _RANDOM[9'h13],
+           _RANDOM[9'h14],
+           _RANDOM[9'h15],
+           _RANDOM[9'h16],
+           _RANDOM[9'h17],
+           _RANDOM[9'h18],
+           _RANDOM[9'h19],
+           _RANDOM[9'h1A],
+           _RANDOM[9'h1B],
+           _RANDOM[9'h1C],
+           _RANDOM[9'h1D],
+           _RANDOM[9'h1E],
+           _RANDOM[9'h1F]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
         regs_2 =
-          {_RANDOM[10'h10],
-           _RANDOM[10'h11],
-           _RANDOM[10'h12],
-           _RANDOM[10'h13],
-           _RANDOM[10'h14],
-           _RANDOM[10'h15],
-           _RANDOM[10'h16],
-           _RANDOM[10'h17]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
+          {_RANDOM[9'h20],
+           _RANDOM[9'h21],
+           _RANDOM[9'h22],
+           _RANDOM[9'h23],
+           _RANDOM[9'h24],
+           _RANDOM[9'h25],
+           _RANDOM[9'h26],
+           _RANDOM[9'h27],
+           _RANDOM[9'h28],
+           _RANDOM[9'h29],
+           _RANDOM[9'h2A],
+           _RANDOM[9'h2B],
+           _RANDOM[9'h2C],
+           _RANDOM[9'h2D],
+           _RANDOM[9'h2E],
+           _RANDOM[9'h2F]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
         regs_3 =
-          {_RANDOM[10'h18],
-           _RANDOM[10'h19],
-           _RANDOM[10'h1A],
-           _RANDOM[10'h1B],
-           _RANDOM[10'h1C],
-           _RANDOM[10'h1D],
-           _RANDOM[10'h1E],
-           _RANDOM[10'h1F]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
+          {_RANDOM[9'h30],
+           _RANDOM[9'h31],
+           _RANDOM[9'h32],
+           _RANDOM[9'h33],
+           _RANDOM[9'h34],
+           _RANDOM[9'h35],
+           _RANDOM[9'h36],
+           _RANDOM[9'h37],
+           _RANDOM[9'h38],
+           _RANDOM[9'h39],
+           _RANDOM[9'h3A],
+           _RANDOM[9'h3B],
+           _RANDOM[9'h3C],
+           _RANDOM[9'h3D],
+           _RANDOM[9'h3E],
+           _RANDOM[9'h3F]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
         regs_4 =
-          {_RANDOM[10'h20],
-           _RANDOM[10'h21],
-           _RANDOM[10'h22],
-           _RANDOM[10'h23],
-           _RANDOM[10'h24],
-           _RANDOM[10'h25],
-           _RANDOM[10'h26],
-           _RANDOM[10'h27]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
+          {_RANDOM[9'h40],
+           _RANDOM[9'h41],
+           _RANDOM[9'h42],
+           _RANDOM[9'h43],
+           _RANDOM[9'h44],
+           _RANDOM[9'h45],
+           _RANDOM[9'h46],
+           _RANDOM[9'h47],
+           _RANDOM[9'h48],
+           _RANDOM[9'h49],
+           _RANDOM[9'h4A],
+           _RANDOM[9'h4B],
+           _RANDOM[9'h4C],
+           _RANDOM[9'h4D],
+           _RANDOM[9'h4E],
+           _RANDOM[9'h4F]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
         regs_5 =
-          {_RANDOM[10'h28],
-           _RANDOM[10'h29],
-           _RANDOM[10'h2A],
-           _RANDOM[10'h2B],
-           _RANDOM[10'h2C],
-           _RANDOM[10'h2D],
-           _RANDOM[10'h2E],
-           _RANDOM[10'h2F]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
+          {_RANDOM[9'h50],
+           _RANDOM[9'h51],
+           _RANDOM[9'h52],
+           _RANDOM[9'h53],
+           _RANDOM[9'h54],
+           _RANDOM[9'h55],
+           _RANDOM[9'h56],
+           _RANDOM[9'h57],
+           _RANDOM[9'h58],
+           _RANDOM[9'h59],
+           _RANDOM[9'h5A],
+           _RANDOM[9'h5B],
+           _RANDOM[9'h5C],
+           _RANDOM[9'h5D],
+           _RANDOM[9'h5E],
+           _RANDOM[9'h5F]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
         regs_6 =
-          {_RANDOM[10'h30],
-           _RANDOM[10'h31],
-           _RANDOM[10'h32],
-           _RANDOM[10'h33],
-           _RANDOM[10'h34],
-           _RANDOM[10'h35],
-           _RANDOM[10'h36],
-           _RANDOM[10'h37]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
+          {_RANDOM[9'h60],
+           _RANDOM[9'h61],
+           _RANDOM[9'h62],
+           _RANDOM[9'h63],
+           _RANDOM[9'h64],
+           _RANDOM[9'h65],
+           _RANDOM[9'h66],
+           _RANDOM[9'h67],
+           _RANDOM[9'h68],
+           _RANDOM[9'h69],
+           _RANDOM[9'h6A],
+           _RANDOM[9'h6B],
+           _RANDOM[9'h6C],
+           _RANDOM[9'h6D],
+           _RANDOM[9'h6E],
+           _RANDOM[9'h6F]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
         regs_7 =
-          {_RANDOM[10'h38],
-           _RANDOM[10'h39],
-           _RANDOM[10'h3A],
-           _RANDOM[10'h3B],
-           _RANDOM[10'h3C],
-           _RANDOM[10'h3D],
-           _RANDOM[10'h3E],
-           _RANDOM[10'h3F]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
+          {_RANDOM[9'h70],
+           _RANDOM[9'h71],
+           _RANDOM[9'h72],
+           _RANDOM[9'h73],
+           _RANDOM[9'h74],
+           _RANDOM[9'h75],
+           _RANDOM[9'h76],
+           _RANDOM[9'h77],
+           _RANDOM[9'h78],
+           _RANDOM[9'h79],
+           _RANDOM[9'h7A],
+           _RANDOM[9'h7B],
+           _RANDOM[9'h7C],
+           _RANDOM[9'h7D],
+           _RANDOM[9'h7E],
+           _RANDOM[9'h7F]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
         regs_8 =
-          {_RANDOM[10'h40],
-           _RANDOM[10'h41],
-           _RANDOM[10'h42],
-           _RANDOM[10'h43],
-           _RANDOM[10'h44],
-           _RANDOM[10'h45],
-           _RANDOM[10'h46],
-           _RANDOM[10'h47]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
+          {_RANDOM[9'h80],
+           _RANDOM[9'h81],
+           _RANDOM[9'h82],
+           _RANDOM[9'h83],
+           _RANDOM[9'h84],
+           _RANDOM[9'h85],
+           _RANDOM[9'h86],
+           _RANDOM[9'h87],
+           _RANDOM[9'h88],
+           _RANDOM[9'h89],
+           _RANDOM[9'h8A],
+           _RANDOM[9'h8B],
+           _RANDOM[9'h8C],
+           _RANDOM[9'h8D],
+           _RANDOM[9'h8E],
+           _RANDOM[9'h8F]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
         regs_9 =
-          {_RANDOM[10'h48],
-           _RANDOM[10'h49],
-           _RANDOM[10'h4A],
-           _RANDOM[10'h4B],
-           _RANDOM[10'h4C],
-           _RANDOM[10'h4D],
-           _RANDOM[10'h4E],
-           _RANDOM[10'h4F]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
+          {_RANDOM[9'h90],
+           _RANDOM[9'h91],
+           _RANDOM[9'h92],
+           _RANDOM[9'h93],
+           _RANDOM[9'h94],
+           _RANDOM[9'h95],
+           _RANDOM[9'h96],
+           _RANDOM[9'h97],
+           _RANDOM[9'h98],
+           _RANDOM[9'h99],
+           _RANDOM[9'h9A],
+           _RANDOM[9'h9B],
+           _RANDOM[9'h9C],
+           _RANDOM[9'h9D],
+           _RANDOM[9'h9E],
+           _RANDOM[9'h9F]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
         regs_10 =
-          {_RANDOM[10'h50],
-           _RANDOM[10'h51],
-           _RANDOM[10'h52],
-           _RANDOM[10'h53],
-           _RANDOM[10'h54],
-           _RANDOM[10'h55],
-           _RANDOM[10'h56],
-           _RANDOM[10'h57]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
+          {_RANDOM[9'hA0],
+           _RANDOM[9'hA1],
+           _RANDOM[9'hA2],
+           _RANDOM[9'hA3],
+           _RANDOM[9'hA4],
+           _RANDOM[9'hA5],
+           _RANDOM[9'hA6],
+           _RANDOM[9'hA7],
+           _RANDOM[9'hA8],
+           _RANDOM[9'hA9],
+           _RANDOM[9'hAA],
+           _RANDOM[9'hAB],
+           _RANDOM[9'hAC],
+           _RANDOM[9'hAD],
+           _RANDOM[9'hAE],
+           _RANDOM[9'hAF]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
         regs_11 =
-          {_RANDOM[10'h58],
-           _RANDOM[10'h59],
-           _RANDOM[10'h5A],
-           _RANDOM[10'h5B],
-           _RANDOM[10'h5C],
-           _RANDOM[10'h5D],
-           _RANDOM[10'h5E],
-           _RANDOM[10'h5F]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
+          {_RANDOM[9'hB0],
+           _RANDOM[9'hB1],
+           _RANDOM[9'hB2],
+           _RANDOM[9'hB3],
+           _RANDOM[9'hB4],
+           _RANDOM[9'hB5],
+           _RANDOM[9'hB6],
+           _RANDOM[9'hB7],
+           _RANDOM[9'hB8],
+           _RANDOM[9'hB9],
+           _RANDOM[9'hBA],
+           _RANDOM[9'hBB],
+           _RANDOM[9'hBC],
+           _RANDOM[9'hBD],
+           _RANDOM[9'hBE],
+           _RANDOM[9'hBF]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
         regs_12 =
-          {_RANDOM[10'h60],
-           _RANDOM[10'h61],
-           _RANDOM[10'h62],
-           _RANDOM[10'h63],
-           _RANDOM[10'h64],
-           _RANDOM[10'h65],
-           _RANDOM[10'h66],
-           _RANDOM[10'h67]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
+          {_RANDOM[9'hC0],
+           _RANDOM[9'hC1],
+           _RANDOM[9'hC2],
+           _RANDOM[9'hC3],
+           _RANDOM[9'hC4],
+           _RANDOM[9'hC5],
+           _RANDOM[9'hC6],
+           _RANDOM[9'hC7],
+           _RANDOM[9'hC8],
+           _RANDOM[9'hC9],
+           _RANDOM[9'hCA],
+           _RANDOM[9'hCB],
+           _RANDOM[9'hCC],
+           _RANDOM[9'hCD],
+           _RANDOM[9'hCE],
+           _RANDOM[9'hCF]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
         regs_13 =
-          {_RANDOM[10'h68],
-           _RANDOM[10'h69],
-           _RANDOM[10'h6A],
-           _RANDOM[10'h6B],
-           _RANDOM[10'h6C],
-           _RANDOM[10'h6D],
-           _RANDOM[10'h6E],
-           _RANDOM[10'h6F]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
+          {_RANDOM[9'hD0],
+           _RANDOM[9'hD1],
+           _RANDOM[9'hD2],
+           _RANDOM[9'hD3],
+           _RANDOM[9'hD4],
+           _RANDOM[9'hD5],
+           _RANDOM[9'hD6],
+           _RANDOM[9'hD7],
+           _RANDOM[9'hD8],
+           _RANDOM[9'hD9],
+           _RANDOM[9'hDA],
+           _RANDOM[9'hDB],
+           _RANDOM[9'hDC],
+           _RANDOM[9'hDD],
+           _RANDOM[9'hDE],
+           _RANDOM[9'hDF]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
         regs_14 =
-          {_RANDOM[10'h70],
-           _RANDOM[10'h71],
-           _RANDOM[10'h72],
-           _RANDOM[10'h73],
-           _RANDOM[10'h74],
-           _RANDOM[10'h75],
-           _RANDOM[10'h76],
-           _RANDOM[10'h77]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
+          {_RANDOM[9'hE0],
+           _RANDOM[9'hE1],
+           _RANDOM[9'hE2],
+           _RANDOM[9'hE3],
+           _RANDOM[9'hE4],
+           _RANDOM[9'hE5],
+           _RANDOM[9'hE6],
+           _RANDOM[9'hE7],
+           _RANDOM[9'hE8],
+           _RANDOM[9'hE9],
+           _RANDOM[9'hEA],
+           _RANDOM[9'hEB],
+           _RANDOM[9'hEC],
+           _RANDOM[9'hED],
+           _RANDOM[9'hEE],
+           _RANDOM[9'hEF]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
         regs_15 =
-          {_RANDOM[10'h78],
-           _RANDOM[10'h79],
-           _RANDOM[10'h7A],
-           _RANDOM[10'h7B],
-           _RANDOM[10'h7C],
-           _RANDOM[10'h7D],
-           _RANDOM[10'h7E],
-           _RANDOM[10'h7F]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_16 =
-          {_RANDOM[10'h80],
-           _RANDOM[10'h81],
-           _RANDOM[10'h82],
-           _RANDOM[10'h83],
-           _RANDOM[10'h84],
-           _RANDOM[10'h85],
-           _RANDOM[10'h86],
-           _RANDOM[10'h87]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_17 =
-          {_RANDOM[10'h88],
-           _RANDOM[10'h89],
-           _RANDOM[10'h8A],
-           _RANDOM[10'h8B],
-           _RANDOM[10'h8C],
-           _RANDOM[10'h8D],
-           _RANDOM[10'h8E],
-           _RANDOM[10'h8F]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_18 =
-          {_RANDOM[10'h90],
-           _RANDOM[10'h91],
-           _RANDOM[10'h92],
-           _RANDOM[10'h93],
-           _RANDOM[10'h94],
-           _RANDOM[10'h95],
-           _RANDOM[10'h96],
-           _RANDOM[10'h97]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_19 =
-          {_RANDOM[10'h98],
-           _RANDOM[10'h99],
-           _RANDOM[10'h9A],
-           _RANDOM[10'h9B],
-           _RANDOM[10'h9C],
-           _RANDOM[10'h9D],
-           _RANDOM[10'h9E],
-           _RANDOM[10'h9F]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_20 =
-          {_RANDOM[10'hA0],
-           _RANDOM[10'hA1],
-           _RANDOM[10'hA2],
-           _RANDOM[10'hA3],
-           _RANDOM[10'hA4],
-           _RANDOM[10'hA5],
-           _RANDOM[10'hA6],
-           _RANDOM[10'hA7]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_21 =
-          {_RANDOM[10'hA8],
-           _RANDOM[10'hA9],
-           _RANDOM[10'hAA],
-           _RANDOM[10'hAB],
-           _RANDOM[10'hAC],
-           _RANDOM[10'hAD],
-           _RANDOM[10'hAE],
-           _RANDOM[10'hAF]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_22 =
-          {_RANDOM[10'hB0],
-           _RANDOM[10'hB1],
-           _RANDOM[10'hB2],
-           _RANDOM[10'hB3],
-           _RANDOM[10'hB4],
-           _RANDOM[10'hB5],
-           _RANDOM[10'hB6],
-           _RANDOM[10'hB7]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_23 =
-          {_RANDOM[10'hB8],
-           _RANDOM[10'hB9],
-           _RANDOM[10'hBA],
-           _RANDOM[10'hBB],
-           _RANDOM[10'hBC],
-           _RANDOM[10'hBD],
-           _RANDOM[10'hBE],
-           _RANDOM[10'hBF]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_24 =
-          {_RANDOM[10'hC0],
-           _RANDOM[10'hC1],
-           _RANDOM[10'hC2],
-           _RANDOM[10'hC3],
-           _RANDOM[10'hC4],
-           _RANDOM[10'hC5],
-           _RANDOM[10'hC6],
-           _RANDOM[10'hC7]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_25 =
-          {_RANDOM[10'hC8],
-           _RANDOM[10'hC9],
-           _RANDOM[10'hCA],
-           _RANDOM[10'hCB],
-           _RANDOM[10'hCC],
-           _RANDOM[10'hCD],
-           _RANDOM[10'hCE],
-           _RANDOM[10'hCF]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_26 =
-          {_RANDOM[10'hD0],
-           _RANDOM[10'hD1],
-           _RANDOM[10'hD2],
-           _RANDOM[10'hD3],
-           _RANDOM[10'hD4],
-           _RANDOM[10'hD5],
-           _RANDOM[10'hD6],
-           _RANDOM[10'hD7]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_27 =
-          {_RANDOM[10'hD8],
-           _RANDOM[10'hD9],
-           _RANDOM[10'hDA],
-           _RANDOM[10'hDB],
-           _RANDOM[10'hDC],
-           _RANDOM[10'hDD],
-           _RANDOM[10'hDE],
-           _RANDOM[10'hDF]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_28 =
-          {_RANDOM[10'hE0],
-           _RANDOM[10'hE1],
-           _RANDOM[10'hE2],
-           _RANDOM[10'hE3],
-           _RANDOM[10'hE4],
-           _RANDOM[10'hE5],
-           _RANDOM[10'hE6],
-           _RANDOM[10'hE7]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_29 =
-          {_RANDOM[10'hE8],
-           _RANDOM[10'hE9],
-           _RANDOM[10'hEA],
-           _RANDOM[10'hEB],
-           _RANDOM[10'hEC],
-           _RANDOM[10'hED],
-           _RANDOM[10'hEE],
-           _RANDOM[10'hEF]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_30 =
-          {_RANDOM[10'hF0],
-           _RANDOM[10'hF1],
-           _RANDOM[10'hF2],
-           _RANDOM[10'hF3],
-           _RANDOM[10'hF4],
-           _RANDOM[10'hF5],
-           _RANDOM[10'hF6],
-           _RANDOM[10'hF7]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_31 =
-          {_RANDOM[10'hF8],
-           _RANDOM[10'hF9],
-           _RANDOM[10'hFA],
-           _RANDOM[10'hFB],
-           _RANDOM[10'hFC],
-           _RANDOM[10'hFD],
-           _RANDOM[10'hFE],
-           _RANDOM[10'hFF]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_32 =
-          {_RANDOM[10'h100],
-           _RANDOM[10'h101],
-           _RANDOM[10'h102],
-           _RANDOM[10'h103],
-           _RANDOM[10'h104],
-           _RANDOM[10'h105],
-           _RANDOM[10'h106],
-           _RANDOM[10'h107]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_33 =
-          {_RANDOM[10'h108],
-           _RANDOM[10'h109],
-           _RANDOM[10'h10A],
-           _RANDOM[10'h10B],
-           _RANDOM[10'h10C],
-           _RANDOM[10'h10D],
-           _RANDOM[10'h10E],
-           _RANDOM[10'h10F]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_34 =
-          {_RANDOM[10'h110],
-           _RANDOM[10'h111],
-           _RANDOM[10'h112],
-           _RANDOM[10'h113],
-           _RANDOM[10'h114],
-           _RANDOM[10'h115],
-           _RANDOM[10'h116],
-           _RANDOM[10'h117]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_35 =
-          {_RANDOM[10'h118],
-           _RANDOM[10'h119],
-           _RANDOM[10'h11A],
-           _RANDOM[10'h11B],
-           _RANDOM[10'h11C],
-           _RANDOM[10'h11D],
-           _RANDOM[10'h11E],
-           _RANDOM[10'h11F]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_36 =
-          {_RANDOM[10'h120],
-           _RANDOM[10'h121],
-           _RANDOM[10'h122],
-           _RANDOM[10'h123],
-           _RANDOM[10'h124],
-           _RANDOM[10'h125],
-           _RANDOM[10'h126],
-           _RANDOM[10'h127]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_37 =
-          {_RANDOM[10'h128],
-           _RANDOM[10'h129],
-           _RANDOM[10'h12A],
-           _RANDOM[10'h12B],
-           _RANDOM[10'h12C],
-           _RANDOM[10'h12D],
-           _RANDOM[10'h12E],
-           _RANDOM[10'h12F]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_38 =
-          {_RANDOM[10'h130],
-           _RANDOM[10'h131],
-           _RANDOM[10'h132],
-           _RANDOM[10'h133],
-           _RANDOM[10'h134],
-           _RANDOM[10'h135],
-           _RANDOM[10'h136],
-           _RANDOM[10'h137]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_39 =
-          {_RANDOM[10'h138],
-           _RANDOM[10'h139],
-           _RANDOM[10'h13A],
-           _RANDOM[10'h13B],
-           _RANDOM[10'h13C],
-           _RANDOM[10'h13D],
-           _RANDOM[10'h13E],
-           _RANDOM[10'h13F]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_40 =
-          {_RANDOM[10'h140],
-           _RANDOM[10'h141],
-           _RANDOM[10'h142],
-           _RANDOM[10'h143],
-           _RANDOM[10'h144],
-           _RANDOM[10'h145],
-           _RANDOM[10'h146],
-           _RANDOM[10'h147]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_41 =
-          {_RANDOM[10'h148],
-           _RANDOM[10'h149],
-           _RANDOM[10'h14A],
-           _RANDOM[10'h14B],
-           _RANDOM[10'h14C],
-           _RANDOM[10'h14D],
-           _RANDOM[10'h14E],
-           _RANDOM[10'h14F]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_42 =
-          {_RANDOM[10'h150],
-           _RANDOM[10'h151],
-           _RANDOM[10'h152],
-           _RANDOM[10'h153],
-           _RANDOM[10'h154],
-           _RANDOM[10'h155],
-           _RANDOM[10'h156],
-           _RANDOM[10'h157]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_43 =
-          {_RANDOM[10'h158],
-           _RANDOM[10'h159],
-           _RANDOM[10'h15A],
-           _RANDOM[10'h15B],
-           _RANDOM[10'h15C],
-           _RANDOM[10'h15D],
-           _RANDOM[10'h15E],
-           _RANDOM[10'h15F]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_44 =
-          {_RANDOM[10'h160],
-           _RANDOM[10'h161],
-           _RANDOM[10'h162],
-           _RANDOM[10'h163],
-           _RANDOM[10'h164],
-           _RANDOM[10'h165],
-           _RANDOM[10'h166],
-           _RANDOM[10'h167]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_45 =
-          {_RANDOM[10'h168],
-           _RANDOM[10'h169],
-           _RANDOM[10'h16A],
-           _RANDOM[10'h16B],
-           _RANDOM[10'h16C],
-           _RANDOM[10'h16D],
-           _RANDOM[10'h16E],
-           _RANDOM[10'h16F]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_46 =
-          {_RANDOM[10'h170],
-           _RANDOM[10'h171],
-           _RANDOM[10'h172],
-           _RANDOM[10'h173],
-           _RANDOM[10'h174],
-           _RANDOM[10'h175],
-           _RANDOM[10'h176],
-           _RANDOM[10'h177]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_47 =
-          {_RANDOM[10'h178],
-           _RANDOM[10'h179],
-           _RANDOM[10'h17A],
-           _RANDOM[10'h17B],
-           _RANDOM[10'h17C],
-           _RANDOM[10'h17D],
-           _RANDOM[10'h17E],
-           _RANDOM[10'h17F]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_48 =
-          {_RANDOM[10'h180],
-           _RANDOM[10'h181],
-           _RANDOM[10'h182],
-           _RANDOM[10'h183],
-           _RANDOM[10'h184],
-           _RANDOM[10'h185],
-           _RANDOM[10'h186],
-           _RANDOM[10'h187]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_49 =
-          {_RANDOM[10'h188],
-           _RANDOM[10'h189],
-           _RANDOM[10'h18A],
-           _RANDOM[10'h18B],
-           _RANDOM[10'h18C],
-           _RANDOM[10'h18D],
-           _RANDOM[10'h18E],
-           _RANDOM[10'h18F]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_50 =
-          {_RANDOM[10'h190],
-           _RANDOM[10'h191],
-           _RANDOM[10'h192],
-           _RANDOM[10'h193],
-           _RANDOM[10'h194],
-           _RANDOM[10'h195],
-           _RANDOM[10'h196],
-           _RANDOM[10'h197]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_51 =
-          {_RANDOM[10'h198],
-           _RANDOM[10'h199],
-           _RANDOM[10'h19A],
-           _RANDOM[10'h19B],
-           _RANDOM[10'h19C],
-           _RANDOM[10'h19D],
-           _RANDOM[10'h19E],
-           _RANDOM[10'h19F]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_52 =
-          {_RANDOM[10'h1A0],
-           _RANDOM[10'h1A1],
-           _RANDOM[10'h1A2],
-           _RANDOM[10'h1A3],
-           _RANDOM[10'h1A4],
-           _RANDOM[10'h1A5],
-           _RANDOM[10'h1A6],
-           _RANDOM[10'h1A7]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_53 =
-          {_RANDOM[10'h1A8],
-           _RANDOM[10'h1A9],
-           _RANDOM[10'h1AA],
-           _RANDOM[10'h1AB],
-           _RANDOM[10'h1AC],
-           _RANDOM[10'h1AD],
-           _RANDOM[10'h1AE],
-           _RANDOM[10'h1AF]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_54 =
-          {_RANDOM[10'h1B0],
-           _RANDOM[10'h1B1],
-           _RANDOM[10'h1B2],
-           _RANDOM[10'h1B3],
-           _RANDOM[10'h1B4],
-           _RANDOM[10'h1B5],
-           _RANDOM[10'h1B6],
-           _RANDOM[10'h1B7]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_55 =
-          {_RANDOM[10'h1B8],
-           _RANDOM[10'h1B9],
-           _RANDOM[10'h1BA],
-           _RANDOM[10'h1BB],
-           _RANDOM[10'h1BC],
-           _RANDOM[10'h1BD],
-           _RANDOM[10'h1BE],
-           _RANDOM[10'h1BF]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_56 =
-          {_RANDOM[10'h1C0],
-           _RANDOM[10'h1C1],
-           _RANDOM[10'h1C2],
-           _RANDOM[10'h1C3],
-           _RANDOM[10'h1C4],
-           _RANDOM[10'h1C5],
-           _RANDOM[10'h1C6],
-           _RANDOM[10'h1C7]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_57 =
-          {_RANDOM[10'h1C8],
-           _RANDOM[10'h1C9],
-           _RANDOM[10'h1CA],
-           _RANDOM[10'h1CB],
-           _RANDOM[10'h1CC],
-           _RANDOM[10'h1CD],
-           _RANDOM[10'h1CE],
-           _RANDOM[10'h1CF]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_58 =
-          {_RANDOM[10'h1D0],
-           _RANDOM[10'h1D1],
-           _RANDOM[10'h1D2],
-           _RANDOM[10'h1D3],
-           _RANDOM[10'h1D4],
-           _RANDOM[10'h1D5],
-           _RANDOM[10'h1D6],
-           _RANDOM[10'h1D7]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_59 =
-          {_RANDOM[10'h1D8],
-           _RANDOM[10'h1D9],
-           _RANDOM[10'h1DA],
-           _RANDOM[10'h1DB],
-           _RANDOM[10'h1DC],
-           _RANDOM[10'h1DD],
-           _RANDOM[10'h1DE],
-           _RANDOM[10'h1DF]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_60 =
-          {_RANDOM[10'h1E0],
-           _RANDOM[10'h1E1],
-           _RANDOM[10'h1E2],
-           _RANDOM[10'h1E3],
-           _RANDOM[10'h1E4],
-           _RANDOM[10'h1E5],
-           _RANDOM[10'h1E6],
-           _RANDOM[10'h1E7]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_61 =
-          {_RANDOM[10'h1E8],
-           _RANDOM[10'h1E9],
-           _RANDOM[10'h1EA],
-           _RANDOM[10'h1EB],
-           _RANDOM[10'h1EC],
-           _RANDOM[10'h1ED],
-           _RANDOM[10'h1EE],
-           _RANDOM[10'h1EF]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_62 =
-          {_RANDOM[10'h1F0],
-           _RANDOM[10'h1F1],
-           _RANDOM[10'h1F2],
-           _RANDOM[10'h1F3],
-           _RANDOM[10'h1F4],
-           _RANDOM[10'h1F5],
-           _RANDOM[10'h1F6],
-           _RANDOM[10'h1F7]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
-        regs_63 =
-          {_RANDOM[10'h1F8],
-           _RANDOM[10'h1F9],
-           _RANDOM[10'h1FA],
-           _RANDOM[10'h1FB],
-           _RANDOM[10'h1FC],
-           _RANDOM[10'h1FD],
-           _RANDOM[10'h1FE],
-           _RANDOM[10'h1FF]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
+          {_RANDOM[9'hF0],
+           _RANDOM[9'hF1],
+           _RANDOM[9'hF2],
+           _RANDOM[9'hF3],
+           _RANDOM[9'hF4],
+           _RANDOM[9'hF5],
+           _RANDOM[9'hF6],
+           _RANDOM[9'hF7],
+           _RANDOM[9'hF8],
+           _RANDOM[9'hF9],
+           _RANDOM[9'hFA],
+           _RANDOM[9'hFB],
+           _RANDOM[9'hFC],
+           _RANDOM[9'hFD],
+           _RANDOM[9'hFE],
+           _RANDOM[9'hFF]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :12:21
         outReg =
-          {_RANDOM[10'h200],
-           _RANDOM[10'h201],
-           _RANDOM[10'h202],
-           _RANDOM[10'h203],
-           _RANDOM[10'h204],
-           _RANDOM[10'h205],
-           _RANDOM[10'h206],
-           _RANDOM[10'h207]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :13:23
+          {_RANDOM[9'h100],
+           _RANDOM[9'h101],
+           _RANDOM[9'h102],
+           _RANDOM[9'h103],
+           _RANDOM[9'h104],
+           _RANDOM[9'h105],
+           _RANDOM[9'h106],
+           _RANDOM[9'h107],
+           _RANDOM[9'h108],
+           _RANDOM[9'h109],
+           _RANDOM[9'h10A],
+           _RANDOM[9'h10B],
+           _RANDOM[9'h10C],
+           _RANDOM[9'h10D],
+           _RANDOM[9'h10E],
+           _RANDOM[9'h10F]};	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7, :13:23
       `endif // RANDOMIZE_REG_INIT
     end // initial
     `ifdef FIRRTL_AFTER_INITIAL	// src/main/scala/ultra/caches/blkmem/BlockMem.scala:7:7
@@ -2583,28 +1711,28 @@ module Icache(	// src/main/scala/ultra/caches/icache/Icache.scala:11:7
                  reset,	// src/main/scala/ultra/caches/icache/Icache.scala:11:7
   input  [31:0]  io_core_in_pc,	// src/main/scala/ultra/caches/icache/Icache.scala:12:14
   input          io_core_in_rreq,	// src/main/scala/ultra/caches/icache/Icache.scala:12:14
-  output [255:0] io_core_out_rdata,	// src/main/scala/ultra/caches/icache/Icache.scala:12:14
+  output [511:0] io_core_out_rdata,	// src/main/scala/ultra/caches/icache/Icache.scala:12:14
   output         io_core_out_rvalid,	// src/main/scala/ultra/caches/icache/Icache.scala:12:14
   output [31:0]  io_bus_out_pc,	// src/main/scala/ultra/caches/icache/Icache.scala:12:14
   output         io_bus_out_rreq,	// src/main/scala/ultra/caches/icache/Icache.scala:12:14
-  input  [255:0] io_bus_in_rdata,	// src/main/scala/ultra/caches/icache/Icache.scala:12:14
+  input  [511:0] io_bus_in_rdata,	// src/main/scala/ultra/caches/icache/Icache.scala:12:14
   input          io_bus_in_rrdy,	// src/main/scala/ultra/caches/icache/Icache.scala:12:14
                  io_bus_in_rvalid,	// src/main/scala/ultra/caches/icache/Icache.scala:12:14
   output [31:0]  io_pc	// src/main/scala/ultra/caches/icache/Icache.scala:14:17
 );
 
   wire         cacheWen;	// src/main/scala/ultra/caches/icache/Icache.scala:23:29, :52:15
-  wire [255:0] _dataRam_io_out_rdata;	// src/main/scala/ultra/caches/icache/Icache.scala:33:23
-  wire [11:0]  _tagRam_io_out_rdata;	// src/main/scala/ultra/caches/icache/Icache.scala:27:22
+  wire [511:0] _dataRam_io_out_rdata;	// src/main/scala/ultra/caches/icache/Icache.scala:33:23
+  wire [12:0]  _tagRam_io_out_rdata;	// src/main/scala/ultra/caches/icache/Icache.scala:27:22
   reg  [31:0]  pcOutReg;	// src/main/scala/ultra/caches/icache/Icache.scala:15:25
-  reg  [255:0] rspns2coreReg_rdata;	// src/main/scala/ultra/caches/icache/Icache.scala:18:30
+  reg  [511:0] rspns2coreReg_rdata;	// src/main/scala/ultra/caches/icache/Icache.scala:18:30
   reg          rspns2coreReg_rvalid;	// src/main/scala/ultra/caches/icache/Icache.scala:18:30
   reg  [31:0]  req2busReg_pc;	// src/main/scala/ultra/caches/icache/Icache.scala:19:27
   reg          req2busReg_rreq;	// src/main/scala/ultra/caches/icache/Icache.scala:19:27
   reg  [31:0]  iReqBuf_pc;	// src/main/scala/ultra/caches/icache/Icache.scala:39:24
   reg          iReqBuf_rreq;	// src/main/scala/ultra/caches/icache/Icache.scala:39:24
   reg  [1:0]   stat;	// src/main/scala/ultra/caches/icache/Icache.scala:40:21
-  wire [5:0]   cacheAddr = cacheWen ? iReqBuf_pc[10:5] : io_core_in_pc[10:5];	// src/main/scala/ultra/caches/icache/Icache.scala:23:29, :39:24, :41:17, :42:{15,28}, :44:{15,31}, :52:15
+  wire [3:0]   cacheAddr = cacheWen ? iReqBuf_pc[9:6] : io_core_in_pc[9:6];	// src/main/scala/ultra/caches/icache/Icache.scala:23:29, :39:24, :41:17, :42:{15,28}, :44:{15,31}, :52:15
   wire         _GEN = stat == 2'h0;	// src/main/scala/ultra/caches/icache/Icache.scala:40:21, :52:15, :66:14
   wire         _GEN_0 = stat == 2'h1;	// src/main/scala/ultra/caches/icache/Icache.scala:40:21, :52:15, :56:14
   wire         _GEN_1 = stat == 2'h2;	// src/main/scala/ultra/caches/icache/Icache.scala:40:21, :52:15, :73:16
@@ -2615,7 +1743,7 @@ module Icache(	// src/main/scala/ultra/caches/icache/Icache.scala:11:7
   always @(posedge clock) begin	// src/main/scala/ultra/caches/icache/Icache.scala:11:7
     if (reset) begin	// src/main/scala/ultra/caches/icache/Icache.scala:11:7
       pcOutReg <= 32'h0;	// src/main/scala/ultra/caches/icache/Icache.scala:15:25
-      rspns2coreReg_rdata <= 256'h0;	// src/main/scala/ultra/caches/icache/Icache.scala:18:30, :35:30
+      rspns2coreReg_rdata <= 512'h0;	// src/main/scala/ultra/caches/icache/Icache.scala:18:30, :35:30
       rspns2coreReg_rvalid <= 1'h0;	// src/main/scala/ultra/bus/UltraBusUtils.scala:24:16, src/main/scala/ultra/caches/icache/Icache.scala:18:30
       req2busReg_pc <= 32'h80000000;	// src/main/scala/ultra/bus/UltraBusUtils.scala:19:13, src/main/scala/ultra/caches/icache/Icache.scala:19:27
       req2busReg_rreq <= 1'h0;	// src/main/scala/ultra/bus/UltraBusUtils.scala:24:16, src/main/scala/ultra/caches/icache/Icache.scala:19:27
@@ -2628,11 +1756,11 @@ module Icache(	// src/main/scala/ultra/caches/icache/Icache.scala:11:7
       automatic logic              _GEN_6;	// src/main/scala/ultra/caches/icache/Icache.scala:19:27, :64:9, :69:29
       automatic logic              _GEN_7 = _GEN_1 | ~_GEN_3;	// src/main/scala/ultra/caches/icache/Icache.scala:18:30, :29:32, :52:15, :85:29, :87:21
       automatic logic [3:0][31:0]  _GEN_8;	// src/main/scala/ultra/caches/icache/Icache.scala:15:25, :52:15, :64:9
-      automatic logic [3:0][255:0] _GEN_9;	// src/main/scala/ultra/caches/icache/Icache.scala:18:30, :52:15, :64:9
+      automatic logic [3:0][511:0] _GEN_9;	// src/main/scala/ultra/caches/icache/Icache.scala:18:30, :52:15, :64:9
       automatic logic [3:0][31:0]  _GEN_10;	// src/main/scala/ultra/caches/icache/Icache.scala:19:27, :52:15, :64:9, :78:27, :84:18
       automatic logic [3:0]        _GEN_11;	// src/main/scala/ultra/caches/icache/Icache.scala:19:27, :52:15, :64:9, :78:27
       automatic logic [3:0][1:0]   _GEN_12;	// src/main/scala/ultra/caches/icache/Icache.scala:52:15, :55:28, :64:9, :78:27
-      _GEN_5 = _tagRam_io_out_rdata[11] & _tagRam_io_out_rdata[10:0] == iReqBuf_pc[21:11];	// src/main/scala/ultra/caches/icache/Icache.scala:27:22, :39:24, :62:{28,47}, :63:{30,45,59}
+      _GEN_5 = _tagRam_io_out_rdata[12] & _tagRam_io_out_rdata[11:0] == iReqBuf_pc[21:10];	// src/main/scala/ultra/caches/icache/Icache.scala:27:22, :39:24, :62:{28,47}, :63:{30,45,59}
       _GEN_6 = _GEN_5 | ~io_bus_in_rrdy;	// src/main/scala/ultra/caches/icache/Icache.scala:19:27, :62:47, :64:9, :69:29
       _GEN_8 =
         {{_GEN_7 ? pcOutReg : iReqBuf_pc},
@@ -2680,30 +1808,38 @@ module Icache(	// src/main/scala/ultra/caches/icache/Icache.scala:11:7
       `FIRRTL_BEFORE_INITIAL	// src/main/scala/ultra/caches/icache/Icache.scala:11:7
     `endif // FIRRTL_BEFORE_INITIAL
     initial begin	// src/main/scala/ultra/caches/icache/Icache.scala:11:7
-      automatic logic [31:0] _RANDOM[0:11];	// src/main/scala/ultra/caches/icache/Icache.scala:11:7
+      automatic logic [31:0] _RANDOM[0:19];	// src/main/scala/ultra/caches/icache/Icache.scala:11:7
       `ifdef INIT_RANDOM_PROLOG_	// src/main/scala/ultra/caches/icache/Icache.scala:11:7
         `INIT_RANDOM_PROLOG_	// src/main/scala/ultra/caches/icache/Icache.scala:11:7
       `endif // INIT_RANDOM_PROLOG_
       `ifdef RANDOMIZE_REG_INIT	// src/main/scala/ultra/caches/icache/Icache.scala:11:7
-        for (logic [3:0] i = 4'h0; i < 4'hC; i += 4'h1) begin
+        for (logic [4:0] i = 5'h0; i < 5'h14; i += 5'h1) begin
           _RANDOM[i] = `RANDOM;	// src/main/scala/ultra/caches/icache/Icache.scala:11:7
         end	// src/main/scala/ultra/caches/icache/Icache.scala:11:7
-        pcOutReg = _RANDOM[4'h0];	// src/main/scala/ultra/caches/icache/Icache.scala:11:7, :15:25
+        pcOutReg = _RANDOM[5'h0];	// src/main/scala/ultra/caches/icache/Icache.scala:11:7, :15:25
         rspns2coreReg_rdata =
-          {_RANDOM[4'h1],
-           _RANDOM[4'h2],
-           _RANDOM[4'h3],
-           _RANDOM[4'h4],
-           _RANDOM[4'h5],
-           _RANDOM[4'h6],
-           _RANDOM[4'h7],
-           _RANDOM[4'h8]};	// src/main/scala/ultra/caches/icache/Icache.scala:11:7, :18:30
-        rspns2coreReg_rvalid = _RANDOM[4'h9][1];	// src/main/scala/ultra/caches/icache/Icache.scala:11:7, :18:30
-        req2busReg_pc = {_RANDOM[4'h9][31:2], _RANDOM[4'hA][1:0]};	// src/main/scala/ultra/caches/icache/Icache.scala:11:7, :18:30, :19:27
-        req2busReg_rreq = _RANDOM[4'hA][2];	// src/main/scala/ultra/caches/icache/Icache.scala:11:7, :19:27
-        iReqBuf_pc = {_RANDOM[4'hA][31:3], _RANDOM[4'hB][2:0]};	// src/main/scala/ultra/caches/icache/Icache.scala:11:7, :19:27, :39:24
-        iReqBuf_rreq = _RANDOM[4'hB][3];	// src/main/scala/ultra/caches/icache/Icache.scala:11:7, :39:24
-        stat = _RANDOM[4'hB][5:4];	// src/main/scala/ultra/caches/icache/Icache.scala:11:7, :39:24, :40:21
+          {_RANDOM[5'h1],
+           _RANDOM[5'h2],
+           _RANDOM[5'h3],
+           _RANDOM[5'h4],
+           _RANDOM[5'h5],
+           _RANDOM[5'h6],
+           _RANDOM[5'h7],
+           _RANDOM[5'h8],
+           _RANDOM[5'h9],
+           _RANDOM[5'hA],
+           _RANDOM[5'hB],
+           _RANDOM[5'hC],
+           _RANDOM[5'hD],
+           _RANDOM[5'hE],
+           _RANDOM[5'hF],
+           _RANDOM[5'h10]};	// src/main/scala/ultra/caches/icache/Icache.scala:11:7, :18:30
+        rspns2coreReg_rvalid = _RANDOM[5'h11][1];	// src/main/scala/ultra/caches/icache/Icache.scala:11:7, :18:30
+        req2busReg_pc = {_RANDOM[5'h11][31:2], _RANDOM[5'h12][1:0]};	// src/main/scala/ultra/caches/icache/Icache.scala:11:7, :18:30, :19:27
+        req2busReg_rreq = _RANDOM[5'h12][2];	// src/main/scala/ultra/caches/icache/Icache.scala:11:7, :19:27
+        iReqBuf_pc = {_RANDOM[5'h12][31:3], _RANDOM[5'h13][2:0]};	// src/main/scala/ultra/caches/icache/Icache.scala:11:7, :19:27, :39:24
+        iReqBuf_rreq = _RANDOM[5'h13][3];	// src/main/scala/ultra/caches/icache/Icache.scala:11:7, :39:24
+        stat = _RANDOM[5'h13][5:4];	// src/main/scala/ultra/caches/icache/Icache.scala:11:7, :39:24, :40:21
       `endif // RANDOMIZE_REG_INIT
     end // initial
     `ifdef FIRRTL_AFTER_INITIAL	// src/main/scala/ultra/caches/icache/Icache.scala:11:7
@@ -2714,7 +1850,7 @@ module Icache(	// src/main/scala/ultra/caches/icache/Icache.scala:11:7
     .clock        (clock),
     .reset        (reset),
     .io_in_wen    (cacheWen),	// src/main/scala/ultra/caches/icache/Icache.scala:23:29, :52:15
-    .io_in_wdata  (_GEN_4 ? 12'h0 : {1'h1, iReqBuf_pc[21:11]}),	// src/main/scala/ultra/bus/UltraBusUtils.scala:26:15, src/main/scala/ultra/caches/icache/Icache.scala:29:32, :39:24, :52:15, :87:{33,46}
+    .io_in_wdata  (_GEN_4 ? 13'h0 : {1'h1, iReqBuf_pc[21:10]}),	// src/main/scala/ultra/bus/UltraBusUtils.scala:26:15, src/main/scala/ultra/caches/icache/Icache.scala:29:32, :39:24, :52:15, :87:{33,46}
     .io_in_addr   (cacheAddr),	// src/main/scala/ultra/caches/icache/Icache.scala:41:17, :42:15, :44:15
     .io_out_rdata (_tagRam_io_out_rdata)
   );
@@ -2722,7 +1858,7 @@ module Icache(	// src/main/scala/ultra/caches/icache/Icache.scala:11:7
     .clock        (clock),
     .reset        (reset),
     .io_in_wen    (cacheWen),	// src/main/scala/ultra/caches/icache/Icache.scala:23:29, :52:15
-    .io_in_wdata  (_GEN_4 ? 256'h0 : io_bus_in_rdata),	// src/main/scala/ultra/caches/icache/Icache.scala:29:32, :35:30, :52:15
+    .io_in_wdata  (_GEN_4 ? 512'h0 : io_bus_in_rdata),	// src/main/scala/ultra/caches/icache/Icache.scala:29:32, :35:30, :52:15
     .io_in_addr   (cacheAddr),	// src/main/scala/ultra/caches/icache/Icache.scala:41:17, :42:15, :44:15
     .io_out_rdata (_dataRam_io_out_rdata)
   );
@@ -2737,7 +1873,7 @@ module IbufferUnit(	// src/main/scala/ultra/caches/ibuffer/IbufferUnit.scala:7:7
   input         clock,	// src/main/scala/ultra/caches/ibuffer/IbufferUnit.scala:7:7
                 reset,	// src/main/scala/ultra/caches/ibuffer/IbufferUnit.scala:7:7
   input  [31:0] io_in_pc,	// src/main/scala/ultra/caches/ibuffer/IbufferUnit.scala:8:14
-  input  [4:0]  io_in_index,	// src/main/scala/ultra/caches/ibuffer/IbufferUnit.scala:8:14
+  input  [5:0]  io_in_index,	// src/main/scala/ultra/caches/ibuffer/IbufferUnit.scala:8:14
   input         io_in_rvalid,	// src/main/scala/ultra/caches/ibuffer/IbufferUnit.scala:8:14
   input  [31:0] io_in_inst,	// src/main/scala/ultra/caches/ibuffer/IbufferUnit.scala:8:14
   output        io_out_isMatched,	// src/main/scala/ultra/caches/ibuffer/IbufferUnit.scala:8:14
@@ -2779,7 +1915,7 @@ module IbufferUnit(	// src/main/scala/ultra/caches/ibuffer/IbufferUnit.scala:7:7
       `FIRRTL_AFTER_INITIAL	// src/main/scala/ultra/caches/ibuffer/IbufferUnit.scala:7:7
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
-  assign io_out_isMatched = {2'h0, io_in_pc[4:2]} == io_in_index;	// src/main/scala/ultra/caches/ibuffer/IbufferUnit.scala:7:7, :10:{31,49}
+  assign io_out_isMatched = {2'h0, io_in_pc[5:2]} == io_in_index;	// src/main/scala/ultra/caches/ibuffer/IbufferUnit.scala:7:7, :10:{31,49}
   assign io_out_bits_inst = buf_inst;	// src/main/scala/ultra/caches/ibuffer/IbufferUnit.scala:7:7, :11:20
   assign io_out_bits_rvalid = buf_rvalid;	// src/main/scala/ultra/caches/ibuffer/IbufferUnit.scala:7:7, :11:20
 endmodule
@@ -2809,11 +1945,35 @@ module MultiMux1(	// src/main/scala/ultra/helper/MultiMux1.scala:13:7
                 io_inputs_7_valid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
   input  [31:0] io_inputs_7_bits_inst,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
   input         io_inputs_7_bits_rvalid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+                io_inputs_8_valid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+  input  [31:0] io_inputs_8_bits_inst,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+  input         io_inputs_8_bits_rvalid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+                io_inputs_9_valid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+  input  [31:0] io_inputs_9_bits_inst,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+  input         io_inputs_9_bits_rvalid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+                io_inputs_10_valid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+  input  [31:0] io_inputs_10_bits_inst,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+  input         io_inputs_10_bits_rvalid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+                io_inputs_11_valid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+  input  [31:0] io_inputs_11_bits_inst,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+  input         io_inputs_11_bits_rvalid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+                io_inputs_12_valid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+  input  [31:0] io_inputs_12_bits_inst,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+  input         io_inputs_12_bits_rvalid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+                io_inputs_13_valid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+  input  [31:0] io_inputs_13_bits_inst,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+  input         io_inputs_13_bits_rvalid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+                io_inputs_14_valid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+  input  [31:0] io_inputs_14_bits_inst,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+  input         io_inputs_14_bits_rvalid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+                io_inputs_15_valid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+  input  [31:0] io_inputs_15_bits_inst,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+  input         io_inputs_15_bits_rvalid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
   output [31:0] io_output_bits_inst,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
   output        io_output_bits_rvalid	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
 );
 
-  wire [32:0] _io_output_bits_T_6 =
+  wire [32:0] _io_output_bits_T_14 =
     {io_inputs_0_valid ? io_inputs_0_bits_inst : 32'h0,
      io_inputs_0_valid & io_inputs_0_bits_rvalid}
     | {io_inputs_1_valid ? io_inputs_1_bits_inst : 32'h0,
@@ -2829,15 +1989,31 @@ module MultiMux1(	// src/main/scala/ultra/helper/MultiMux1.scala:13:7
     | {io_inputs_6_valid ? io_inputs_6_bits_inst : 32'h0,
        io_inputs_6_valid & io_inputs_6_bits_rvalid}
     | {io_inputs_7_valid ? io_inputs_7_bits_inst : 32'h0,
-       io_inputs_7_valid & io_inputs_7_bits_rvalid};	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:28:75, src/main/scala/ultra/helper/MultiMux1.scala:23:22, :26:{43,65}
-  assign io_output_bits_inst = _io_output_bits_T_6[32:1];	// src/main/scala/ultra/helper/MultiMux1.scala:13:7, :26:{65,78}
-  assign io_output_bits_rvalid = _io_output_bits_T_6[0];	// src/main/scala/ultra/helper/MultiMux1.scala:13:7, :26:{65,78}
+       io_inputs_7_valid & io_inputs_7_bits_rvalid}
+    | {io_inputs_8_valid ? io_inputs_8_bits_inst : 32'h0,
+       io_inputs_8_valid & io_inputs_8_bits_rvalid}
+    | {io_inputs_9_valid ? io_inputs_9_bits_inst : 32'h0,
+       io_inputs_9_valid & io_inputs_9_bits_rvalid}
+    | {io_inputs_10_valid ? io_inputs_10_bits_inst : 32'h0,
+       io_inputs_10_valid & io_inputs_10_bits_rvalid}
+    | {io_inputs_11_valid ? io_inputs_11_bits_inst : 32'h0,
+       io_inputs_11_valid & io_inputs_11_bits_rvalid}
+    | {io_inputs_12_valid ? io_inputs_12_bits_inst : 32'h0,
+       io_inputs_12_valid & io_inputs_12_bits_rvalid}
+    | {io_inputs_13_valid ? io_inputs_13_bits_inst : 32'h0,
+       io_inputs_13_valid & io_inputs_13_bits_rvalid}
+    | {io_inputs_14_valid ? io_inputs_14_bits_inst : 32'h0,
+       io_inputs_14_valid & io_inputs_14_bits_rvalid}
+    | {io_inputs_15_valid ? io_inputs_15_bits_inst : 32'h0,
+       io_inputs_15_valid & io_inputs_15_bits_rvalid};	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:28:75, src/main/scala/ultra/helper/MultiMux1.scala:23:22, :26:{43,65}
+  assign io_output_bits_inst = _io_output_bits_T_14[32:1];	// src/main/scala/ultra/helper/MultiMux1.scala:13:7, :26:{65,78}
+  assign io_output_bits_rvalid = _io_output_bits_T_14[0];	// src/main/scala/ultra/helper/MultiMux1.scala:13:7, :26:{65,78}
 endmodule
 
 module Ibuffer(	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
   input          clock,	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
                  reset,	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
-  input  [255:0] io_icache_in_rdata,	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:10:14
+  input  [511:0] io_icache_in_rdata,	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:10:14
   input          io_icache_in_rvalid,	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:10:14
   input  [31:0]  io_icache_in_pc,	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:10:14
                  io_core_in_pc,	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:10:14
@@ -2846,6 +2022,30 @@ module Ibuffer(	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
   output         io_core_out_bits_rvalid	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:10:14
 );
 
+  wire        _ibufs_15_io_out_isMatched;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+  wire [31:0] _ibufs_15_io_out_bits_inst;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+  wire        _ibufs_15_io_out_bits_rvalid;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+  wire        _ibufs_14_io_out_isMatched;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+  wire [31:0] _ibufs_14_io_out_bits_inst;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+  wire        _ibufs_14_io_out_bits_rvalid;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+  wire        _ibufs_13_io_out_isMatched;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+  wire [31:0] _ibufs_13_io_out_bits_inst;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+  wire        _ibufs_13_io_out_bits_rvalid;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+  wire        _ibufs_12_io_out_isMatched;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+  wire [31:0] _ibufs_12_io_out_bits_inst;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+  wire        _ibufs_12_io_out_bits_rvalid;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+  wire        _ibufs_11_io_out_isMatched;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+  wire [31:0] _ibufs_11_io_out_bits_inst;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+  wire        _ibufs_11_io_out_bits_rvalid;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+  wire        _ibufs_10_io_out_isMatched;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+  wire [31:0] _ibufs_10_io_out_bits_inst;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+  wire        _ibufs_10_io_out_bits_rvalid;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+  wire        _ibufs_9_io_out_isMatched;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+  wire [31:0] _ibufs_9_io_out_bits_inst;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+  wire        _ibufs_9_io_out_bits_rvalid;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+  wire        _ibufs_8_io_out_isMatched;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+  wire [31:0] _ibufs_8_io_out_bits_inst;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+  wire        _ibufs_8_io_out_bits_rvalid;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
   wire        _ibufs_7_io_out_isMatched;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
   wire [31:0] _ibufs_7_io_out_bits_inst;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
   wire        _ibufs_7_io_out_bits_rvalid;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
@@ -2870,12 +2070,12 @@ module Ibuffer(	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
   wire        _ibufs_0_io_out_isMatched;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
   wire [31:0] _ibufs_0_io_out_bits_inst;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
   wire        _ibufs_0_io_out_bits_rvalid;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-  reg  [17:0] pcTag;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:14:22
+  reg  [16:0] pcTag;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:14:22
   always @(posedge clock) begin	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
     if (reset)	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
-      pcTag <= 18'h0;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:14:22
+      pcTag <= 17'h0;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:14:22
     else if (io_icache_in_rvalid)	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:10:14
-      pcTag <= {1'h1, io_icache_in_pc[21:5]};	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7, :14:22, :16:{23,41}
+      pcTag <= {1'h1, io_icache_in_pc[21:6]};	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7, :14:22, :16:{23,41}
   end // always @(posedge)
   `ifdef ENABLE_INITIAL_REG_	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
     `ifdef FIRRTL_BEFORE_INITIAL	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
@@ -2888,7 +2088,7 @@ module Ibuffer(	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
       `endif // INIT_RANDOM_PROLOG_
       `ifdef RANDOMIZE_REG_INIT	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
         _RANDOM[/*Zero width*/ 1'b0] = `RANDOM;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
-        pcTag = _RANDOM[/*Zero width*/ 1'b0][17:0];	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7, :14:22
+        pcTag = _RANDOM[/*Zero width*/ 1'b0][16:0];	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7, :14:22
       `endif // RANDOMIZE_REG_INIT
     end // initial
     `ifdef FIRRTL_AFTER_INITIAL	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
@@ -2899,7 +2099,7 @@ module Ibuffer(	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
     .clock              (clock),
     .reset              (reset),
     .io_in_pc           (io_core_in_pc),
-    .io_in_index        (5'h0),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:22:22
+    .io_in_index        (6'h0),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:22:22
     .io_in_rvalid       (io_icache_in_rvalid),
     .io_in_inst         (io_icache_in_rdata[31:0]),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:24:42
     .io_out_isMatched   (_ibufs_0_io_out_isMatched),
@@ -2910,7 +2110,7 @@ module Ibuffer(	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
     .clock              (clock),
     .reset              (reset),
     .io_in_pc           (io_core_in_pc),
-    .io_in_index        (5'h1),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:22:22
+    .io_in_index        (6'h1),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:22:22
     .io_in_rvalid       (io_icache_in_rvalid),
     .io_in_inst         (io_icache_in_rdata[63:32]),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:24:42
     .io_out_isMatched   (_ibufs_1_io_out_isMatched),
@@ -2921,7 +2121,7 @@ module Ibuffer(	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
     .clock              (clock),
     .reset              (reset),
     .io_in_pc           (io_core_in_pc),
-    .io_in_index        (5'h2),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:22:22
+    .io_in_index        (6'h2),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:22:22
     .io_in_rvalid       (io_icache_in_rvalid),
     .io_in_inst         (io_icache_in_rdata[95:64]),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:24:42
     .io_out_isMatched   (_ibufs_2_io_out_isMatched),
@@ -2932,7 +2132,7 @@ module Ibuffer(	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
     .clock              (clock),
     .reset              (reset),
     .io_in_pc           (io_core_in_pc),
-    .io_in_index        (5'h3),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:22:22
+    .io_in_index        (6'h3),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:22:22
     .io_in_rvalid       (io_icache_in_rvalid),
     .io_in_inst         (io_icache_in_rdata[127:96]),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:24:42
     .io_out_isMatched   (_ibufs_3_io_out_isMatched),
@@ -2943,7 +2143,7 @@ module Ibuffer(	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
     .clock              (clock),
     .reset              (reset),
     .io_in_pc           (io_core_in_pc),
-    .io_in_index        (5'h4),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:22:22
+    .io_in_index        (6'h4),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:22:22
     .io_in_rvalid       (io_icache_in_rvalid),
     .io_in_inst         (io_icache_in_rdata[159:128]),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:24:42
     .io_out_isMatched   (_ibufs_4_io_out_isMatched),
@@ -2954,7 +2154,7 @@ module Ibuffer(	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
     .clock              (clock),
     .reset              (reset),
     .io_in_pc           (io_core_in_pc),
-    .io_in_index        (5'h5),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:22:22
+    .io_in_index        (6'h5),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:22:22
     .io_in_rvalid       (io_icache_in_rvalid),
     .io_in_inst         (io_icache_in_rdata[191:160]),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:24:42
     .io_out_isMatched   (_ibufs_5_io_out_isMatched),
@@ -2965,7 +2165,7 @@ module Ibuffer(	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
     .clock              (clock),
     .reset              (reset),
     .io_in_pc           (io_core_in_pc),
-    .io_in_index        (5'h6),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:22:22
+    .io_in_index        (6'h6),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:22:22
     .io_in_rvalid       (io_icache_in_rvalid),
     .io_in_inst         (io_icache_in_rdata[223:192]),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:24:42
     .io_out_isMatched   (_ibufs_6_io_out_isMatched),
@@ -2976,49 +2176,161 @@ module Ibuffer(	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
     .clock              (clock),
     .reset              (reset),
     .io_in_pc           (io_core_in_pc),
-    .io_in_index        (5'h7),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:22:22
+    .io_in_index        (6'h7),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:22:22
     .io_in_rvalid       (io_icache_in_rvalid),
     .io_in_inst         (io_icache_in_rdata[255:224]),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:24:42
     .io_out_isMatched   (_ibufs_7_io_out_isMatched),
     .io_out_bits_inst   (_ibufs_7_io_out_bits_inst),
     .io_out_bits_rvalid (_ibufs_7_io_out_bits_rvalid)
   );
-  MultiMux1 ibufMux (	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:28:23
-    .io_inputs_0_valid       (_ibufs_0_io_out_isMatched),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .io_inputs_0_bits_inst   (_ibufs_0_io_out_bits_inst),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .io_inputs_0_bits_rvalid (_ibufs_0_io_out_bits_rvalid),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .io_inputs_1_valid       (_ibufs_1_io_out_isMatched),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .io_inputs_1_bits_inst   (_ibufs_1_io_out_bits_inst),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .io_inputs_1_bits_rvalid (_ibufs_1_io_out_bits_rvalid),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .io_inputs_2_valid       (_ibufs_2_io_out_isMatched),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .io_inputs_2_bits_inst   (_ibufs_2_io_out_bits_inst),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .io_inputs_2_bits_rvalid (_ibufs_2_io_out_bits_rvalid),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .io_inputs_3_valid       (_ibufs_3_io_out_isMatched),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .io_inputs_3_bits_inst   (_ibufs_3_io_out_bits_inst),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .io_inputs_3_bits_rvalid (_ibufs_3_io_out_bits_rvalid),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .io_inputs_4_valid       (_ibufs_4_io_out_isMatched),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .io_inputs_4_bits_inst   (_ibufs_4_io_out_bits_inst),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .io_inputs_4_bits_rvalid (_ibufs_4_io_out_bits_rvalid),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .io_inputs_5_valid       (_ibufs_5_io_out_isMatched),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .io_inputs_5_bits_inst   (_ibufs_5_io_out_bits_inst),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .io_inputs_5_bits_rvalid (_ibufs_5_io_out_bits_rvalid),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .io_inputs_6_valid       (_ibufs_6_io_out_isMatched),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .io_inputs_6_bits_inst   (_ibufs_6_io_out_bits_inst),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .io_inputs_6_bits_rvalid (_ibufs_6_io_out_bits_rvalid),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .io_inputs_7_valid       (_ibufs_7_io_out_isMatched),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .io_inputs_7_bits_inst   (_ibufs_7_io_out_bits_inst),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .io_inputs_7_bits_rvalid (_ibufs_7_io_out_bits_rvalid),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .io_output_bits_inst     (io_core_out_bits_inst),
-    .io_output_bits_rvalid   (io_core_out_bits_rvalid)
+  IbufferUnit ibufs_8 (	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .clock              (clock),
+    .reset              (reset),
+    .io_in_pc           (io_core_in_pc),
+    .io_in_index        (6'h8),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:22:22
+    .io_in_rvalid       (io_icache_in_rvalid),
+    .io_in_inst         (io_icache_in_rdata[287:256]),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:24:42
+    .io_out_isMatched   (_ibufs_8_io_out_isMatched),
+    .io_out_bits_inst   (_ibufs_8_io_out_bits_inst),
+    .io_out_bits_rvalid (_ibufs_8_io_out_bits_rvalid)
   );
-  assign io_core_out_hit = pcTag[17] & pcTag[16:0] == io_core_in_pc[21:5];	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7, :14:22, :36:{10,29}, :37:{12,27,44}
+  IbufferUnit ibufs_9 (	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .clock              (clock),
+    .reset              (reset),
+    .io_in_pc           (io_core_in_pc),
+    .io_in_index        (6'h9),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:22:22
+    .io_in_rvalid       (io_icache_in_rvalid),
+    .io_in_inst         (io_icache_in_rdata[319:288]),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:24:42
+    .io_out_isMatched   (_ibufs_9_io_out_isMatched),
+    .io_out_bits_inst   (_ibufs_9_io_out_bits_inst),
+    .io_out_bits_rvalid (_ibufs_9_io_out_bits_rvalid)
+  );
+  IbufferUnit ibufs_10 (	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .clock              (clock),
+    .reset              (reset),
+    .io_in_pc           (io_core_in_pc),
+    .io_in_index        (6'hA),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:22:22
+    .io_in_rvalid       (io_icache_in_rvalid),
+    .io_in_inst         (io_icache_in_rdata[351:320]),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:24:42
+    .io_out_isMatched   (_ibufs_10_io_out_isMatched),
+    .io_out_bits_inst   (_ibufs_10_io_out_bits_inst),
+    .io_out_bits_rvalid (_ibufs_10_io_out_bits_rvalid)
+  );
+  IbufferUnit ibufs_11 (	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .clock              (clock),
+    .reset              (reset),
+    .io_in_pc           (io_core_in_pc),
+    .io_in_index        (6'hB),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:22:22
+    .io_in_rvalid       (io_icache_in_rvalid),
+    .io_in_inst         (io_icache_in_rdata[383:352]),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:24:42
+    .io_out_isMatched   (_ibufs_11_io_out_isMatched),
+    .io_out_bits_inst   (_ibufs_11_io_out_bits_inst),
+    .io_out_bits_rvalid (_ibufs_11_io_out_bits_rvalid)
+  );
+  IbufferUnit ibufs_12 (	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .clock              (clock),
+    .reset              (reset),
+    .io_in_pc           (io_core_in_pc),
+    .io_in_index        (6'hC),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:22:22
+    .io_in_rvalid       (io_icache_in_rvalid),
+    .io_in_inst         (io_icache_in_rdata[415:384]),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:24:42
+    .io_out_isMatched   (_ibufs_12_io_out_isMatched),
+    .io_out_bits_inst   (_ibufs_12_io_out_bits_inst),
+    .io_out_bits_rvalid (_ibufs_12_io_out_bits_rvalid)
+  );
+  IbufferUnit ibufs_13 (	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .clock              (clock),
+    .reset              (reset),
+    .io_in_pc           (io_core_in_pc),
+    .io_in_index        (6'hD),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:22:22
+    .io_in_rvalid       (io_icache_in_rvalid),
+    .io_in_inst         (io_icache_in_rdata[447:416]),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:24:42
+    .io_out_isMatched   (_ibufs_13_io_out_isMatched),
+    .io_out_bits_inst   (_ibufs_13_io_out_bits_inst),
+    .io_out_bits_rvalid (_ibufs_13_io_out_bits_rvalid)
+  );
+  IbufferUnit ibufs_14 (	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .clock              (clock),
+    .reset              (reset),
+    .io_in_pc           (io_core_in_pc),
+    .io_in_index        (6'hE),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:22:22
+    .io_in_rvalid       (io_icache_in_rvalid),
+    .io_in_inst         (io_icache_in_rdata[479:448]),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:24:42
+    .io_out_isMatched   (_ibufs_14_io_out_isMatched),
+    .io_out_bits_inst   (_ibufs_14_io_out_bits_inst),
+    .io_out_bits_rvalid (_ibufs_14_io_out_bits_rvalid)
+  );
+  IbufferUnit ibufs_15 (	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .clock              (clock),
+    .reset              (reset),
+    .io_in_pc           (io_core_in_pc),
+    .io_in_index        (6'hF),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:22:22
+    .io_in_rvalid       (io_icache_in_rvalid),
+    .io_in_inst         (io_icache_in_rdata[511:480]),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:24:42
+    .io_out_isMatched   (_ibufs_15_io_out_isMatched),
+    .io_out_bits_inst   (_ibufs_15_io_out_bits_inst),
+    .io_out_bits_rvalid (_ibufs_15_io_out_bits_rvalid)
+  );
+  MultiMux1 ibufMux (	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:28:23
+    .io_inputs_0_valid        (_ibufs_0_io_out_isMatched),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_0_bits_inst    (_ibufs_0_io_out_bits_inst),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_0_bits_rvalid  (_ibufs_0_io_out_bits_rvalid),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_1_valid        (_ibufs_1_io_out_isMatched),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_1_bits_inst    (_ibufs_1_io_out_bits_inst),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_1_bits_rvalid  (_ibufs_1_io_out_bits_rvalid),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_2_valid        (_ibufs_2_io_out_isMatched),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_2_bits_inst    (_ibufs_2_io_out_bits_inst),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_2_bits_rvalid  (_ibufs_2_io_out_bits_rvalid),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_3_valid        (_ibufs_3_io_out_isMatched),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_3_bits_inst    (_ibufs_3_io_out_bits_inst),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_3_bits_rvalid  (_ibufs_3_io_out_bits_rvalid),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_4_valid        (_ibufs_4_io_out_isMatched),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_4_bits_inst    (_ibufs_4_io_out_bits_inst),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_4_bits_rvalid  (_ibufs_4_io_out_bits_rvalid),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_5_valid        (_ibufs_5_io_out_isMatched),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_5_bits_inst    (_ibufs_5_io_out_bits_inst),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_5_bits_rvalid  (_ibufs_5_io_out_bits_rvalid),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_6_valid        (_ibufs_6_io_out_isMatched),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_6_bits_inst    (_ibufs_6_io_out_bits_inst),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_6_bits_rvalid  (_ibufs_6_io_out_bits_rvalid),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_7_valid        (_ibufs_7_io_out_isMatched),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_7_bits_inst    (_ibufs_7_io_out_bits_inst),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_7_bits_rvalid  (_ibufs_7_io_out_bits_rvalid),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_8_valid        (_ibufs_8_io_out_isMatched),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_8_bits_inst    (_ibufs_8_io_out_bits_inst),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_8_bits_rvalid  (_ibufs_8_io_out_bits_rvalid),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_9_valid        (_ibufs_9_io_out_isMatched),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_9_bits_inst    (_ibufs_9_io_out_bits_inst),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_9_bits_rvalid  (_ibufs_9_io_out_bits_rvalid),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_10_valid       (_ibufs_10_io_out_isMatched),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_10_bits_inst   (_ibufs_10_io_out_bits_inst),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_10_bits_rvalid (_ibufs_10_io_out_bits_rvalid),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_11_valid       (_ibufs_11_io_out_isMatched),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_11_bits_inst   (_ibufs_11_io_out_bits_inst),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_11_bits_rvalid (_ibufs_11_io_out_bits_rvalid),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_12_valid       (_ibufs_12_io_out_isMatched),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_12_bits_inst   (_ibufs_12_io_out_bits_inst),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_12_bits_rvalid (_ibufs_12_io_out_bits_rvalid),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_13_valid       (_ibufs_13_io_out_isMatched),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_13_bits_inst   (_ibufs_13_io_out_bits_inst),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_13_bits_rvalid (_ibufs_13_io_out_bits_rvalid),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_14_valid       (_ibufs_14_io_out_isMatched),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_14_bits_inst   (_ibufs_14_io_out_bits_inst),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_14_bits_rvalid (_ibufs_14_io_out_bits_rvalid),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_15_valid       (_ibufs_15_io_out_isMatched),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_15_bits_inst   (_ibufs_15_io_out_bits_inst),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_inputs_15_bits_rvalid (_ibufs_15_io_out_bits_rvalid),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
+    .io_output_bits_inst      (io_core_out_bits_inst),
+    .io_output_bits_rvalid    (io_core_out_bits_rvalid)
+  );
+  assign io_core_out_hit = pcTag[16] & pcTag[15:0] == io_core_in_pc[21:6];	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7, :14:22, :36:{10,29}, :37:{12,27,44}
 endmodule
 
 module BpUnit(	// src/main/scala/ultra/caches/bpbuffer/BpUnit.scala:9:7
   input         clock,	// src/main/scala/ultra/caches/bpbuffer/BpUnit.scala:9:7
                 reset,	// src/main/scala/ultra/caches/bpbuffer/BpUnit.scala:9:7
   input  [31:0] io_in_pc,	// src/main/scala/ultra/caches/bpbuffer/BpUnit.scala:10:14
-  input  [4:0]  io_in_index,	// src/main/scala/ultra/caches/bpbuffer/BpUnit.scala:10:14
+  input  [5:0]  io_in_index,	// src/main/scala/ultra/caches/bpbuffer/BpUnit.scala:10:14
   input         io_in_rvalid,	// src/main/scala/ultra/caches/bpbuffer/BpUnit.scala:10:14
   input  [31:0] io_in_inst,	// src/main/scala/ultra/caches/bpbuffer/BpUnit.scala:10:14
   output        io_out_isMatched,	// src/main/scala/ultra/caches/bpbuffer/BpUnit.scala:10:14
@@ -3074,7 +2386,7 @@ module BpUnit(	// src/main/scala/ultra/caches/bpbuffer/BpUnit.scala:9:7
       `FIRRTL_AFTER_INITIAL	// src/main/scala/ultra/caches/bpbuffer/BpUnit.scala:9:7
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
-  assign io_out_isMatched = {2'h0, io_in_pc[4:2]} == io_in_index;	// src/main/scala/ultra/caches/bpbuffer/BpUnit.scala:9:7, :12:{31,49}
+  assign io_out_isMatched = {2'h0, io_in_pc[5:2]} == io_in_index;	// src/main/scala/ultra/caches/bpbuffer/BpUnit.scala:9:7, :12:{31,49}
   assign io_out_bits_predictTaken = buf_predictTaken;	// src/main/scala/ultra/caches/bpbuffer/BpUnit.scala:9:7, :13:20
   assign io_out_bits_offset = buf_offset;	// src/main/scala/ultra/caches/bpbuffer/BpUnit.scala:9:7, :13:20
 endmodule
@@ -3104,11 +2416,35 @@ module MultiMux1_1(	// src/main/scala/ultra/helper/MultiMux1.scala:13:7
   input         io_inputs_7_valid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
                 io_inputs_7_bits_predictTaken,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
   input  [31:0] io_inputs_7_bits_offset,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+  input         io_inputs_8_valid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+                io_inputs_8_bits_predictTaken,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+  input  [31:0] io_inputs_8_bits_offset,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+  input         io_inputs_9_valid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+                io_inputs_9_bits_predictTaken,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+  input  [31:0] io_inputs_9_bits_offset,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+  input         io_inputs_10_valid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+                io_inputs_10_bits_predictTaken,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+  input  [31:0] io_inputs_10_bits_offset,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+  input         io_inputs_11_valid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+                io_inputs_11_bits_predictTaken,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+  input  [31:0] io_inputs_11_bits_offset,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+  input         io_inputs_12_valid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+                io_inputs_12_bits_predictTaken,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+  input  [31:0] io_inputs_12_bits_offset,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+  input         io_inputs_13_valid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+                io_inputs_13_bits_predictTaken,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+  input  [31:0] io_inputs_13_bits_offset,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+  input         io_inputs_14_valid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+                io_inputs_14_bits_predictTaken,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+  input  [31:0] io_inputs_14_bits_offset,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+  input         io_inputs_15_valid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+                io_inputs_15_bits_predictTaken,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
+  input  [31:0] io_inputs_15_bits_offset,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
   output        io_output_bits_predictTaken,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
   output [31:0] io_output_bits_offset	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
 );
 
-  wire [32:0] _io_output_bits_T_6 =
+  wire [32:0] _io_output_bits_T_14 =
     {io_inputs_0_valid & io_inputs_0_bits_predictTaken,
      io_inputs_0_valid ? io_inputs_0_bits_offset : 32'h0}
     | {io_inputs_1_valid & io_inputs_1_bits_predictTaken,
@@ -3124,21 +2460,61 @@ module MultiMux1_1(	// src/main/scala/ultra/helper/MultiMux1.scala:13:7
     | {io_inputs_6_valid & io_inputs_6_bits_predictTaken,
        io_inputs_6_valid ? io_inputs_6_bits_offset : 32'h0}
     | {io_inputs_7_valid & io_inputs_7_bits_predictTaken,
-       io_inputs_7_valid ? io_inputs_7_bits_offset : 32'h0};	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:22:71, src/main/scala/ultra/helper/MultiMux1.scala:23:22, :26:{43,65}
-  assign io_output_bits_predictTaken = _io_output_bits_T_6[32];	// src/main/scala/ultra/helper/MultiMux1.scala:13:7, :26:{65,78}
-  assign io_output_bits_offset = _io_output_bits_T_6[31:0];	// src/main/scala/ultra/helper/MultiMux1.scala:13:7, :26:{65,78}
+       io_inputs_7_valid ? io_inputs_7_bits_offset : 32'h0}
+    | {io_inputs_8_valid & io_inputs_8_bits_predictTaken,
+       io_inputs_8_valid ? io_inputs_8_bits_offset : 32'h0}
+    | {io_inputs_9_valid & io_inputs_9_bits_predictTaken,
+       io_inputs_9_valid ? io_inputs_9_bits_offset : 32'h0}
+    | {io_inputs_10_valid & io_inputs_10_bits_predictTaken,
+       io_inputs_10_valid ? io_inputs_10_bits_offset : 32'h0}
+    | {io_inputs_11_valid & io_inputs_11_bits_predictTaken,
+       io_inputs_11_valid ? io_inputs_11_bits_offset : 32'h0}
+    | {io_inputs_12_valid & io_inputs_12_bits_predictTaken,
+       io_inputs_12_valid ? io_inputs_12_bits_offset : 32'h0}
+    | {io_inputs_13_valid & io_inputs_13_bits_predictTaken,
+       io_inputs_13_valid ? io_inputs_13_bits_offset : 32'h0}
+    | {io_inputs_14_valid & io_inputs_14_bits_predictTaken,
+       io_inputs_14_valid ? io_inputs_14_bits_offset : 32'h0}
+    | {io_inputs_15_valid & io_inputs_15_bits_predictTaken,
+       io_inputs_15_valid ? io_inputs_15_bits_offset : 32'h0};	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:22:71, src/main/scala/ultra/helper/MultiMux1.scala:23:22, :26:{43,65}
+  assign io_output_bits_predictTaken = _io_output_bits_T_14[32];	// src/main/scala/ultra/helper/MultiMux1.scala:13:7, :26:{65,78}
+  assign io_output_bits_offset = _io_output_bits_T_14[31:0];	// src/main/scala/ultra/helper/MultiMux1.scala:13:7, :26:{65,78}
 endmodule
 
 module BpBuffer(	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:10:7
   input          clock,	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:10:7
                  reset,	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:10:7
-  input  [255:0] io_icache_in_rdata,	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:11:14
+  input  [511:0] io_icache_in_rdata,	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:11:14
   input          io_icache_in_rvalid,	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:11:14
   input  [31:0]  io_core_in_pc,	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:11:14
   output         io_core_out_predictTaken,	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:11:14
   output [31:0]  io_core_out_offset	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:11:14
 );
 
+  wire        _bpers_15_io_out_isMatched;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+  wire        _bpers_15_io_out_bits_predictTaken;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+  wire [31:0] _bpers_15_io_out_bits_offset;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+  wire        _bpers_14_io_out_isMatched;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+  wire        _bpers_14_io_out_bits_predictTaken;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+  wire [31:0] _bpers_14_io_out_bits_offset;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+  wire        _bpers_13_io_out_isMatched;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+  wire        _bpers_13_io_out_bits_predictTaken;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+  wire [31:0] _bpers_13_io_out_bits_offset;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+  wire        _bpers_12_io_out_isMatched;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+  wire        _bpers_12_io_out_bits_predictTaken;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+  wire [31:0] _bpers_12_io_out_bits_offset;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+  wire        _bpers_11_io_out_isMatched;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+  wire        _bpers_11_io_out_bits_predictTaken;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+  wire [31:0] _bpers_11_io_out_bits_offset;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+  wire        _bpers_10_io_out_isMatched;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+  wire        _bpers_10_io_out_bits_predictTaken;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+  wire [31:0] _bpers_10_io_out_bits_offset;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+  wire        _bpers_9_io_out_isMatched;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+  wire        _bpers_9_io_out_bits_predictTaken;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+  wire [31:0] _bpers_9_io_out_bits_offset;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+  wire        _bpers_8_io_out_isMatched;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+  wire        _bpers_8_io_out_bits_predictTaken;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+  wire [31:0] _bpers_8_io_out_bits_offset;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
   wire        _bpers_7_io_out_isMatched;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
   wire        _bpers_7_io_out_bits_predictTaken;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
   wire [31:0] _bpers_7_io_out_bits_offset;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
@@ -3167,7 +2543,7 @@ module BpBuffer(	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:10:7
     .clock                    (clock),
     .reset                    (reset),
     .io_in_pc                 (io_core_in_pc),
-    .io_in_index              (5'h0),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:16:22
+    .io_in_index              (6'h0),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:16:22
     .io_in_rvalid             (io_icache_in_rvalid),
     .io_in_inst               (io_icache_in_rdata[31:0]),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:18:42
     .io_out_isMatched         (_bpers_0_io_out_isMatched),
@@ -3178,7 +2554,7 @@ module BpBuffer(	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:10:7
     .clock                    (clock),
     .reset                    (reset),
     .io_in_pc                 (io_core_in_pc),
-    .io_in_index              (5'h1),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:16:22
+    .io_in_index              (6'h1),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:16:22
     .io_in_rvalid             (io_icache_in_rvalid),
     .io_in_inst               (io_icache_in_rdata[63:32]),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:18:42
     .io_out_isMatched         (_bpers_1_io_out_isMatched),
@@ -3189,7 +2565,7 @@ module BpBuffer(	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:10:7
     .clock                    (clock),
     .reset                    (reset),
     .io_in_pc                 (io_core_in_pc),
-    .io_in_index              (5'h2),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:16:22
+    .io_in_index              (6'h2),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:16:22
     .io_in_rvalid             (io_icache_in_rvalid),
     .io_in_inst               (io_icache_in_rdata[95:64]),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:18:42
     .io_out_isMatched         (_bpers_2_io_out_isMatched),
@@ -3200,7 +2576,7 @@ module BpBuffer(	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:10:7
     .clock                    (clock),
     .reset                    (reset),
     .io_in_pc                 (io_core_in_pc),
-    .io_in_index              (5'h3),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:16:22
+    .io_in_index              (6'h3),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:16:22
     .io_in_rvalid             (io_icache_in_rvalid),
     .io_in_inst               (io_icache_in_rdata[127:96]),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:18:42
     .io_out_isMatched         (_bpers_3_io_out_isMatched),
@@ -3211,7 +2587,7 @@ module BpBuffer(	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:10:7
     .clock                    (clock),
     .reset                    (reset),
     .io_in_pc                 (io_core_in_pc),
-    .io_in_index              (5'h4),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:16:22
+    .io_in_index              (6'h4),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:16:22
     .io_in_rvalid             (io_icache_in_rvalid),
     .io_in_inst               (io_icache_in_rdata[159:128]),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:18:42
     .io_out_isMatched         (_bpers_4_io_out_isMatched),
@@ -3222,7 +2598,7 @@ module BpBuffer(	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:10:7
     .clock                    (clock),
     .reset                    (reset),
     .io_in_pc                 (io_core_in_pc),
-    .io_in_index              (5'h5),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:16:22
+    .io_in_index              (6'h5),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:16:22
     .io_in_rvalid             (io_icache_in_rvalid),
     .io_in_inst               (io_icache_in_rdata[191:160]),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:18:42
     .io_out_isMatched         (_bpers_5_io_out_isMatched),
@@ -3233,7 +2609,7 @@ module BpBuffer(	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:10:7
     .clock                    (clock),
     .reset                    (reset),
     .io_in_pc                 (io_core_in_pc),
-    .io_in_index              (5'h6),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:16:22
+    .io_in_index              (6'h6),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:16:22
     .io_in_rvalid             (io_icache_in_rvalid),
     .io_in_inst               (io_icache_in_rdata[223:192]),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:18:42
     .io_out_isMatched         (_bpers_6_io_out_isMatched),
@@ -3244,40 +2620,152 @@ module BpBuffer(	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:10:7
     .clock                    (clock),
     .reset                    (reset),
     .io_in_pc                 (io_core_in_pc),
-    .io_in_index              (5'h7),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:16:22
+    .io_in_index              (6'h7),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:16:22
     .io_in_rvalid             (io_icache_in_rvalid),
     .io_in_inst               (io_icache_in_rdata[255:224]),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:18:42
     .io_out_isMatched         (_bpers_7_io_out_isMatched),
     .io_out_bits_predictTaken (_bpers_7_io_out_bits_predictTaken),
     .io_out_bits_offset       (_bpers_7_io_out_bits_offset)
   );
+  BpUnit bpers_8 (	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .clock                    (clock),
+    .reset                    (reset),
+    .io_in_pc                 (io_core_in_pc),
+    .io_in_index              (6'h8),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:16:22
+    .io_in_rvalid             (io_icache_in_rvalid),
+    .io_in_inst               (io_icache_in_rdata[287:256]),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:18:42
+    .io_out_isMatched         (_bpers_8_io_out_isMatched),
+    .io_out_bits_predictTaken (_bpers_8_io_out_bits_predictTaken),
+    .io_out_bits_offset       (_bpers_8_io_out_bits_offset)
+  );
+  BpUnit bpers_9 (	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .clock                    (clock),
+    .reset                    (reset),
+    .io_in_pc                 (io_core_in_pc),
+    .io_in_index              (6'h9),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:16:22
+    .io_in_rvalid             (io_icache_in_rvalid),
+    .io_in_inst               (io_icache_in_rdata[319:288]),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:18:42
+    .io_out_isMatched         (_bpers_9_io_out_isMatched),
+    .io_out_bits_predictTaken (_bpers_9_io_out_bits_predictTaken),
+    .io_out_bits_offset       (_bpers_9_io_out_bits_offset)
+  );
+  BpUnit bpers_10 (	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .clock                    (clock),
+    .reset                    (reset),
+    .io_in_pc                 (io_core_in_pc),
+    .io_in_index              (6'hA),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:16:22
+    .io_in_rvalid             (io_icache_in_rvalid),
+    .io_in_inst               (io_icache_in_rdata[351:320]),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:18:42
+    .io_out_isMatched         (_bpers_10_io_out_isMatched),
+    .io_out_bits_predictTaken (_bpers_10_io_out_bits_predictTaken),
+    .io_out_bits_offset       (_bpers_10_io_out_bits_offset)
+  );
+  BpUnit bpers_11 (	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .clock                    (clock),
+    .reset                    (reset),
+    .io_in_pc                 (io_core_in_pc),
+    .io_in_index              (6'hB),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:16:22
+    .io_in_rvalid             (io_icache_in_rvalid),
+    .io_in_inst               (io_icache_in_rdata[383:352]),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:18:42
+    .io_out_isMatched         (_bpers_11_io_out_isMatched),
+    .io_out_bits_predictTaken (_bpers_11_io_out_bits_predictTaken),
+    .io_out_bits_offset       (_bpers_11_io_out_bits_offset)
+  );
+  BpUnit bpers_12 (	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .clock                    (clock),
+    .reset                    (reset),
+    .io_in_pc                 (io_core_in_pc),
+    .io_in_index              (6'hC),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:16:22
+    .io_in_rvalid             (io_icache_in_rvalid),
+    .io_in_inst               (io_icache_in_rdata[415:384]),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:18:42
+    .io_out_isMatched         (_bpers_12_io_out_isMatched),
+    .io_out_bits_predictTaken (_bpers_12_io_out_bits_predictTaken),
+    .io_out_bits_offset       (_bpers_12_io_out_bits_offset)
+  );
+  BpUnit bpers_13 (	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .clock                    (clock),
+    .reset                    (reset),
+    .io_in_pc                 (io_core_in_pc),
+    .io_in_index              (6'hD),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:16:22
+    .io_in_rvalid             (io_icache_in_rvalid),
+    .io_in_inst               (io_icache_in_rdata[447:416]),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:18:42
+    .io_out_isMatched         (_bpers_13_io_out_isMatched),
+    .io_out_bits_predictTaken (_bpers_13_io_out_bits_predictTaken),
+    .io_out_bits_offset       (_bpers_13_io_out_bits_offset)
+  );
+  BpUnit bpers_14 (	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .clock                    (clock),
+    .reset                    (reset),
+    .io_in_pc                 (io_core_in_pc),
+    .io_in_index              (6'hE),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:16:22
+    .io_in_rvalid             (io_icache_in_rvalid),
+    .io_in_inst               (io_icache_in_rdata[479:448]),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:18:42
+    .io_out_isMatched         (_bpers_14_io_out_isMatched),
+    .io_out_bits_predictTaken (_bpers_14_io_out_bits_predictTaken),
+    .io_out_bits_offset       (_bpers_14_io_out_bits_offset)
+  );
+  BpUnit bpers_15 (	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .clock                    (clock),
+    .reset                    (reset),
+    .io_in_pc                 (io_core_in_pc),
+    .io_in_index              (6'hF),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:16:22
+    .io_in_rvalid             (io_icache_in_rvalid),
+    .io_in_inst               (io_icache_in_rdata[511:480]),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:18:42
+    .io_out_isMatched         (_bpers_15_io_out_isMatched),
+    .io_out_bits_predictTaken (_bpers_15_io_out_bits_predictTaken),
+    .io_out_bits_offset       (_bpers_15_io_out_bits_offset)
+  );
   MultiMux1_1 bpMux (	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:22:21
-    .io_inputs_0_valid             (_bpers_0_io_out_isMatched),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .io_inputs_0_bits_predictTaken (_bpers_0_io_out_bits_predictTaken),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .io_inputs_0_bits_offset       (_bpers_0_io_out_bits_offset),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .io_inputs_1_valid             (_bpers_1_io_out_isMatched),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .io_inputs_1_bits_predictTaken (_bpers_1_io_out_bits_predictTaken),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .io_inputs_1_bits_offset       (_bpers_1_io_out_bits_offset),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .io_inputs_2_valid             (_bpers_2_io_out_isMatched),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .io_inputs_2_bits_predictTaken (_bpers_2_io_out_bits_predictTaken),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .io_inputs_2_bits_offset       (_bpers_2_io_out_bits_offset),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .io_inputs_3_valid             (_bpers_3_io_out_isMatched),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .io_inputs_3_bits_predictTaken (_bpers_3_io_out_bits_predictTaken),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .io_inputs_3_bits_offset       (_bpers_3_io_out_bits_offset),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .io_inputs_4_valid             (_bpers_4_io_out_isMatched),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .io_inputs_4_bits_predictTaken (_bpers_4_io_out_bits_predictTaken),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .io_inputs_4_bits_offset       (_bpers_4_io_out_bits_offset),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .io_inputs_5_valid             (_bpers_5_io_out_isMatched),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .io_inputs_5_bits_predictTaken (_bpers_5_io_out_bits_predictTaken),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .io_inputs_5_bits_offset       (_bpers_5_io_out_bits_offset),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .io_inputs_6_valid             (_bpers_6_io_out_isMatched),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .io_inputs_6_bits_predictTaken (_bpers_6_io_out_bits_predictTaken),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .io_inputs_6_bits_offset       (_bpers_6_io_out_bits_offset),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .io_inputs_7_valid             (_bpers_7_io_out_isMatched),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .io_inputs_7_bits_predictTaken (_bpers_7_io_out_bits_predictTaken),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .io_inputs_7_bits_offset       (_bpers_7_io_out_bits_offset),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .io_output_bits_predictTaken   (io_core_out_predictTaken),
-    .io_output_bits_offset         (io_core_out_offset)
+    .io_inputs_0_valid              (_bpers_0_io_out_isMatched),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_0_bits_predictTaken  (_bpers_0_io_out_bits_predictTaken),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_0_bits_offset        (_bpers_0_io_out_bits_offset),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_1_valid              (_bpers_1_io_out_isMatched),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_1_bits_predictTaken  (_bpers_1_io_out_bits_predictTaken),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_1_bits_offset        (_bpers_1_io_out_bits_offset),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_2_valid              (_bpers_2_io_out_isMatched),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_2_bits_predictTaken  (_bpers_2_io_out_bits_predictTaken),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_2_bits_offset        (_bpers_2_io_out_bits_offset),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_3_valid              (_bpers_3_io_out_isMatched),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_3_bits_predictTaken  (_bpers_3_io_out_bits_predictTaken),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_3_bits_offset        (_bpers_3_io_out_bits_offset),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_4_valid              (_bpers_4_io_out_isMatched),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_4_bits_predictTaken  (_bpers_4_io_out_bits_predictTaken),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_4_bits_offset        (_bpers_4_io_out_bits_offset),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_5_valid              (_bpers_5_io_out_isMatched),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_5_bits_predictTaken  (_bpers_5_io_out_bits_predictTaken),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_5_bits_offset        (_bpers_5_io_out_bits_offset),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_6_valid              (_bpers_6_io_out_isMatched),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_6_bits_predictTaken  (_bpers_6_io_out_bits_predictTaken),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_6_bits_offset        (_bpers_6_io_out_bits_offset),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_7_valid              (_bpers_7_io_out_isMatched),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_7_bits_predictTaken  (_bpers_7_io_out_bits_predictTaken),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_7_bits_offset        (_bpers_7_io_out_bits_offset),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_8_valid              (_bpers_8_io_out_isMatched),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_8_bits_predictTaken  (_bpers_8_io_out_bits_predictTaken),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_8_bits_offset        (_bpers_8_io_out_bits_offset),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_9_valid              (_bpers_9_io_out_isMatched),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_9_bits_predictTaken  (_bpers_9_io_out_bits_predictTaken),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_9_bits_offset        (_bpers_9_io_out_bits_offset),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_10_valid             (_bpers_10_io_out_isMatched),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_10_bits_predictTaken (_bpers_10_io_out_bits_predictTaken),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_10_bits_offset       (_bpers_10_io_out_bits_offset),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_11_valid             (_bpers_11_io_out_isMatched),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_11_bits_predictTaken (_bpers_11_io_out_bits_predictTaken),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_11_bits_offset       (_bpers_11_io_out_bits_offset),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_12_valid             (_bpers_12_io_out_isMatched),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_12_bits_predictTaken (_bpers_12_io_out_bits_predictTaken),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_12_bits_offset       (_bpers_12_io_out_bits_offset),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_13_valid             (_bpers_13_io_out_isMatched),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_13_bits_predictTaken (_bpers_13_io_out_bits_predictTaken),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_13_bits_offset       (_bpers_13_io_out_bits_offset),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_14_valid             (_bpers_14_io_out_isMatched),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_14_bits_predictTaken (_bpers_14_io_out_bits_predictTaken),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_14_bits_offset       (_bpers_14_io_out_bits_offset),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_15_valid             (_bpers_15_io_out_isMatched),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_15_bits_predictTaken (_bpers_15_io_out_bits_predictTaken),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_inputs_15_bits_offset       (_bpers_15_io_out_bits_offset),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
+    .io_output_bits_predictTaken    (io_core_out_predictTaken),
+    .io_output_bits_offset          (io_core_out_offset)
   );
 endmodule
 
@@ -3293,12 +2781,12 @@ module FetchPlugin(	// src/main/scala/ultra/caches/FetchPlugin.scala:10:7
   output         io_core_out_predictTaken,	// src/main/scala/ultra/caches/FetchPlugin.scala:11:14
   output [31:0]  io_bus_out_pc,	// src/main/scala/ultra/caches/FetchPlugin.scala:11:14
   output         io_bus_out_rreq,	// src/main/scala/ultra/caches/FetchPlugin.scala:11:14
-  input  [255:0] io_bus_in_rdata,	// src/main/scala/ultra/caches/FetchPlugin.scala:11:14
+  input  [511:0] io_bus_in_rdata,	// src/main/scala/ultra/caches/FetchPlugin.scala:11:14
   input          io_bus_in_rrdy,	// src/main/scala/ultra/caches/FetchPlugin.scala:11:14
                  io_bus_in_rvalid	// src/main/scala/ultra/caches/FetchPlugin.scala:11:14
 );
 
-  wire [255:0] _icache_io_core_out_rdata;	// src/main/scala/ultra/caches/FetchPlugin.scala:15:22
+  wire [511:0] _icache_io_core_out_rdata;	// src/main/scala/ultra/caches/FetchPlugin.scala:15:22
   wire         _icache_io_core_out_rvalid;	// src/main/scala/ultra/caches/FetchPlugin.scala:15:22
   wire [31:0]  _icache_io_pc;	// src/main/scala/ultra/caches/FetchPlugin.scala:15:22
   Icache icache (	// src/main/scala/ultra/caches/FetchPlugin.scala:15:22
@@ -4232,7 +3720,8 @@ module UltraExeStage(	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:8
                 io_aside_in_rvalid,	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:9:14
                 io_aside_in_wrdy,	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:9:14
                 io_aside_in_wdone,	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:9:14
-  output        io_aside_out_rreq,	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:9:14
+  output        io_aside_out_uncache,	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:9:14
+                io_aside_out_rreq,	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:9:14
                 io_aside_out_wreq,	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:9:14
   output [31:0] io_aside_out_addr,	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:9:14
                 io_aside_out_byteSelN,	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:9:14
@@ -4261,6 +3750,7 @@ module UltraExeStage(	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:8
   wire [31:0]     _defaultTarget_T_1 = io_pipe_decode_in_fetchInfo_pc + 32'h4;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:89:32
   wire            asideOutWire_rreq = io_pipe_decode_in_bits_exeOp_opType == 4'h6;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:136:49
   wire            asideOutWire_wreq = io_pipe_decode_in_bits_exeOp_opType == 4'h7;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:137:49, :154:18
+  reg             asideOutBuf_uncache;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:140:28
   reg             asideOutBuf_rreq;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:140:28
   reg             asideOutBuf_wreq;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:140:28
   reg  [31:0]     asideOutBuf_addr;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:140:28
@@ -4303,10 +3793,10 @@ module UltraExeStage(	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:8
   wire            _GEN_17 = _GEN_15 & io_aside_in_wrdy;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:32:18, :182:37, :212:31, :214:24
   wire            _GEN_18 =
     ~_GEN_11
-    & (_GEN_13 ? io_aside_in_rrdy & asideOutWire_rreq : _GEN_17 & asideOutWire_rreq);	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:30:16, :32:18, :80:26, :93:21, :128:21, :136:49, :182:37, :197:31, :198:24, :212:31, :214:24
+    & (_GEN_13 ? io_aside_in_rrdy & asideOutWire_rreq : _GEN_17 & asideOutWire_rreq);	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:30:16, :32:18, :80:26, :93:21, :128:21, :136:49, :140:28, :182:37, :197:31, :198:24, :212:31, :214:24
   wire            _GEN_19 =
     ~_GEN_11
-    & (_GEN_13 ? io_aside_in_rrdy & asideOutWire_wreq : _GEN_17 & asideOutWire_wreq);	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:30:16, :32:18, :80:26, :93:21, :128:21, :137:49, :182:37, :197:31, :198:24, :212:31, :214:24
+    & (_GEN_13 ? io_aside_in_rrdy & asideOutWire_wreq : _GEN_17 & asideOutWire_wreq);	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:30:16, :32:18, :80:26, :93:21, :128:21, :137:49, :140:28, :182:37, :197:31, :198:24, :212:31, :214:24
   wire            _GEN_20 = _GEN_11 | ~(_GEN_13 ? io_aside_in_rrdy : _GEN_17);	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:30:16, :32:18, :80:26, :93:21, :128:21, :182:37, :197:31, :198:24, :212:31, :214:24
   wire            _GEN_21 = ~io_pipe_decode_in_req | _GEN_20;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:31:16, :32:18, :182:37, :229:23
   wire            _GEN_22 = _GEN_15 & io_aside_in_wrdy & _GEN_7;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:32:18, :95:37, :182:37, :212:31, :214:24, :215:56, :216:35
@@ -4326,6 +3816,7 @@ module UltraExeStage(	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:8
       preResBuf_bits_addr <= 5'h0;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:15:26, src/main/scala/ultra/pipeline/regfile/RegfileUtils.scala:10:15
       preResBuf_bits_data <= 32'h0;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:15:26, :37:26
       exstat <= 3'h0;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:8:7, :26:23
+      asideOutBuf_uncache <= 1'h1;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:140:28, src/main/scala/ultra/pipeline/exe/UltraExeUtils.scala:51:18
       asideOutBuf_rreq <= 1'h0;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:140:28, src/main/scala/ultra/pipeline/regfile/RegfileUtils.scala:9:13
       asideOutBuf_wreq <= 1'h0;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:140:28, src/main/scala/ultra/pipeline/regfile/RegfileUtils.scala:9:13
       asideOutBuf_addr <= 32'h0;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:37:26, :140:28
@@ -4347,22 +3838,24 @@ module UltraExeStage(	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:8
       automatic logic            _GEN_37;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:68:23, :182:37
       automatic logic            _GEN_38;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:68:23, :182:37
       automatic logic [2:0]      _GEN_39 = io_aside_in_rrdy ? 3'h2 : 3'h1;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:8:7, :197:31, :202:18, :204:18
-      automatic logic            _GEN_40 = _GEN_11 | ~(_GEN_13 | _GEN_15);	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:30:16, :80:26, :93:21, :128:21, :140:28, :182:37, :193:21, :208:21
-      automatic logic [2:0]      _GEN_41 = io_aside_in_wrdy ? 3'h4 : 3'h3;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:8:7, :212:31, :213:18, :219:18
-      automatic logic [2:0]      _GEN_42 =
-        _GEN_16 ? 3'h0 : _GEN_13 ? _GEN_39 : _GEN_15 ? _GEN_41 : 3'h0;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:8:7, :28:12, :140:28, :182:37, :197:31, :202:18, :204:18, :212:31, :213:18, :219:18, :229:23
+      automatic logic            _GEN_40 = _GEN_13 | _GEN_15;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:140:28, :182:37, :193:21, :208:21
+      automatic logic            _GEN_41;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:140:28, :182:37
+      automatic logic            _GEN_42 = _GEN_11 | ~_GEN_40;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:30:16, :80:26, :93:21, :128:21, :140:28, :182:37, :193:21, :208:21
+      automatic logic [2:0]      _GEN_43 = io_aside_in_wrdy ? 3'h4 : 3'h3;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:8:7, :212:31, :213:18, :219:18
+      automatic logic [2:0]      _GEN_44 =
+        _GEN_16 ? 3'h0 : _GEN_13 ? _GEN_39 : _GEN_15 ? _GEN_43 : 3'h0;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:8:7, :28:12, :140:28, :182:37, :197:31, :202:18, :204:18, :212:31, :213:18, :219:18, :229:23
       automatic logic            _pipeOutReg_bits_data_T;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:161:21
-      automatic logic [31:0]     _GEN_43;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:160:26, :161:21, :175:13
-      automatic logic            _GEN_44;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:30:16, :226:17
-      automatic logic [7:0][2:0] _GEN_45 =
+      automatic logic [31:0]     _GEN_45;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:160:26, :161:21, :175:13
+      automatic logic            _GEN_46;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:30:16, :226:17
+      automatic logic [7:0][2:0] _GEN_47 =
         {{3'h0},
          {3'h0},
          {3'h0},
-         {io_aside_in_wdone ? _GEN_42 : 3'h4},
-         {_GEN_41},
+         {io_aside_in_wdone ? _GEN_44 : 3'h4},
+         {_GEN_43},
          {{1'h0, ~io_aside_in_rvalid, 1'h0}},
          {_GEN_39},
-         {_GEN_42}};	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:8:7, :28:12, :182:37, :197:31, :202:18, :204:18, :212:31, :213:18, :219:18, :226:17, :229:23, :237:29, :246:31, :247:16, :252:16, :257:29, :266:30, :267:25, :273:16, src/main/scala/ultra/pipeline/regfile/RegfileUtils.scala:9:13
+         {_GEN_44}};	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:8:7, :28:12, :182:37, :197:31, :202:18, :204:18, :212:31, :213:18, :219:18, :226:17, :229:23, :237:29, :246:31, :247:16, :252:16, :257:29, :266:30, :267:25, :273:16, src/main/scala/ultra/pipeline/regfile/RegfileUtils.scala:9:13
       _GEN_30 =
         (|io_pipe_decode_in_bits_wCtrl_addr) ? io_pipe_decode_in_bits_wCtrl_addr : 5'h0;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:68:{15,23}, :69:17, :72:27, src/main/scala/ultra/pipeline/regfile/RegfileUtils.scala:10:15
       _GEN_31 = (|io_pipe_decode_in_bits_wCtrl_addr) ? _alu_io_out_res : 32'h0;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:37:26, :57:19, :68:{15,23}, :69:17, :73:27
@@ -4371,9 +3864,10 @@ module UltraExeStage(	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:8
         (|io_pipe_decode_in_bits_wCtrl_addr) ? io_pipe_decode_in_bits_wCtrl_data : 32'h0;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:37:26, :68:{15,23}, :69:17, :73:27
       _GEN_37 = _GEN_2 | _GEN_9;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:68:23, :182:37
       _GEN_38 = _GEN_1 | _GEN_2 | _GEN_9;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:68:23, :182:37
+      _GEN_41 = ~_GEN_11 & _GEN_40;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:30:16, :80:26, :93:21, :128:21, :140:28, :182:37, :193:21, :208:21
       _pipeOutReg_bits_data_T = asideOutBuf_byteSelN == 32'hE;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:140:28, :161:21
-      _GEN_43 = (|asideOutBuf_byteSelN) ? 32'h0 : io_aside_in_rdata;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:37:26, :140:28, :160:26, :161:21, :175:13
-      _GEN_44 = _GEN_25 | ~_GEN_28;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:30:16, :225:28, :226:17, :266:30, :267:25, :269:28
+      _GEN_45 = (|asideOutBuf_byteSelN) ? 32'h0 : io_aside_in_rdata;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:37:26, :140:28, :160:26, :161:21, :175:13
+      _GEN_46 = _GEN_25 | ~_GEN_28;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:30:16, :225:28, :226:17, :266:30, :267:25, :269:28
       pipeOutReg_bits_en <=
         _GEN_0
           ? io_pipe_decode_in_req & _GEN_34
@@ -4406,9 +3900,9 @@ module UltraExeStage(	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:8
                                     ? {24'h0, io_aside_in_rdata[23:16]}
                                     : asideOutBuf_byteSelN == 32'h7
                                         ? {24'h0, io_aside_in_rdata[31:24]}
-                                        : _GEN_43)
+                                        : _GEN_45)
                        : 32'h0)
-                  : _GEN_44 ? 32'h0 : _GEN_36;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:13:27, :30:16, :37:26, :81:26, :140:28, :160:26, :161:21, :163:{13,20}, :166:{13,20}, :169:{13,20}, :172:{13,20}, :175:13, :182:37, :226:17, :229:23, :246:31, :249:30
+                  : _GEN_46 ? 32'h0 : _GEN_36;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:13:27, :30:16, :37:26, :81:26, :140:28, :160:26, :161:21, :163:{13,20}, :166:{13,20}, :169:{13,20}, :172:{13,20}, :175:13, :182:37, :226:17, :229:23, :246:31, :249:30
       if (_GEN_0) begin	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:226:17
         if (io_pipe_decode_in_req) begin	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:9:14
           if (_GEN_1) begin	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:182:37
@@ -4424,15 +3918,16 @@ module UltraExeStage(	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:8
         end
         if (io_pipe_decode_in_req & _GEN_38)	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:15:26, :68:23, :182:37, :229:23
           preResBuf_bits_addr <= _GEN_30;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:15:26, :68:23, :69:17, :72:27
+        asideOutBuf_uncache <= io_pipe_decode_in_req & _GEN_41 | asideOutBuf_uncache;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:140:28, :182:37, :229:23
         if (_GEN_16) begin	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:140:28, :182:37, :229:23
         end
         else if (_GEN_13) begin	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:182:37
-          automatic logic [3:0][3:0] _GEN_46 = '{4'h7, 4'hB, 4'hD, 4'hE};	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:142:31, :143:22, :145:18, :148:18, :151:18, :154:18
-          asideOutBuf_byteSelN <= _GEN_7 ? {28'h0, _GEN_46[_alu_io_out_res[1:0]]} : 32'h0;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:37:26, :57:19, :95:37, :140:28, :142:31, :143:{16,22}, :145:18, :148:18, :151:18, :154:18, :193:21, :194:53, :195:32
+          automatic logic [3:0][3:0] _GEN_48 = '{4'h7, 4'hB, 4'hD, 4'hE};	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:142:31, :143:22, :145:18, :148:18, :151:18, :154:18
+          asideOutBuf_byteSelN <= _GEN_7 ? {28'h0, _GEN_48[_alu_io_out_res[1:0]]} : 32'h0;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:37:26, :57:19, :95:37, :140:28, :142:31, :143:{16,22}, :145:18, :148:18, :151:18, :154:18, :193:21, :194:53, :195:32
         end
         else if (_GEN_15) begin	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:182:37
-          automatic logic [3:0][3:0] _GEN_47 = '{4'h7, 4'hB, 4'hD, 4'hE};	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:142:31, :143:22, :145:18, :148:18, :151:18, :154:18
-          asideOutBuf_byteSelN <= _GEN_7 ? {28'h0, _GEN_47[_alu_io_out_res[1:0]]} : 32'h0;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:37:26, :57:19, :95:37, :140:28, :142:31, :143:{16,22}, :145:18, :148:18, :151:18, :154:18, :195:32, :208:21, :209:54, :210:32
+          automatic logic [3:0][3:0] _GEN_49 = '{4'h7, 4'hB, 4'hD, 4'hE};	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:142:31, :143:22, :145:18, :148:18, :151:18, :154:18
+          asideOutBuf_byteSelN <= _GEN_7 ? {28'h0, _GEN_49[_alu_io_out_res[1:0]]} : 32'h0;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:37:26, :57:19, :95:37, :140:28, :142:31, :143:{16,22}, :145:18, :148:18, :151:18, :154:18, :195:32, :208:21, :209:54, :210:32
         end
       end
       else begin	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:226:17
@@ -4452,12 +3947,12 @@ module UltraExeStage(	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:8
                                ? {24'h0, io_aside_in_rdata[23:16]}
                                : asideOutBuf_byteSelN == 32'h7
                                    ? {24'h0, io_aside_in_rdata[31:24]}
-                                   : _GEN_43)
+                                   : _GEN_45)
                   : 32'h0;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:15:26, :37:26, :68:{15,23}, :69:17, :73:27, :140:28, :160:26, :161:21, :163:{13,20}, :166:{13,20}, :169:{13,20}, :172:{13,20}, :175:13, :225:28
             end
           end
           else begin	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:226:17
-            if (_GEN_44) begin	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:15:26, :30:16, :226:17
+            if (_GEN_46) begin	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:15:26, :30:16, :226:17
             end
             else if (_GEN_1)	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:182:37
               preResBuf_bits_en <= |io_pipe_decode_in_bits_wCtrl_addr;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:15:26, :68:15
@@ -4467,7 +3962,7 @@ module UltraExeStage(	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:8
             end
             else	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:15:26, :226:17
               preResBuf_bits_addr <= _GEN_30;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:15:26, :68:23, :69:17, :72:27
-            if (_GEN_44) begin	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:15:26, :30:16, :226:17
+            if (_GEN_46) begin	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:15:26, :30:16, :226:17
             end
             else if (_GEN_1)	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:182:37
               preResBuf_bits_data <= _GEN_31;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:15:26, :68:23, :69:17, :73:27
@@ -4475,15 +3970,16 @@ module UltraExeStage(	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:8
               preResBuf_bits_data <= _GEN_33;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:15:26, :68:23, :69:17, :73:27
           end
         end
+        asideOutBuf_uncache <= ~_GEN_27 & _GEN_28 & _GEN_41 | asideOutBuf_uncache;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:29:28, :140:28, :182:37, :225:28, :226:17, :266:30, :267:25, :269:28
         if (_GEN_27 | ~_GEN_28 | _GEN_11) begin	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:29:28, :30:16, :80:26, :93:21, :128:21, :140:28, :182:37, :225:28, :226:17, :266:30, :267:25, :269:28
         end
         else if (_GEN_13) begin	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:182:37
-          automatic logic [3:0][3:0] _GEN_48 = '{4'h7, 4'hB, 4'hD, 4'hE};	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:142:31, :143:22, :145:18, :148:18, :151:18, :154:18
-          asideOutBuf_byteSelN <= _GEN_7 ? {28'h0, _GEN_48[_alu_io_out_res[1:0]]} : 32'h0;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:37:26, :57:19, :95:37, :140:28, :142:31, :143:{16,22}, :145:18, :148:18, :151:18, :154:18, :193:21, :194:53, :195:32
+          automatic logic [3:0][3:0] _GEN_50 = '{4'h7, 4'hB, 4'hD, 4'hE};	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:142:31, :143:22, :145:18, :148:18, :151:18, :154:18
+          asideOutBuf_byteSelN <= _GEN_7 ? {28'h0, _GEN_50[_alu_io_out_res[1:0]]} : 32'h0;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:37:26, :57:19, :95:37, :140:28, :142:31, :143:{16,22}, :145:18, :148:18, :151:18, :154:18, :193:21, :194:53, :195:32
         end
         else if (_GEN_15) begin	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:182:37
-          automatic logic [3:0][3:0] _GEN_49 = '{4'h7, 4'hB, 4'hD, 4'hE};	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:142:31, :143:22, :145:18, :148:18, :151:18, :154:18
-          asideOutBuf_byteSelN <= _GEN_7 ? {28'h0, _GEN_49[_alu_io_out_res[1:0]]} : 32'h0;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:37:26, :57:19, :95:37, :140:28, :142:31, :143:{16,22}, :145:18, :148:18, :151:18, :154:18, :195:32, :208:21, :209:54, :210:32
+          automatic logic [3:0][3:0] _GEN_51 = '{4'h7, 4'hB, 4'hD, 4'hE};	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:142:31, :143:22, :145:18, :148:18, :151:18, :154:18
+          asideOutBuf_byteSelN <= _GEN_7 ? {28'h0, _GEN_51[_alu_io_out_res[1:0]]} : 32'h0;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:37:26, :57:19, :95:37, :140:28, :142:31, :143:{16,22}, :145:18, :148:18, :151:18, :154:18, :195:32, :208:21, :209:54, :210:32
         end
         if (_GEN_27 | ~_GEN_28) begin	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:29:28, :225:28, :226:17, :266:30, :267:25, :269:28
         end
@@ -4492,8 +3988,8 @@ module UltraExeStage(	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:8
           curWctrlBuf_bits_addr <= io_pipe_decode_in_bits_wCtrl_addr;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:225:28
         end
       end
-      exstat <= _GEN_45[exstat];	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:26:23, :28:12, :226:17, :229:23, :237:29, :246:31, :257:29, :266:30
-      if (_GEN_0 ? ~io_pipe_decode_in_req | _GEN_40 : _GEN_27 | ~_GEN_28 | _GEN_40) begin	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:29:28, :31:16, :140:28, :182:37, :225:28, :226:17, :229:23, :266:30, :267:25, :269:28
+      exstat <= _GEN_47[exstat];	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:26:23, :28:12, :226:17, :229:23, :237:29, :246:31, :257:29, :266:30
+      if (_GEN_0 ? ~io_pipe_decode_in_req | _GEN_42 : _GEN_27 | ~_GEN_28 | _GEN_42) begin	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:29:28, :31:16, :140:28, :182:37, :225:28, :226:17, :229:23, :266:30, :267:25, :269:28
       end
       else begin	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:140:28, :182:37, :226:17, :229:23
         asideOutBuf_rreq <= asideOutWire_rreq;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:136:49, :140:28
@@ -4523,6 +4019,7 @@ module UltraExeStage(	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:8
         preResBuf_bits_addr = _RANDOM[3'h1][11:7];	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:8:7, :13:27, :15:26
         preResBuf_bits_data = {_RANDOM[3'h1][31:12], _RANDOM[3'h2][11:0]};	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:8:7, :13:27, :15:26
         exstat = _RANDOM[3'h2][14:12];	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:8:7, :15:26, :26:23
+        asideOutBuf_uncache = _RANDOM[3'h2][15];	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:8:7, :15:26, :140:28
         asideOutBuf_rreq = _RANDOM[3'h2][16];	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:8:7, :15:26, :140:28
         asideOutBuf_wreq = _RANDOM[3'h2][17];	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:8:7, :15:26, :140:28
         asideOutBuf_addr = {_RANDOM[3'h2][31:18], _RANDOM[3'h3][17:0]};	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:8:7, :15:26, :140:28
@@ -4567,6 +4064,11 @@ module UltraExeStage(	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:8
           : _GEN_2
               ? _GEN_8
               : _GEN_9 ? regLeft_res + io_pipe_decode_in_bits_operands_imm : 32'h0;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:8:7, :29:28, :31:16, :37:26, :41:6, :42:11, :44:11, :95:37, :97:35, :131:{20,39}, :182:37, :225:28, :226:17, :229:23, :266:30, :267:25, :269:28
+  assign io_aside_out_uncache =
+    _GEN_0
+    | (_GEN_23
+         ? ~io_aside_in_rrdy | asideOutBuf_uncache
+         : _GEN_24 | ~(_GEN_25 & io_aside_in_wrdy) | asideOutBuf_uncache);	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:8:7, :32:18, :140:28, :226:17, :229:23, :237:29, :239:22, :257:29, :259:22
   assign io_aside_out_rreq =
     _GEN_0
       ? io_pipe_decode_in_req & _GEN_18
@@ -4621,140 +4123,180 @@ module UltraExeStage(	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:8
                   : _GEN_29 ? 32'h0 : regRight_res;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:8:7, :32:18, :37:26, :41:6, :42:11, :44:11, :140:28, :182:37, :226:17, :229:23, :237:29, :239:22, :257:29, :259:22, :266:30, :267:25
 endmodule
 
-module ExePlugin(	// src/main/scala/ultra/caches/ExePlugin.scala:10:7
-  input         io_core_in_rreq,	// src/main/scala/ultra/caches/ExePlugin.scala:11:14
-                io_core_in_wreq,	// src/main/scala/ultra/caches/ExePlugin.scala:11:14
-  input  [31:0] io_core_in_addr,	// src/main/scala/ultra/caches/ExePlugin.scala:11:14
-                io_core_in_byteSelN,	// src/main/scala/ultra/caches/ExePlugin.scala:11:14
-                io_core_in_wdata,	// src/main/scala/ultra/caches/ExePlugin.scala:11:14
-  output [31:0] io_core_out_rdata,	// src/main/scala/ultra/caches/ExePlugin.scala:11:14
-  output        io_core_out_rrdy,	// src/main/scala/ultra/caches/ExePlugin.scala:11:14
-                io_core_out_rvalid,	// src/main/scala/ultra/caches/ExePlugin.scala:11:14
-                io_core_out_wrdy,	// src/main/scala/ultra/caches/ExePlugin.scala:11:14
-                io_core_out_wdone,	// src/main/scala/ultra/caches/ExePlugin.scala:11:14
-                io_bus_out_rreq,	// src/main/scala/ultra/caches/ExePlugin.scala:11:14
-                io_bus_out_wreq,	// src/main/scala/ultra/caches/ExePlugin.scala:11:14
-  output [3:0]  io_bus_out_byteSelN,	// src/main/scala/ultra/caches/ExePlugin.scala:11:14
-  output [31:0] io_bus_out_addr,	// src/main/scala/ultra/caches/ExePlugin.scala:11:14
-                io_bus_out_wdata,	// src/main/scala/ultra/caches/ExePlugin.scala:11:14
-  input  [63:0] io_bus_in_rdata,	// src/main/scala/ultra/caches/ExePlugin.scala:11:14
-  input         io_bus_in_rrdy,	// src/main/scala/ultra/caches/ExePlugin.scala:11:14
-                io_bus_in_rvalid,	// src/main/scala/ultra/caches/ExePlugin.scala:11:14
-                io_bus_in_wrdy,	// src/main/scala/ultra/caches/ExePlugin.scala:11:14
-                io_bus_in_wdone	// src/main/scala/ultra/caches/ExePlugin.scala:11:14
+module AlphaExePlugin(	// src/main/scala/ultra/caches/AlphaExePlugin.scala:10:7
+  input         clock,	// src/main/scala/ultra/caches/AlphaExePlugin.scala:10:7
+                reset,	// src/main/scala/ultra/caches/AlphaExePlugin.scala:10:7
+                io_core_in_uncache,	// src/main/scala/ultra/caches/AlphaExePlugin.scala:11:14
+                io_core_in_rreq,	// src/main/scala/ultra/caches/AlphaExePlugin.scala:11:14
+                io_core_in_wreq,	// src/main/scala/ultra/caches/AlphaExePlugin.scala:11:14
+  input  [31:0] io_core_in_addr,	// src/main/scala/ultra/caches/AlphaExePlugin.scala:11:14
+                io_core_in_byteSelN,	// src/main/scala/ultra/caches/AlphaExePlugin.scala:11:14
+                io_core_in_wdata,	// src/main/scala/ultra/caches/AlphaExePlugin.scala:11:14
+  output [31:0] io_core_out_rdata,	// src/main/scala/ultra/caches/AlphaExePlugin.scala:11:14
+  output        io_core_out_rrdy,	// src/main/scala/ultra/caches/AlphaExePlugin.scala:11:14
+                io_core_out_rvalid,	// src/main/scala/ultra/caches/AlphaExePlugin.scala:11:14
+                io_core_out_wrdy,	// src/main/scala/ultra/caches/AlphaExePlugin.scala:11:14
+                io_core_out_wdone,	// src/main/scala/ultra/caches/AlphaExePlugin.scala:11:14
+                io_bus_out_rreq,	// src/main/scala/ultra/caches/AlphaExePlugin.scala:11:14
+                io_bus_out_rtype,	// src/main/scala/ultra/caches/AlphaExePlugin.scala:11:14
+                io_bus_out_wreq,	// src/main/scala/ultra/caches/AlphaExePlugin.scala:11:14
+  output [3:0]  io_bus_out_byteSelN,	// src/main/scala/ultra/caches/AlphaExePlugin.scala:11:14
+  output [31:0] io_bus_out_addr,	// src/main/scala/ultra/caches/AlphaExePlugin.scala:11:14
+                io_bus_out_wdata,	// src/main/scala/ultra/caches/AlphaExePlugin.scala:11:14
+  input  [63:0] io_bus_in_rdata,	// src/main/scala/ultra/caches/AlphaExePlugin.scala:11:14
+  input         io_bus_in_rvalid,	// src/main/scala/ultra/caches/AlphaExePlugin.scala:11:14
+                io_bus_in_wdone	// src/main/scala/ultra/caches/AlphaExePlugin.scala:11:14
 );
 
-  assign io_core_out_rdata = io_bus_in_rdata[31:0];	// src/main/scala/ultra/caches/ExePlugin.scala:10:7, :17:39
-  assign io_core_out_rrdy = io_bus_in_rrdy;	// src/main/scala/ultra/caches/ExePlugin.scala:10:7
-  assign io_core_out_rvalid = io_bus_in_rvalid;	// src/main/scala/ultra/caches/ExePlugin.scala:10:7
-  assign io_core_out_wrdy = io_bus_in_wrdy;	// src/main/scala/ultra/caches/ExePlugin.scala:10:7
-  assign io_core_out_wdone = io_bus_in_wdone;	// src/main/scala/ultra/caches/ExePlugin.scala:10:7
-  assign io_bus_out_rreq = io_core_in_rreq;	// src/main/scala/ultra/caches/ExePlugin.scala:10:7
-  assign io_bus_out_wreq = io_core_in_wreq;	// src/main/scala/ultra/caches/ExePlugin.scala:10:7
-  assign io_bus_out_byteSelN = io_core_in_byteSelN[3:0];	// src/main/scala/ultra/caches/ExePlugin.scala:10:7, :26:23
-  assign io_bus_out_addr = io_core_in_addr;	// src/main/scala/ultra/caches/ExePlugin.scala:10:7
-  assign io_bus_out_wdata = io_core_in_wdata;	// src/main/scala/ultra/caches/ExePlugin.scala:10:7
+  reg  [1:0] expStat;	// src/main/scala/ultra/caches/AlphaExePlugin.scala:31:24
+  wire       _GEN = ~(|expStat) & io_core_in_rreq;	// src/main/scala/ultra/caches/AlphaExePlugin.scala:19:16, :31:24, :33:33, :35:20, :37:28, :39:29
+  wire       _GEN_0 = expStat == 2'h2;	// src/main/scala/ultra/caches/AlphaExePlugin.scala:31:24, :35:20, :45:17
+  wire       _GEN_1 = expStat == 2'h1 & io_bus_in_rvalid;	// src/main/scala/ultra/caches/AlphaExePlugin.scala:31:24, :35:20, :38:17, :64:29, :65:17
+  wire       _GEN_2 = ~(|expStat) | _GEN_0 | (&expStat);	// src/main/scala/ultra/caches/AlphaExePlugin.scala:18:19, :31:24, :33:33, :35:20
+  always @(posedge clock) begin	// src/main/scala/ultra/caches/AlphaExePlugin.scala:10:7
+    if (reset)	// src/main/scala/ultra/caches/AlphaExePlugin.scala:10:7
+      expStat <= 2'h0;	// src/main/scala/ultra/caches/AlphaExePlugin.scala:31:24, :55:17
+    else if (|expStat) begin	// src/main/scala/ultra/caches/AlphaExePlugin.scala:31:24, :33:33
+      if (_GEN_0)	// src/main/scala/ultra/caches/AlphaExePlugin.scala:35:20
+        expStat <= io_bus_in_wdone ? 2'h0 : 2'h3;	// src/main/scala/ultra/caches/AlphaExePlugin.scala:31:24, :52:15, :54:28, :55:17
+      else if ((&expStat) ? io_bus_in_wdone : _GEN_1)	// src/main/scala/ultra/caches/AlphaExePlugin.scala:31:24, :35:20, :59:28, :60:17, :64:29, :65:17
+        expStat <= 2'h0;	// src/main/scala/ultra/caches/AlphaExePlugin.scala:31:24, :55:17
+    end
+    else if (io_core_in_wreq)	// src/main/scala/ultra/caches/AlphaExePlugin.scala:11:14
+      expStat <= 2'h2;	// src/main/scala/ultra/caches/AlphaExePlugin.scala:31:24, :45:17
+    else if (io_core_in_rreq)	// src/main/scala/ultra/caches/AlphaExePlugin.scala:11:14
+      expStat <= 2'h1;	// src/main/scala/ultra/caches/AlphaExePlugin.scala:31:24, :38:17
+  end // always @(posedge)
+  `ifdef ENABLE_INITIAL_REG_	// src/main/scala/ultra/caches/AlphaExePlugin.scala:10:7
+    `ifdef FIRRTL_BEFORE_INITIAL	// src/main/scala/ultra/caches/AlphaExePlugin.scala:10:7
+      `FIRRTL_BEFORE_INITIAL	// src/main/scala/ultra/caches/AlphaExePlugin.scala:10:7
+    `endif // FIRRTL_BEFORE_INITIAL
+    initial begin	// src/main/scala/ultra/caches/AlphaExePlugin.scala:10:7
+      automatic logic [31:0] _RANDOM[0:0];	// src/main/scala/ultra/caches/AlphaExePlugin.scala:10:7
+      `ifdef INIT_RANDOM_PROLOG_	// src/main/scala/ultra/caches/AlphaExePlugin.scala:10:7
+        `INIT_RANDOM_PROLOG_	// src/main/scala/ultra/caches/AlphaExePlugin.scala:10:7
+      `endif // INIT_RANDOM_PROLOG_
+      `ifdef RANDOMIZE_REG_INIT	// src/main/scala/ultra/caches/AlphaExePlugin.scala:10:7
+        _RANDOM[/*Zero width*/ 1'b0] = `RANDOM;	// src/main/scala/ultra/caches/AlphaExePlugin.scala:10:7
+        expStat = _RANDOM[/*Zero width*/ 1'b0][1:0];	// src/main/scala/ultra/caches/AlphaExePlugin.scala:10:7, :31:24
+      `endif // RANDOMIZE_REG_INIT
+    end // initial
+    `ifdef FIRRTL_AFTER_INITIAL	// src/main/scala/ultra/caches/AlphaExePlugin.scala:10:7
+      `FIRRTL_AFTER_INITIAL	// src/main/scala/ultra/caches/AlphaExePlugin.scala:10:7
+    `endif // FIRRTL_AFTER_INITIAL
+  `endif // ENABLE_INITIAL_REG_
+  assign io_core_out_rdata = _GEN_2 | ~_GEN_1 ? 32'h0 : io_bus_in_rdata[31:0];	// src/main/scala/ultra/caches/AlphaExePlugin.scala:10:7, :18:19, :31:24, :35:20, :64:29, :65:17, :67:47, src/main/scala/ultra/pipeline/exe/UltraExeUtils.scala:38:16
+  assign io_core_out_rrdy = ~(|expStat);	// src/main/scala/ultra/caches/AlphaExePlugin.scala:10:7, :31:24, :33:33
+  assign io_core_out_rvalid = ~_GEN_2 & _GEN_1 & io_bus_in_rvalid;	// src/main/scala/ultra/caches/AlphaExePlugin.scala:10:7, :18:19, :31:24, :35:20, :64:29, :65:17
+  assign io_core_out_wrdy = ~(|expStat);	// src/main/scala/ultra/caches/AlphaExePlugin.scala:10:7, :31:24, :33:33
+  assign io_core_out_wdone = (|expStat) & _GEN_0;	// src/main/scala/ultra/caches/AlphaExePlugin.scala:10:7, :18:19, :31:24, :33:33, :35:20
+  assign io_bus_out_rreq = ~(|expStat) & io_core_in_rreq;	// src/main/scala/ultra/caches/AlphaExePlugin.scala:10:7, :19:16, :31:24, :33:33, :35:20, :37:28
+  assign io_bus_out_rtype = _GEN & io_core_in_uncache;	// src/main/scala/ultra/caches/AlphaExePlugin.scala:10:7, :19:16, :35:20, :37:28, :39:29, :42:26
+  assign io_bus_out_wreq = ~(|expStat) & io_core_in_wreq;	// src/main/scala/ultra/caches/AlphaExePlugin.scala:10:7, :19:16, :31:24, :33:33, :35:20, :44:28
+  assign io_bus_out_byteSelN = _GEN ? io_core_in_byteSelN[3:0] : 4'h0;	// src/main/scala/ultra/bus/UltraBusUtils.scala:58:19, src/main/scala/ultra/caches/AlphaExePlugin.scala:10:7, :19:16, :35:20, :37:28, :39:29
+  assign io_bus_out_addr =
+    ~(|expStat) & (io_core_in_wreq | io_core_in_rreq) ? io_core_in_addr : 32'h0;	// src/main/scala/ultra/caches/AlphaExePlugin.scala:10:7, :19:16, :31:24, :33:33, :35:20, :37:28, :41:25, :44:28, :47:25, src/main/scala/ultra/pipeline/exe/UltraExeUtils.scala:38:16
+  assign io_bus_out_wdata = ~(|expStat) & io_core_in_wreq ? io_core_in_wdata : 32'h0;	// src/main/scala/ultra/caches/AlphaExePlugin.scala:10:7, :19:16, :31:24, :33:33, :35:20, :44:28, :48:26, src/main/scala/ultra/pipeline/exe/UltraExeUtils.scala:38:16
 endmodule
 
-module UltraCpu(	// src/main/scala/ultra/UltraCpu.scala:11:7
-  input         clock,	// src/main/scala/ultra/UltraCpu.scala:11:7
-                reset,	// src/main/scala/ultra/UltraCpu.scala:11:7
-  output [31:0] io_baseSram_req_wData,	// src/main/scala/ultra/UltraCpu.scala:12:14
-  output [19:0] io_baseSram_req_addr,	// src/main/scala/ultra/UltraCpu.scala:12:14
-  output [3:0]  io_baseSram_req_byteSelN,	// src/main/scala/ultra/UltraCpu.scala:12:14
-  output        io_baseSram_req_ce,	// src/main/scala/ultra/UltraCpu.scala:12:14
-                io_baseSram_req_oe,	// src/main/scala/ultra/UltraCpu.scala:12:14
-                io_baseSram_req_we,	// src/main/scala/ultra/UltraCpu.scala:12:14
-  input  [31:0] io_baseSram_rspns_rData,	// src/main/scala/ultra/UltraCpu.scala:12:14
-  output [31:0] io_extSram_req_wData,	// src/main/scala/ultra/UltraCpu.scala:12:14
-  output [19:0] io_extSram_req_addr,	// src/main/scala/ultra/UltraCpu.scala:12:14
-  output [3:0]  io_extSram_req_byteSelN,	// src/main/scala/ultra/UltraCpu.scala:12:14
-  output        io_extSram_req_ce,	// src/main/scala/ultra/UltraCpu.scala:12:14
-                io_extSram_req_oe,	// src/main/scala/ultra/UltraCpu.scala:12:14
-                io_extSram_req_we,	// src/main/scala/ultra/UltraCpu.scala:12:14
-  input  [31:0] io_extSram_rspns_rData,	// src/main/scala/ultra/UltraCpu.scala:12:14
-  output        io_uart_txd,	// src/main/scala/ultra/UltraCpu.scala:12:14
-  input         io_uart_rxd	// src/main/scala/ultra/UltraCpu.scala:12:14
+module UltraCpu(	// src/main/scala/ultra/UltraCpu.scala:10:7
+  input         clock,	// src/main/scala/ultra/UltraCpu.scala:10:7
+                reset,	// src/main/scala/ultra/UltraCpu.scala:10:7
+  output [31:0] io_baseSram_req_wData,	// src/main/scala/ultra/UltraCpu.scala:11:14
+  output [19:0] io_baseSram_req_addr,	// src/main/scala/ultra/UltraCpu.scala:11:14
+  output [3:0]  io_baseSram_req_byteSelN,	// src/main/scala/ultra/UltraCpu.scala:11:14
+  output        io_baseSram_req_ce,	// src/main/scala/ultra/UltraCpu.scala:11:14
+                io_baseSram_req_oe,	// src/main/scala/ultra/UltraCpu.scala:11:14
+                io_baseSram_req_we,	// src/main/scala/ultra/UltraCpu.scala:11:14
+  input  [31:0] io_baseSram_rspns_rData,	// src/main/scala/ultra/UltraCpu.scala:11:14
+  output [31:0] io_extSram_req_wData,	// src/main/scala/ultra/UltraCpu.scala:11:14
+  output [19:0] io_extSram_req_addr,	// src/main/scala/ultra/UltraCpu.scala:11:14
+  output [3:0]  io_extSram_req_byteSelN,	// src/main/scala/ultra/UltraCpu.scala:11:14
+  output        io_extSram_req_ce,	// src/main/scala/ultra/UltraCpu.scala:11:14
+                io_extSram_req_oe,	// src/main/scala/ultra/UltraCpu.scala:11:14
+                io_extSram_req_we,	// src/main/scala/ultra/UltraCpu.scala:11:14
+  input  [31:0] io_extSram_rspns_rData,	// src/main/scala/ultra/UltraCpu.scala:11:14
+  output        io_uart_txd,	// src/main/scala/ultra/UltraCpu.scala:11:14
+  input         io_uart_rxd	// src/main/scala/ultra/UltraCpu.scala:11:14
 );
 
-  wire [31:0]  _exePlugin_io_core_out_rdata;	// src/main/scala/ultra/UltraCpu.scala:53:25
-  wire         _exePlugin_io_core_out_rrdy;	// src/main/scala/ultra/UltraCpu.scala:53:25
-  wire         _exePlugin_io_core_out_rvalid;	// src/main/scala/ultra/UltraCpu.scala:53:25
-  wire         _exePlugin_io_core_out_wrdy;	// src/main/scala/ultra/UltraCpu.scala:53:25
-  wire         _exePlugin_io_core_out_wdone;	// src/main/scala/ultra/UltraCpu.scala:53:25
-  wire         _exePlugin_io_bus_out_rreq;	// src/main/scala/ultra/UltraCpu.scala:53:25
-  wire         _exePlugin_io_bus_out_wreq;	// src/main/scala/ultra/UltraCpu.scala:53:25
-  wire [3:0]   _exePlugin_io_bus_out_byteSelN;	// src/main/scala/ultra/UltraCpu.scala:53:25
-  wire [31:0]  _exePlugin_io_bus_out_addr;	// src/main/scala/ultra/UltraCpu.scala:53:25
-  wire [31:0]  _exePlugin_io_bus_out_wdata;	// src/main/scala/ultra/UltraCpu.scala:53:25
-  wire         _exeStage_io_pipe_decode_out_ack;	// src/main/scala/ultra/UltraCpu.scala:52:24
-  wire         _exeStage_io_pipe_wback_out_bits_en;	// src/main/scala/ultra/UltraCpu.scala:52:24
-  wire [4:0]   _exeStage_io_pipe_wback_out_bits_addr;	// src/main/scala/ultra/UltraCpu.scala:52:24
-  wire [31:0]  _exeStage_io_pipe_wback_out_bits_data;	// src/main/scala/ultra/UltraCpu.scala:52:24
-  wire         _exeStage_io_pipe_br_isMispredict;	// src/main/scala/ultra/UltraCpu.scala:52:24
-  wire [31:0]  _exeStage_io_pipe_br_npc;	// src/main/scala/ultra/UltraCpu.scala:52:24
-  wire         _exeStage_io_aside_out_rreq;	// src/main/scala/ultra/UltraCpu.scala:52:24
-  wire         _exeStage_io_aside_out_wreq;	// src/main/scala/ultra/UltraCpu.scala:52:24
-  wire [31:0]  _exeStage_io_aside_out_addr;	// src/main/scala/ultra/UltraCpu.scala:52:24
-  wire [31:0]  _exeStage_io_aside_out_byteSelN;	// src/main/scala/ultra/UltraCpu.scala:52:24
-  wire [31:0]  _exeStage_io_aside_out_wdata;	// src/main/scala/ultra/UltraCpu.scala:52:24
-  wire [31:0]  _regfile_io_rChannel_1_out;	// src/main/scala/ultra/UltraCpu.scala:43:23
-  wire [31:0]  _regfile_io_rChannel_2_out;	// src/main/scala/ultra/UltraCpu.scala:43:23
-  wire         _decodeStage_io_pipe_fetch_out_ack;	// src/main/scala/ultra/UltraCpu.scala:42:27
-  wire [3:0]   _decodeStage_io_pipe_exe_out_bits_exeOp_opType;	// src/main/scala/ultra/UltraCpu.scala:42:27
-  wire [2:0]   _decodeStage_io_pipe_exe_out_bits_exeOp_opFunc;	// src/main/scala/ultra/UltraCpu.scala:42:27
-  wire         _decodeStage_io_pipe_exe_out_bits_wCtrl_en;	// src/main/scala/ultra/UltraCpu.scala:42:27
-  wire [4:0]   _decodeStage_io_pipe_exe_out_bits_wCtrl_addr;	// src/main/scala/ultra/UltraCpu.scala:42:27
-  wire [31:0]  _decodeStage_io_pipe_exe_out_bits_wCtrl_data;	// src/main/scala/ultra/UltraCpu.scala:42:27
-  wire         _decodeStage_io_pipe_exe_out_bits_operands_hasImm;	// src/main/scala/ultra/UltraCpu.scala:42:27
-  wire [31:0]  _decodeStage_io_pipe_exe_out_bits_operands_imm;	// src/main/scala/ultra/UltraCpu.scala:42:27
-  wire [31:0]  _decodeStage_io_pipe_exe_out_bits_operands_regData_1;	// src/main/scala/ultra/UltraCpu.scala:42:27
-  wire [31:0]  _decodeStage_io_pipe_exe_out_bits_operands_regData_2;	// src/main/scala/ultra/UltraCpu.scala:42:27
-  wire [4:0]   _decodeStage_io_pipe_exe_out_readInfo_reg_1_addr;	// src/main/scala/ultra/UltraCpu.scala:42:27
-  wire [4:0]   _decodeStage_io_pipe_exe_out_readInfo_reg_2_addr;	// src/main/scala/ultra/UltraCpu.scala:42:27
-  wire [31:0]  _decodeStage_io_pipe_exe_out_fetchInfo_pc;	// src/main/scala/ultra/UltraCpu.scala:42:27
-  wire         _decodeStage_io_pipe_exe_out_fetchInfo_predictTaken;	// src/main/scala/ultra/UltraCpu.scala:42:27
-  wire         _decodeStage_io_pipe_exe_out_req;	// src/main/scala/ultra/UltraCpu.scala:42:27
-  wire [4:0]   _decodeStage_io_aside_out_reg_1_addr;	// src/main/scala/ultra/UltraCpu.scala:42:27
-  wire [4:0]   _decodeStage_io_aside_out_reg_2_addr;	// src/main/scala/ultra/UltraCpu.scala:42:27
-  wire [31:0]  _fetchPlugin_io_core_out_inst;	// src/main/scala/ultra/UltraCpu.scala:36:27
-  wire         _fetchPlugin_io_core_out_rvalid;	// src/main/scala/ultra/UltraCpu.scala:36:27
-  wire         _fetchPlugin_io_core_out_isInBuf;	// src/main/scala/ultra/UltraCpu.scala:36:27
-  wire [31:0]  _fetchPlugin_io_core_out_pcOffset;	// src/main/scala/ultra/UltraCpu.scala:36:27
-  wire         _fetchPlugin_io_core_out_predictTaken;	// src/main/scala/ultra/UltraCpu.scala:36:27
-  wire [31:0]  _fetchPlugin_io_bus_out_pc;	// src/main/scala/ultra/UltraCpu.scala:36:27
-  wire         _fetchPlugin_io_bus_out_rreq;	// src/main/scala/ultra/UltraCpu.scala:36:27
-  wire         _fetchStage_io_pipe_out_req;	// src/main/scala/ultra/UltraCpu.scala:35:26
-  wire [31:0]  _fetchStage_io_pipe_out_bits_pc;	// src/main/scala/ultra/UltraCpu.scala:35:26
-  wire [31:0]  _fetchStage_io_pipe_out_bits_inst;	// src/main/scala/ultra/UltraCpu.scala:35:26
-  wire         _fetchStage_io_pipe_out_bits_predictTaken;	// src/main/scala/ultra/UltraCpu.scala:35:26
-  wire [31:0]  _fetchStage_io_aside_out_pc;	// src/main/scala/ultra/UltraCpu.scala:35:26
-  wire         _fetchStage_io_aside_out_rreq;	// src/main/scala/ultra/UltraCpu.scala:35:26
-  wire [255:0] _bus_io_iChannel_out_rdata;	// src/main/scala/ultra/UltraCpu.scala:26:19
-  wire         _bus_io_iChannel_out_rrdy;	// src/main/scala/ultra/UltraCpu.scala:26:19
-  wire         _bus_io_iChannel_out_rvalid;	// src/main/scala/ultra/UltraCpu.scala:26:19
-  wire [63:0]  _bus_io_dChannel_out_rdata;	// src/main/scala/ultra/UltraCpu.scala:26:19
-  wire         _bus_io_dChannel_out_rrdy;	// src/main/scala/ultra/UltraCpu.scala:26:19
-  wire         _bus_io_dChannel_out_rvalid;	// src/main/scala/ultra/UltraCpu.scala:26:19
-  wire         _bus_io_dChannel_out_wrdy;	// src/main/scala/ultra/UltraCpu.scala:26:19
-  wire         _bus_io_dChannel_out_wdone;	// src/main/scala/ultra/UltraCpu.scala:26:19
-  UltraBus bus (	// src/main/scala/ultra/UltraCpu.scala:26:19
+  wire [31:0]  _exePlugin_io_core_out_rdata;	// src/main/scala/ultra/UltraCpu.scala:52:25
+  wire         _exePlugin_io_core_out_rrdy;	// src/main/scala/ultra/UltraCpu.scala:52:25
+  wire         _exePlugin_io_core_out_rvalid;	// src/main/scala/ultra/UltraCpu.scala:52:25
+  wire         _exePlugin_io_core_out_wrdy;	// src/main/scala/ultra/UltraCpu.scala:52:25
+  wire         _exePlugin_io_core_out_wdone;	// src/main/scala/ultra/UltraCpu.scala:52:25
+  wire         _exePlugin_io_bus_out_rreq;	// src/main/scala/ultra/UltraCpu.scala:52:25
+  wire         _exePlugin_io_bus_out_rtype;	// src/main/scala/ultra/UltraCpu.scala:52:25
+  wire         _exePlugin_io_bus_out_wreq;	// src/main/scala/ultra/UltraCpu.scala:52:25
+  wire [3:0]   _exePlugin_io_bus_out_byteSelN;	// src/main/scala/ultra/UltraCpu.scala:52:25
+  wire [31:0]  _exePlugin_io_bus_out_addr;	// src/main/scala/ultra/UltraCpu.scala:52:25
+  wire [31:0]  _exePlugin_io_bus_out_wdata;	// src/main/scala/ultra/UltraCpu.scala:52:25
+  wire         _exeStage_io_pipe_decode_out_ack;	// src/main/scala/ultra/UltraCpu.scala:51:24
+  wire         _exeStage_io_pipe_wback_out_bits_en;	// src/main/scala/ultra/UltraCpu.scala:51:24
+  wire [4:0]   _exeStage_io_pipe_wback_out_bits_addr;	// src/main/scala/ultra/UltraCpu.scala:51:24
+  wire [31:0]  _exeStage_io_pipe_wback_out_bits_data;	// src/main/scala/ultra/UltraCpu.scala:51:24
+  wire         _exeStage_io_pipe_br_isMispredict;	// src/main/scala/ultra/UltraCpu.scala:51:24
+  wire [31:0]  _exeStage_io_pipe_br_npc;	// src/main/scala/ultra/UltraCpu.scala:51:24
+  wire         _exeStage_io_aside_out_uncache;	// src/main/scala/ultra/UltraCpu.scala:51:24
+  wire         _exeStage_io_aside_out_rreq;	// src/main/scala/ultra/UltraCpu.scala:51:24
+  wire         _exeStage_io_aside_out_wreq;	// src/main/scala/ultra/UltraCpu.scala:51:24
+  wire [31:0]  _exeStage_io_aside_out_addr;	// src/main/scala/ultra/UltraCpu.scala:51:24
+  wire [31:0]  _exeStage_io_aside_out_byteSelN;	// src/main/scala/ultra/UltraCpu.scala:51:24
+  wire [31:0]  _exeStage_io_aside_out_wdata;	// src/main/scala/ultra/UltraCpu.scala:51:24
+  wire [31:0]  _regfile_io_rChannel_1_out;	// src/main/scala/ultra/UltraCpu.scala:42:23
+  wire [31:0]  _regfile_io_rChannel_2_out;	// src/main/scala/ultra/UltraCpu.scala:42:23
+  wire         _decodeStage_io_pipe_fetch_out_ack;	// src/main/scala/ultra/UltraCpu.scala:41:27
+  wire [3:0]   _decodeStage_io_pipe_exe_out_bits_exeOp_opType;	// src/main/scala/ultra/UltraCpu.scala:41:27
+  wire [2:0]   _decodeStage_io_pipe_exe_out_bits_exeOp_opFunc;	// src/main/scala/ultra/UltraCpu.scala:41:27
+  wire         _decodeStage_io_pipe_exe_out_bits_wCtrl_en;	// src/main/scala/ultra/UltraCpu.scala:41:27
+  wire [4:0]   _decodeStage_io_pipe_exe_out_bits_wCtrl_addr;	// src/main/scala/ultra/UltraCpu.scala:41:27
+  wire [31:0]  _decodeStage_io_pipe_exe_out_bits_wCtrl_data;	// src/main/scala/ultra/UltraCpu.scala:41:27
+  wire         _decodeStage_io_pipe_exe_out_bits_operands_hasImm;	// src/main/scala/ultra/UltraCpu.scala:41:27
+  wire [31:0]  _decodeStage_io_pipe_exe_out_bits_operands_imm;	// src/main/scala/ultra/UltraCpu.scala:41:27
+  wire [31:0]  _decodeStage_io_pipe_exe_out_bits_operands_regData_1;	// src/main/scala/ultra/UltraCpu.scala:41:27
+  wire [31:0]  _decodeStage_io_pipe_exe_out_bits_operands_regData_2;	// src/main/scala/ultra/UltraCpu.scala:41:27
+  wire [4:0]   _decodeStage_io_pipe_exe_out_readInfo_reg_1_addr;	// src/main/scala/ultra/UltraCpu.scala:41:27
+  wire [4:0]   _decodeStage_io_pipe_exe_out_readInfo_reg_2_addr;	// src/main/scala/ultra/UltraCpu.scala:41:27
+  wire [31:0]  _decodeStage_io_pipe_exe_out_fetchInfo_pc;	// src/main/scala/ultra/UltraCpu.scala:41:27
+  wire         _decodeStage_io_pipe_exe_out_fetchInfo_predictTaken;	// src/main/scala/ultra/UltraCpu.scala:41:27
+  wire         _decodeStage_io_pipe_exe_out_req;	// src/main/scala/ultra/UltraCpu.scala:41:27
+  wire [4:0]   _decodeStage_io_aside_out_reg_1_addr;	// src/main/scala/ultra/UltraCpu.scala:41:27
+  wire [4:0]   _decodeStage_io_aside_out_reg_2_addr;	// src/main/scala/ultra/UltraCpu.scala:41:27
+  wire [31:0]  _fetchPlugin_io_core_out_inst;	// src/main/scala/ultra/UltraCpu.scala:35:27
+  wire         _fetchPlugin_io_core_out_rvalid;	// src/main/scala/ultra/UltraCpu.scala:35:27
+  wire         _fetchPlugin_io_core_out_isInBuf;	// src/main/scala/ultra/UltraCpu.scala:35:27
+  wire [31:0]  _fetchPlugin_io_core_out_pcOffset;	// src/main/scala/ultra/UltraCpu.scala:35:27
+  wire         _fetchPlugin_io_core_out_predictTaken;	// src/main/scala/ultra/UltraCpu.scala:35:27
+  wire [31:0]  _fetchPlugin_io_bus_out_pc;	// src/main/scala/ultra/UltraCpu.scala:35:27
+  wire         _fetchPlugin_io_bus_out_rreq;	// src/main/scala/ultra/UltraCpu.scala:35:27
+  wire         _fetchStage_io_pipe_out_req;	// src/main/scala/ultra/UltraCpu.scala:34:26
+  wire [31:0]  _fetchStage_io_pipe_out_bits_pc;	// src/main/scala/ultra/UltraCpu.scala:34:26
+  wire [31:0]  _fetchStage_io_pipe_out_bits_inst;	// src/main/scala/ultra/UltraCpu.scala:34:26
+  wire         _fetchStage_io_pipe_out_bits_predictTaken;	// src/main/scala/ultra/UltraCpu.scala:34:26
+  wire [31:0]  _fetchStage_io_aside_out_pc;	// src/main/scala/ultra/UltraCpu.scala:34:26
+  wire         _fetchStage_io_aside_out_rreq;	// src/main/scala/ultra/UltraCpu.scala:34:26
+  wire [511:0] _bus_io_iChannel_out_rdata;	// src/main/scala/ultra/UltraCpu.scala:25:19
+  wire         _bus_io_iChannel_out_rrdy;	// src/main/scala/ultra/UltraCpu.scala:25:19
+  wire         _bus_io_iChannel_out_rvalid;	// src/main/scala/ultra/UltraCpu.scala:25:19
+  wire [63:0]  _bus_io_dChannel_out_rdata;	// src/main/scala/ultra/UltraCpu.scala:25:19
+  wire         _bus_io_dChannel_out_rvalid;	// src/main/scala/ultra/UltraCpu.scala:25:19
+  wire         _bus_io_dChannel_out_wdone;	// src/main/scala/ultra/UltraCpu.scala:25:19
+  UltraBus bus (	// src/main/scala/ultra/UltraCpu.scala:25:19
     .clock                   (clock),
     .reset                   (reset),
-    .io_iChannel_in_pc       (_fetchPlugin_io_bus_out_pc),	// src/main/scala/ultra/UltraCpu.scala:36:27
-    .io_iChannel_in_rreq     (_fetchPlugin_io_bus_out_rreq),	// src/main/scala/ultra/UltraCpu.scala:36:27
+    .io_iChannel_in_pc       (_fetchPlugin_io_bus_out_pc),	// src/main/scala/ultra/UltraCpu.scala:35:27
+    .io_iChannel_in_rreq     (_fetchPlugin_io_bus_out_rreq),	// src/main/scala/ultra/UltraCpu.scala:35:27
     .io_iChannel_out_rdata   (_bus_io_iChannel_out_rdata),
     .io_iChannel_out_rrdy    (_bus_io_iChannel_out_rrdy),
     .io_iChannel_out_rvalid  (_bus_io_iChannel_out_rvalid),
-    .io_dChannel_in_rreq     (_exePlugin_io_bus_out_rreq),	// src/main/scala/ultra/UltraCpu.scala:53:25
-    .io_dChannel_in_wreq     (_exePlugin_io_bus_out_wreq),	// src/main/scala/ultra/UltraCpu.scala:53:25
-    .io_dChannel_in_byteSelN (_exePlugin_io_bus_out_byteSelN),	// src/main/scala/ultra/UltraCpu.scala:53:25
-    .io_dChannel_in_addr     (_exePlugin_io_bus_out_addr),	// src/main/scala/ultra/UltraCpu.scala:53:25
-    .io_dChannel_in_wdata    (_exePlugin_io_bus_out_wdata),	// src/main/scala/ultra/UltraCpu.scala:53:25
+    .io_dChannel_in_rreq     (_exePlugin_io_bus_out_rreq),	// src/main/scala/ultra/UltraCpu.scala:52:25
+    .io_dChannel_in_rtype    (_exePlugin_io_bus_out_rtype),	// src/main/scala/ultra/UltraCpu.scala:52:25
+    .io_dChannel_in_wreq     (_exePlugin_io_bus_out_wreq),	// src/main/scala/ultra/UltraCpu.scala:52:25
+    .io_dChannel_in_byteSelN (_exePlugin_io_bus_out_byteSelN),	// src/main/scala/ultra/UltraCpu.scala:52:25
+    .io_dChannel_in_addr     (_exePlugin_io_bus_out_addr),	// src/main/scala/ultra/UltraCpu.scala:52:25
+    .io_dChannel_in_wdata    (_exePlugin_io_bus_out_wdata),	// src/main/scala/ultra/UltraCpu.scala:52:25
     .io_dChannel_out_rdata   (_bus_io_dChannel_out_rdata),
-    .io_dChannel_out_rrdy    (_bus_io_dChannel_out_rrdy),
     .io_dChannel_out_rvalid  (_bus_io_dChannel_out_rvalid),
-    .io_dChannel_out_wrdy    (_bus_io_dChannel_out_wrdy),
     .io_dChannel_out_wdone   (_bus_io_dChannel_out_wdone),
     .io_baseRam_in_rData     (io_baseSram_rspns_rData),
     .io_baseRam_out_wData    (io_baseSram_req_wData),
@@ -4773,29 +4315,29 @@ module UltraCpu(	// src/main/scala/ultra/UltraCpu.scala:11:7
     .io_uart_txd             (io_uart_txd),
     .io_uart_rxd             (io_uart_rxd)
   );
-  UltraFetchStage fetchStage (	// src/main/scala/ultra/UltraCpu.scala:35:26
+  UltraFetchStage fetchStage (	// src/main/scala/ultra/UltraCpu.scala:34:26
     .clock                         (clock),
     .reset                         (reset),
-    .io_pipe_in_ack                (_decodeStage_io_pipe_fetch_out_ack),	// src/main/scala/ultra/UltraCpu.scala:42:27
+    .io_pipe_in_ack                (_decodeStage_io_pipe_fetch_out_ack),	// src/main/scala/ultra/UltraCpu.scala:41:27
     .io_pipe_out_req               (_fetchStage_io_pipe_out_req),
     .io_pipe_out_bits_pc           (_fetchStage_io_pipe_out_bits_pc),
     .io_pipe_out_bits_inst         (_fetchStage_io_pipe_out_bits_inst),
     .io_pipe_out_bits_predictTaken (_fetchStage_io_pipe_out_bits_predictTaken),
-    .io_pipe_br_isMispredict       (_exeStage_io_pipe_br_isMispredict),	// src/main/scala/ultra/UltraCpu.scala:52:24
-    .io_pipe_br_npc                (_exeStage_io_pipe_br_npc),	// src/main/scala/ultra/UltraCpu.scala:52:24
+    .io_pipe_br_isMispredict       (_exeStage_io_pipe_br_isMispredict),	// src/main/scala/ultra/UltraCpu.scala:51:24
+    .io_pipe_br_npc                (_exeStage_io_pipe_br_npc),	// src/main/scala/ultra/UltraCpu.scala:51:24
     .io_aside_out_pc               (_fetchStage_io_aside_out_pc),
     .io_aside_out_rreq             (_fetchStage_io_aside_out_rreq),
-    .io_aside_in_inst              (_fetchPlugin_io_core_out_inst),	// src/main/scala/ultra/UltraCpu.scala:36:27
-    .io_aside_in_rvalid            (_fetchPlugin_io_core_out_rvalid),	// src/main/scala/ultra/UltraCpu.scala:36:27
-    .io_aside_in_isInBuf           (_fetchPlugin_io_core_out_isInBuf),	// src/main/scala/ultra/UltraCpu.scala:36:27
-    .io_aside_in_pcOffset          (_fetchPlugin_io_core_out_pcOffset),	// src/main/scala/ultra/UltraCpu.scala:36:27
-    .io_aside_in_predictTaken      (_fetchPlugin_io_core_out_predictTaken)	// src/main/scala/ultra/UltraCpu.scala:36:27
+    .io_aside_in_inst              (_fetchPlugin_io_core_out_inst),	// src/main/scala/ultra/UltraCpu.scala:35:27
+    .io_aside_in_rvalid            (_fetchPlugin_io_core_out_rvalid),	// src/main/scala/ultra/UltraCpu.scala:35:27
+    .io_aside_in_isInBuf           (_fetchPlugin_io_core_out_isInBuf),	// src/main/scala/ultra/UltraCpu.scala:35:27
+    .io_aside_in_pcOffset          (_fetchPlugin_io_core_out_pcOffset),	// src/main/scala/ultra/UltraCpu.scala:35:27
+    .io_aside_in_predictTaken      (_fetchPlugin_io_core_out_predictTaken)	// src/main/scala/ultra/UltraCpu.scala:35:27
   );
-  FetchPlugin fetchPlugin (	// src/main/scala/ultra/UltraCpu.scala:36:27
+  FetchPlugin fetchPlugin (	// src/main/scala/ultra/UltraCpu.scala:35:27
     .clock                    (clock),
     .reset                    (reset),
-    .io_core_in_pc            (_fetchStage_io_aside_out_pc),	// src/main/scala/ultra/UltraCpu.scala:35:26
-    .io_core_in_rreq          (_fetchStage_io_aside_out_rreq),	// src/main/scala/ultra/UltraCpu.scala:35:26
+    .io_core_in_pc            (_fetchStage_io_aside_out_pc),	// src/main/scala/ultra/UltraCpu.scala:34:26
+    .io_core_in_rreq          (_fetchStage_io_aside_out_rreq),	// src/main/scala/ultra/UltraCpu.scala:34:26
     .io_core_out_inst         (_fetchPlugin_io_core_out_inst),
     .io_core_out_rvalid       (_fetchPlugin_io_core_out_rvalid),
     .io_core_out_isInBuf      (_fetchPlugin_io_core_out_isInBuf),
@@ -4803,19 +4345,19 @@ module UltraCpu(	// src/main/scala/ultra/UltraCpu.scala:11:7
     .io_core_out_predictTaken (_fetchPlugin_io_core_out_predictTaken),
     .io_bus_out_pc            (_fetchPlugin_io_bus_out_pc),
     .io_bus_out_rreq          (_fetchPlugin_io_bus_out_rreq),
-    .io_bus_in_rdata          (_bus_io_iChannel_out_rdata),	// src/main/scala/ultra/UltraCpu.scala:26:19
-    .io_bus_in_rrdy           (_bus_io_iChannel_out_rrdy),	// src/main/scala/ultra/UltraCpu.scala:26:19
-    .io_bus_in_rvalid         (_bus_io_iChannel_out_rvalid)	// src/main/scala/ultra/UltraCpu.scala:26:19
+    .io_bus_in_rdata          (_bus_io_iChannel_out_rdata),	// src/main/scala/ultra/UltraCpu.scala:25:19
+    .io_bus_in_rrdy           (_bus_io_iChannel_out_rrdy),	// src/main/scala/ultra/UltraCpu.scala:25:19
+    .io_bus_in_rvalid         (_bus_io_iChannel_out_rvalid)	// src/main/scala/ultra/UltraCpu.scala:25:19
   );
-  UltraDecodeStage decodeStage (	// src/main/scala/ultra/UltraCpu.scala:42:27
+  UltraDecodeStage decodeStage (	// src/main/scala/ultra/UltraCpu.scala:41:27
     .clock                                   (clock),
     .reset                                   (reset),
-    .io_pipe_fetch_in_req                    (_fetchStage_io_pipe_out_req),	// src/main/scala/ultra/UltraCpu.scala:35:26
-    .io_pipe_fetch_in_bits_pc                (_fetchStage_io_pipe_out_bits_pc),	// src/main/scala/ultra/UltraCpu.scala:35:26
-    .io_pipe_fetch_in_bits_inst              (_fetchStage_io_pipe_out_bits_inst),	// src/main/scala/ultra/UltraCpu.scala:35:26
-    .io_pipe_fetch_in_bits_predictTaken      (_fetchStage_io_pipe_out_bits_predictTaken),	// src/main/scala/ultra/UltraCpu.scala:35:26
+    .io_pipe_fetch_in_req                    (_fetchStage_io_pipe_out_req),	// src/main/scala/ultra/UltraCpu.scala:34:26
+    .io_pipe_fetch_in_bits_pc                (_fetchStage_io_pipe_out_bits_pc),	// src/main/scala/ultra/UltraCpu.scala:34:26
+    .io_pipe_fetch_in_bits_inst              (_fetchStage_io_pipe_out_bits_inst),	// src/main/scala/ultra/UltraCpu.scala:34:26
+    .io_pipe_fetch_in_bits_predictTaken      (_fetchStage_io_pipe_out_bits_predictTaken),	// src/main/scala/ultra/UltraCpu.scala:34:26
     .io_pipe_fetch_out_ack                   (_decodeStage_io_pipe_fetch_out_ack),
-    .io_pipe_exe_in_ack                      (_exeStage_io_pipe_decode_out_ack),	// src/main/scala/ultra/UltraCpu.scala:52:24
+    .io_pipe_exe_in_ack                      (_exeStage_io_pipe_decode_out_ack),	// src/main/scala/ultra/UltraCpu.scala:51:24
     .io_pipe_exe_out_bits_exeOp_opType
       (_decodeStage_io_pipe_exe_out_bits_exeOp_opType),
     .io_pipe_exe_out_bits_exeOp_opFunc
@@ -4841,91 +4383,94 @@ module UltraCpu(	// src/main/scala/ultra/UltraCpu.scala:11:7
     .io_pipe_exe_out_fetchInfo_predictTaken
       (_decodeStage_io_pipe_exe_out_fetchInfo_predictTaken),
     .io_pipe_exe_out_req                     (_decodeStage_io_pipe_exe_out_req),
-    .io_pipe_br_isMispredict                 (_exeStage_io_pipe_br_isMispredict),	// src/main/scala/ultra/UltraCpu.scala:52:24
-    .io_aside_in_regLeft                     (_regfile_io_rChannel_1_out),	// src/main/scala/ultra/UltraCpu.scala:43:23
-    .io_aside_in_regRight                    (_regfile_io_rChannel_2_out),	// src/main/scala/ultra/UltraCpu.scala:43:23
+    .io_pipe_br_isMispredict                 (_exeStage_io_pipe_br_isMispredict),	// src/main/scala/ultra/UltraCpu.scala:51:24
+    .io_aside_in_regLeft                     (_regfile_io_rChannel_1_out),	// src/main/scala/ultra/UltraCpu.scala:42:23
+    .io_aside_in_regRight                    (_regfile_io_rChannel_2_out),	// src/main/scala/ultra/UltraCpu.scala:42:23
     .io_aside_out_reg_1_addr                 (_decodeStage_io_aside_out_reg_1_addr),
     .io_aside_out_reg_2_addr                 (_decodeStage_io_aside_out_reg_2_addr)
   );
-  Regfile regfile (	// src/main/scala/ultra/UltraCpu.scala:43:23
+  Regfile regfile (	// src/main/scala/ultra/UltraCpu.scala:42:23
     .clock                 (clock),
     .reset                 (reset),
-    .io_rChannel_1_in_addr (_decodeStage_io_aside_out_reg_1_addr),	// src/main/scala/ultra/UltraCpu.scala:42:27
+    .io_rChannel_1_in_addr (_decodeStage_io_aside_out_reg_1_addr),	// src/main/scala/ultra/UltraCpu.scala:41:27
     .io_rChannel_1_out     (_regfile_io_rChannel_1_out),
-    .io_rChannel_2_in_addr (_decodeStage_io_aside_out_reg_2_addr),	// src/main/scala/ultra/UltraCpu.scala:42:27
+    .io_rChannel_2_in_addr (_decodeStage_io_aside_out_reg_2_addr),	// src/main/scala/ultra/UltraCpu.scala:41:27
     .io_rChannel_2_out     (_regfile_io_rChannel_2_out),
-    .io_wChannel_en        (_exeStage_io_pipe_wback_out_bits_en),	// src/main/scala/ultra/UltraCpu.scala:52:24
-    .io_wChannel_addr      (_exeStage_io_pipe_wback_out_bits_addr),	// src/main/scala/ultra/UltraCpu.scala:52:24
-    .io_wChannel_data      (_exeStage_io_pipe_wback_out_bits_data)	// src/main/scala/ultra/UltraCpu.scala:52:24
+    .io_wChannel_en        (_exeStage_io_pipe_wback_out_bits_en),	// src/main/scala/ultra/UltraCpu.scala:51:24
+    .io_wChannel_addr      (_exeStage_io_pipe_wback_out_bits_addr),	// src/main/scala/ultra/UltraCpu.scala:51:24
+    .io_wChannel_data      (_exeStage_io_pipe_wback_out_bits_data)	// src/main/scala/ultra/UltraCpu.scala:51:24
   );
-  UltraExeStage exeStage (	// src/main/scala/ultra/UltraCpu.scala:52:24
+  UltraExeStage exeStage (	// src/main/scala/ultra/UltraCpu.scala:51:24
     .clock                                     (clock),
     .reset                                     (reset),
     .io_pipe_decode_in_bits_exeOp_opType
-      (_decodeStage_io_pipe_exe_out_bits_exeOp_opType),	// src/main/scala/ultra/UltraCpu.scala:42:27
+      (_decodeStage_io_pipe_exe_out_bits_exeOp_opType),	// src/main/scala/ultra/UltraCpu.scala:41:27
     .io_pipe_decode_in_bits_exeOp_opFunc
-      (_decodeStage_io_pipe_exe_out_bits_exeOp_opFunc),	// src/main/scala/ultra/UltraCpu.scala:42:27
+      (_decodeStage_io_pipe_exe_out_bits_exeOp_opFunc),	// src/main/scala/ultra/UltraCpu.scala:41:27
     .io_pipe_decode_in_bits_wCtrl_en
-      (_decodeStage_io_pipe_exe_out_bits_wCtrl_en),	// src/main/scala/ultra/UltraCpu.scala:42:27
+      (_decodeStage_io_pipe_exe_out_bits_wCtrl_en),	// src/main/scala/ultra/UltraCpu.scala:41:27
     .io_pipe_decode_in_bits_wCtrl_addr
-      (_decodeStage_io_pipe_exe_out_bits_wCtrl_addr),	// src/main/scala/ultra/UltraCpu.scala:42:27
+      (_decodeStage_io_pipe_exe_out_bits_wCtrl_addr),	// src/main/scala/ultra/UltraCpu.scala:41:27
     .io_pipe_decode_in_bits_wCtrl_data
-      (_decodeStage_io_pipe_exe_out_bits_wCtrl_data),	// src/main/scala/ultra/UltraCpu.scala:42:27
+      (_decodeStage_io_pipe_exe_out_bits_wCtrl_data),	// src/main/scala/ultra/UltraCpu.scala:41:27
     .io_pipe_decode_in_bits_operands_hasImm
-      (_decodeStage_io_pipe_exe_out_bits_operands_hasImm),	// src/main/scala/ultra/UltraCpu.scala:42:27
+      (_decodeStage_io_pipe_exe_out_bits_operands_hasImm),	// src/main/scala/ultra/UltraCpu.scala:41:27
     .io_pipe_decode_in_bits_operands_imm
-      (_decodeStage_io_pipe_exe_out_bits_operands_imm),	// src/main/scala/ultra/UltraCpu.scala:42:27
+      (_decodeStage_io_pipe_exe_out_bits_operands_imm),	// src/main/scala/ultra/UltraCpu.scala:41:27
     .io_pipe_decode_in_bits_operands_regData_1
-      (_decodeStage_io_pipe_exe_out_bits_operands_regData_1),	// src/main/scala/ultra/UltraCpu.scala:42:27
+      (_decodeStage_io_pipe_exe_out_bits_operands_regData_1),	// src/main/scala/ultra/UltraCpu.scala:41:27
     .io_pipe_decode_in_bits_operands_regData_2
-      (_decodeStage_io_pipe_exe_out_bits_operands_regData_2),	// src/main/scala/ultra/UltraCpu.scala:42:27
+      (_decodeStage_io_pipe_exe_out_bits_operands_regData_2),	// src/main/scala/ultra/UltraCpu.scala:41:27
     .io_pipe_decode_in_readInfo_reg_1_addr
-      (_decodeStage_io_pipe_exe_out_readInfo_reg_1_addr),	// src/main/scala/ultra/UltraCpu.scala:42:27
+      (_decodeStage_io_pipe_exe_out_readInfo_reg_1_addr),	// src/main/scala/ultra/UltraCpu.scala:41:27
     .io_pipe_decode_in_readInfo_reg_2_addr
-      (_decodeStage_io_pipe_exe_out_readInfo_reg_2_addr),	// src/main/scala/ultra/UltraCpu.scala:42:27
+      (_decodeStage_io_pipe_exe_out_readInfo_reg_2_addr),	// src/main/scala/ultra/UltraCpu.scala:41:27
     .io_pipe_decode_in_fetchInfo_pc
-      (_decodeStage_io_pipe_exe_out_fetchInfo_pc),	// src/main/scala/ultra/UltraCpu.scala:42:27
+      (_decodeStage_io_pipe_exe_out_fetchInfo_pc),	// src/main/scala/ultra/UltraCpu.scala:41:27
     .io_pipe_decode_in_fetchInfo_predictTaken
-      (_decodeStage_io_pipe_exe_out_fetchInfo_predictTaken),	// src/main/scala/ultra/UltraCpu.scala:42:27
-    .io_pipe_decode_in_req                     (_decodeStage_io_pipe_exe_out_req),	// src/main/scala/ultra/UltraCpu.scala:42:27
+      (_decodeStage_io_pipe_exe_out_fetchInfo_predictTaken),	// src/main/scala/ultra/UltraCpu.scala:41:27
+    .io_pipe_decode_in_req                     (_decodeStage_io_pipe_exe_out_req),	// src/main/scala/ultra/UltraCpu.scala:41:27
     .io_pipe_decode_out_ack                    (_exeStage_io_pipe_decode_out_ack),
     .io_pipe_wback_out_bits_en                 (_exeStage_io_pipe_wback_out_bits_en),
     .io_pipe_wback_out_bits_addr               (_exeStage_io_pipe_wback_out_bits_addr),
     .io_pipe_wback_out_bits_data               (_exeStage_io_pipe_wback_out_bits_data),
     .io_pipe_br_isMispredict                   (_exeStage_io_pipe_br_isMispredict),
     .io_pipe_br_npc                            (_exeStage_io_pipe_br_npc),
-    .io_aside_in_rdata                         (_exePlugin_io_core_out_rdata),	// src/main/scala/ultra/UltraCpu.scala:53:25
-    .io_aside_in_rrdy                          (_exePlugin_io_core_out_rrdy),	// src/main/scala/ultra/UltraCpu.scala:53:25
-    .io_aside_in_rvalid                        (_exePlugin_io_core_out_rvalid),	// src/main/scala/ultra/UltraCpu.scala:53:25
-    .io_aside_in_wrdy                          (_exePlugin_io_core_out_wrdy),	// src/main/scala/ultra/UltraCpu.scala:53:25
-    .io_aside_in_wdone                         (_exePlugin_io_core_out_wdone),	// src/main/scala/ultra/UltraCpu.scala:53:25
+    .io_aside_in_rdata                         (_exePlugin_io_core_out_rdata),	// src/main/scala/ultra/UltraCpu.scala:52:25
+    .io_aside_in_rrdy                          (_exePlugin_io_core_out_rrdy),	// src/main/scala/ultra/UltraCpu.scala:52:25
+    .io_aside_in_rvalid                        (_exePlugin_io_core_out_rvalid),	// src/main/scala/ultra/UltraCpu.scala:52:25
+    .io_aside_in_wrdy                          (_exePlugin_io_core_out_wrdy),	// src/main/scala/ultra/UltraCpu.scala:52:25
+    .io_aside_in_wdone                         (_exePlugin_io_core_out_wdone),	// src/main/scala/ultra/UltraCpu.scala:52:25
+    .io_aside_out_uncache                      (_exeStage_io_aside_out_uncache),
     .io_aside_out_rreq                         (_exeStage_io_aside_out_rreq),
     .io_aside_out_wreq                         (_exeStage_io_aside_out_wreq),
     .io_aside_out_addr                         (_exeStage_io_aside_out_addr),
     .io_aside_out_byteSelN                     (_exeStage_io_aside_out_byteSelN),
     .io_aside_out_wdata                        (_exeStage_io_aside_out_wdata)
   );
-  ExePlugin exePlugin (	// src/main/scala/ultra/UltraCpu.scala:53:25
-    .io_core_in_rreq     (_exeStage_io_aside_out_rreq),	// src/main/scala/ultra/UltraCpu.scala:52:24
-    .io_core_in_wreq     (_exeStage_io_aside_out_wreq),	// src/main/scala/ultra/UltraCpu.scala:52:24
-    .io_core_in_addr     (_exeStage_io_aside_out_addr),	// src/main/scala/ultra/UltraCpu.scala:52:24
-    .io_core_in_byteSelN (_exeStage_io_aside_out_byteSelN),	// src/main/scala/ultra/UltraCpu.scala:52:24
-    .io_core_in_wdata    (_exeStage_io_aside_out_wdata),	// src/main/scala/ultra/UltraCpu.scala:52:24
+  AlphaExePlugin exePlugin (	// src/main/scala/ultra/UltraCpu.scala:52:25
+    .clock               (clock),
+    .reset               (reset),
+    .io_core_in_uncache  (_exeStage_io_aside_out_uncache),	// src/main/scala/ultra/UltraCpu.scala:51:24
+    .io_core_in_rreq     (_exeStage_io_aside_out_rreq),	// src/main/scala/ultra/UltraCpu.scala:51:24
+    .io_core_in_wreq     (_exeStage_io_aside_out_wreq),	// src/main/scala/ultra/UltraCpu.scala:51:24
+    .io_core_in_addr     (_exeStage_io_aside_out_addr),	// src/main/scala/ultra/UltraCpu.scala:51:24
+    .io_core_in_byteSelN (_exeStage_io_aside_out_byteSelN),	// src/main/scala/ultra/UltraCpu.scala:51:24
+    .io_core_in_wdata    (_exeStage_io_aside_out_wdata),	// src/main/scala/ultra/UltraCpu.scala:51:24
     .io_core_out_rdata   (_exePlugin_io_core_out_rdata),
     .io_core_out_rrdy    (_exePlugin_io_core_out_rrdy),
     .io_core_out_rvalid  (_exePlugin_io_core_out_rvalid),
     .io_core_out_wrdy    (_exePlugin_io_core_out_wrdy),
     .io_core_out_wdone   (_exePlugin_io_core_out_wdone),
     .io_bus_out_rreq     (_exePlugin_io_bus_out_rreq),
+    .io_bus_out_rtype    (_exePlugin_io_bus_out_rtype),
     .io_bus_out_wreq     (_exePlugin_io_bus_out_wreq),
     .io_bus_out_byteSelN (_exePlugin_io_bus_out_byteSelN),
     .io_bus_out_addr     (_exePlugin_io_bus_out_addr),
     .io_bus_out_wdata    (_exePlugin_io_bus_out_wdata),
-    .io_bus_in_rdata     (_bus_io_dChannel_out_rdata),	// src/main/scala/ultra/UltraCpu.scala:26:19
-    .io_bus_in_rrdy      (_bus_io_dChannel_out_rrdy),	// src/main/scala/ultra/UltraCpu.scala:26:19
-    .io_bus_in_rvalid    (_bus_io_dChannel_out_rvalid),	// src/main/scala/ultra/UltraCpu.scala:26:19
-    .io_bus_in_wrdy      (_bus_io_dChannel_out_wrdy),	// src/main/scala/ultra/UltraCpu.scala:26:19
-    .io_bus_in_wdone     (_bus_io_dChannel_out_wdone)	// src/main/scala/ultra/UltraCpu.scala:26:19
+    .io_bus_in_rdata     (_bus_io_dChannel_out_rdata),	// src/main/scala/ultra/UltraCpu.scala:25:19
+    .io_bus_in_rvalid    (_bus_io_dChannel_out_rvalid),	// src/main/scala/ultra/UltraCpu.scala:25:19
+    .io_bus_in_wdone     (_bus_io_dChannel_out_wdone)	// src/main/scala/ultra/UltraCpu.scala:25:19
   );
 endmodule
 

@@ -38,8 +38,8 @@ object UltraExeUtils {
     init.rdata := 0.U
     init.wdone := false.B
     init.rvalid := false.B
-    init.rrdy := false.B
-    init.wrdy := false.B
+    init.rrdy := true.B
+    init.wrdy := true.B
     init
   }
   def initExeAsideOut = {

@@ -66,7 +66,6 @@ object UltraExePorts {
       val wdone = Bool()
     }
     class ExeAsideOut extends Bundle {
-      val uncache = Bool()
       val rreq = Bool()
       val wreq = Bool()
       val addr = UInt(32.W)

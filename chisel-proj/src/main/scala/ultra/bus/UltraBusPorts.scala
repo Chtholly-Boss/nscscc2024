@@ -27,7 +27,6 @@ object UltraBusPorts {
   // --- Data Channel ---
   class DataReq extends Bundle {
     val rreq = Bool()
-    val rtype = UInt(1.W)
     val wreq = Bool()
     // byteSelN will only be used in Write Operation
     // When LoadBytes,the core will choose bytes itself

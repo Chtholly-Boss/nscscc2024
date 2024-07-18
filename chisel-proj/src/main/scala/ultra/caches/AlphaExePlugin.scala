@@ -5,7 +5,6 @@ import ultra.bus.UltraBusUtils._
 import ultra.bus.UltraBusPorts._
 import ultra.pipeline.exe.UltraExePorts.ExeAsidePorts._
 import ultra.pipeline.exe.UltraExeUtils._
-import ultra.bus.UltraBusUtils.DataLoadType._
 import ultra.pipeline.exe.UltraExeParams._
 class AlphaExePlugin extends Module {
   val io = IO(new Bundle {
@@ -55,7 +54,6 @@ class AlphaExePlugin extends Module {
     req2busRef.byteSelN := io.core.in.byteSelN
     req2busRef.rreq := true.B
     req2busRef.addr := io.core.in.addr
-    req2busRef.rtype := io.core.in.uncache
   }
   def processReq(coreReq:ExeAsideOut) = {
     when(coreReq.rreq){

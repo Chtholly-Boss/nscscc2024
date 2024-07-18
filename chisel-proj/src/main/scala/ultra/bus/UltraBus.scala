@@ -66,27 +66,23 @@ class UltraBus extends Module{
   // Status Signals
   val baseramBusy = WireDefault(
     istat === I.B_LOAD ||
-      dstat === D.B_LOAD_SINGLE ||
-      dstat === D.B_LOAD_LINE ||
+      dstat === D.B_LOAD ||
       dstat === D.B_STORE
   )
   val extramBusy = WireDefault(
     dstat === D.E_STORE ||
-      dstat === D.E_LOAD_LINE ||
-      dstat === D.E_LOAD_SINGLE
+      dstat === D.E_LOAD
   )
   val isData2BaseRam = WireDefault(
     (dHasReq && io.dChannel.in.addr(31,22) === baseSramAddr) ||
       dstat === D.B_WAIT ||
       dstat === D.B_STORE ||
-      dstat === D.B_LOAD_LINE ||
-      dstat === D.B_LOAD_SINGLE
+      dstat === D.B_LOAD
   )
   val isData2ExtRam = WireDefault(
     (dHasReq && io.dChannel.in.addr(31,22) === extSramAddr) ||
       dstat === D.E_WAIT ||
-      dstat === D.E_LOAD_LINE ||
-      dstat === D.E_LOAD_SINGLE ||
+      dstat === D.E_LOAD ||
       dstat === D.E_STORE
   )
   val isData2Uart = WireDefault(
@@ -150,10 +146,10 @@ class UltraBus extends Module{
 
 
   // Data Handy Functions
-  import DataLoadType._
   val dWordCnt = Counter(dWords+1)
   val dCycleCnt = Counter(memCycles)
   val dData = RegInit(0.U(dBandWidth.W))
+  val dReqBuf = RegInit(initDataReq)
   // Data State Machine Logic
   def dIsProcessing():Unit = {
     dRspnsReg.rrdy := false.B
@@ -177,16 +173,8 @@ class UltraBus extends Module{
     dRspnsReg.rdata := 0.U
   }
   def dstat2BaseLoad(src:DataReq) = {
-    switch(src.rtype){
-      is(1.U) { // uncache
-        dstat := D.B_LOAD_SINGLE
-        baseramReqReg := sramRead(src.addr(21,2),src.byteSelN)
-      }
-      is(0.U) { // cache
-        dstat := D.B_LOAD_LINE
-        baseramReqReg := sramRead(src.addr(21,dOffsetWidth) ## 0.U((dOffsetWidth-2).W),src.byteSelN)
-      }
-    }
+    dstat := D.B_LOAD
+    baseramReqReg := sramRead(src.addr(21,2),src.byteSelN)
     dWordCnt.reset()
     dCycleCnt.reset()
     dData := 0.U
@@ -197,16 +185,8 @@ class UltraBus extends Module{
     baseramReqReg := sramWrite(src.addr(21,2),src.wdata,src.byteSelN)
   }
   def dstat2ExtLoad(src:DataReq)= {
-    switch(src.rtype) {
-      is(1.U){
-        dstat := D.E_LOAD_SINGLE
-        extramReqReg := sramRead(src.addr(21,2),src.byteSelN)
-      }
-      is(0.U) {
-        dstat := D.E_LOAD_LINE
-        extramReqReg := sramRead(src.addr(21,dOffsetWidth) ## 0.U((dOffsetWidth-2).W),src.byteSelN)
-      }
-    }
+    dstat := D.E_LOAD
+    extramReqReg := sramRead(src.addr(21,2),src.byteSelN)
     dWordCnt.reset()
     dCycleCnt.reset()
     dData := 0.U
@@ -251,23 +231,33 @@ class UltraBus extends Module{
       }
       when(isData2Uart){
         dIsProcessing()
+        dReqBuf := io.dChannel.in
         switch(io.dChannel.in.addr(3,0)){
           is(uartStatAddr){
-            dLoadDone(U_status)
+            dstat := D.U_CHECK
           }
           is(uartDataAddr){
             when(io.dChannel.in.rreq){
-              UR_clear := true.B
-              dLoadDone(UartReceiver.io.RxD_data)
+              dstat := D.U_LOAD
             }
             when(io.dChannel.in.wreq){
-              UT_start := true.B
-              UT_data := io.dChannel.in.wdata(7,0)
-              dStoreDone()
+              dstat := D.U_STORE
             }
           }
         }
       }
+    }
+    is(D.U_CHECK){
+      dLoadDone(U_status)
+    }
+    is(D.U_LOAD){
+      UR_clear := true.B
+      dLoadDone(UartReceiver.io.RxD_data)
+    }
+    is(D.U_STORE){
+      UT_start := true.B
+      UT_data := dReqBuf.wdata(7,0)
+      dStoreDone()
     }
     is(D.B_WAIT){
       when(!baseramBusy){
@@ -285,22 +275,10 @@ class UltraBus extends Module{
         baseramReqReg := initSramReq
       }
     }
-    is(D.B_LOAD_SINGLE){
+    is(D.B_LOAD){
       when(dCycleCnt.inc()){
         dLoadDone(baseramInWire.rData)
         baseramReqReg := initSramReq
-      }
-    }
-    is(D.B_LOAD_LINE){
-      when(dWordCnt.value === dWords.U){
-        dLoadDone(dData)
-        baseramReqReg := initSramReq
-      }.otherwise{
-        when(dCycleCnt.inc()){
-          dData := baseramInWire.rData ## dData(dBandWidth-1,32)
-          baseramReqReg.addr := baseramReqReg.addr + 1.U
-          dWordCnt.inc()
-        }
       }
     }
     is(D.E_WAIT){
@@ -319,22 +297,10 @@ class UltraBus extends Module{
         extramReqReg := initSramReq
       }
     }
-    is(D.E_LOAD_SINGLE){
+    is(D.E_LOAD){
       when(dCycleCnt.inc()){
         dLoadDone(extramInWire.rData)
         extramReqReg := initSramReq
-      }
-    }
-    is(D.E_LOAD_LINE){
-      when(dWordCnt.value === dWords.U){
-        dLoadDone(dData)
-        extramReqReg := initSramReq
-      }.otherwise{
-        when(dCycleCnt.inc()){
-          dData := extramInWire.rData ## dData(dBandWidth-1,32)
-          extramReqReg.addr := extramReqReg.addr + 1.U
-          dWordCnt.inc()
-        }
       }
     }
   }

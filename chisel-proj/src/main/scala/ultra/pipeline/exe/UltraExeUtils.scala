@@ -49,7 +49,6 @@ object UltraExeUtils {
     init.wdata := 0.U
     init.rreq := false.B
     init.wreq := false.B
-    init.uncache := true.B
     init.byteSelN := "b0000".U
     init
   }

@@ -27,31 +27,23 @@ object UltraBusUtils {
     init
   }
 
-
-  // Data Channel Utils
-  object DataLoadType extends ChiselEnum {
-    val
-      CACHE,
-      UNCACHE
-    = Value
-  }
   object DataState extends ChiselEnum {
     val
-      IDLE,             // 0
-      B_WAIT,           // 1
-      E_WAIT,           // 2
-      B_LOAD_SINGLE,    // 3
-      B_LOAD_LINE,      // 4
-      E_LOAD_SINGLE,   // 5
-      E_LOAD_LINE,     // 6
-      B_STORE,          // 7
-      E_STORE           // 8
+      IDLE,
+      B_WAIT,
+      E_WAIT,
+      B_LOAD,
+      E_LOAD,
+      B_STORE,
+      U_CHECK,
+      U_LOAD,
+      U_STORE,
+      E_STORE
     = Value
   }
   def initDataReq:DataReq = {
     val init = Wire(new DataReq)
     init.rreq := false.B
-    init.rtype := 0.U // Load Word
     init.wreq := false.B
     init.wdata := 0.U
     init.addr := 0.U

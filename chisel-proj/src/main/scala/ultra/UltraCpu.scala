@@ -62,6 +62,6 @@ class UltraCpu extends Module {
 
   exeStage.io.pipe.wback.out.bits <> regfile.io.wChannel
 }
-object UltraCpu {
+object UltraCpu extends App {
   emitVerilog(new UltraCpu)
 }

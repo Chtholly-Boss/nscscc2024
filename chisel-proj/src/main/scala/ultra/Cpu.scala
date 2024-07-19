@@ -3,7 +3,7 @@ import chisel3._
 import ultra.bus.UltraBus
 import ultra.bus.sram.SramPorts._
 import ultra.caches._
-import ultra.pipeline.fetch.UltraFetchStage
+import ultra.pipeline.fetch._
 import ultra.pipeline.regfile.Regfile
 import ultra.pipeline.decode.UltraDecodeStage
 import ultra.pipeline.exe.UltraExeStage

@@ -166,6 +166,7 @@ class UltraExeStage extends Module {
         processJump()
       }
       is(tp.load){
+        loadWctrlBuf.bits := decode.bits.wCtrl
         asideOutBuf := asideOutWire
         when(io.aside.in.rrdy){
           processLoad(asideOutWire)
@@ -184,13 +185,40 @@ class UltraExeStage extends Module {
     }
   }
 
-  val curWctrlBuf = RegInit(initExeOut)
+  val loadWctrlBuf = RegInit(initExeOut)
+  def fillLoadSlot(nstat:Type) = {
+    when(decode.req){
+      // Check if collision exists
+      when(
+        decode.readInfo.reg_1.addr === loadWctrlBuf.bits.addr ||
+          decode.readInfo.reg_2.addr === loadWctrlBuf.bits.addr ||
+          decode.bits.wCtrl.addr === loadWctrlBuf.bits.addr
+      ){
+        // Do nothing
+      }.otherwise{
+        switch(decode.bits.exeOp.opType){
+          is(tp.arith,tp.shift,tp.logic){
+            io.pipe.decode.out.ack := true.B
+            processComp()
+          }
+          is(tp.branch){
+            io.pipe.decode.out.ack := true.B
+            processBranch()
+          }
+          is(tp.jump){
+            io.pipe.decode.out.ack := true.B
+            processJump()
+          }
+        }
+      }
+    }
+    exstat := nstat
+  }
   switch(exstat){
     is(IDLE){
       default()
       when(decode.req){
         io.pipe.decode.out.ack := true.B
-        curWctrlBuf.bits := decode.bits.wCtrl
         exePathSelect()
       }
     }
@@ -199,16 +227,16 @@ class UltraExeStage extends Module {
       when(io.aside.in.rrdy){
         processLoad(asideOutBuf)
       }.otherwise{
-        exstat := LOAD_BLOCK
+        fillLoadSlot(LOAD_BLOCK)
       }
     }
     is(LOADING){
       default()
       when(io.aside.in.rvalid){
         exstat := IDLE
-        pipeOutReg := curWctrlBuf
+        pipeOutReg := loadWctrlBuf
         pipeOutReg.bits.data := selByteInWords(asideOutBuf.byteSelN,io.aside.in.rdata)
-        store2PreRes(true.B,curWctrlBuf.bits.addr,selByteInWords(asideOutBuf.byteSelN,io.aside.in.rdata))
+        store2PreRes(true.B,loadWctrlBuf.bits.addr,selByteInWords(asideOutBuf.byteSelN,io.aside.in.rdata))
       }.otherwise{
         exstat := LOADING
       }

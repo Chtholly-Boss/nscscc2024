@@ -20,9 +20,13 @@ class UltraBus extends Module{
   val UartReceiver = Module(new async_receiver(cpuFrequency))
   io.uart.txd := UartTransmitter.io.TxD
   UartReceiver.io.RxD := io.uart.rxd
-  val UT_data = WireDefault(0.U(8.W))
-  val UT_start = WireDefault(false.B)
-  val UR_clear = WireDefault(false.B)
+  /**
+   * Change Uart Input to Reg type
+   * May benefit to the Time Constraint
+   */
+  val UT_data = RegInit(0.U(8.W))
+  val UT_start = RegInit(false.B)
+  val UR_clear = RegInit(false.B)
   val U_status = WireDefault(
     UartReceiver.io.RxD_data_ready ##
       ~UartTransmitter.io.TxD_busy
@@ -149,7 +153,6 @@ class UltraBus extends Module{
   val dWordCnt = Counter(dWords+1)
   val dCycleCnt = Counter(memCycles)
   val dData = RegInit(0.U(dBandWidth.W))
-  val dReqBuf = RegInit(initDataReq)
   // Data State Machine Logic
   def dIsProcessing():Unit = {
     dRspnsReg.rrdy := false.B
@@ -202,6 +205,7 @@ class UltraBus extends Module{
       dRspnsReg := initDataRspns
       UR_clear := false.B
       UT_start := false.B
+      UT_data := 0.U
       when(isData2BaseRam){
         dIsProcessing()
         when(baseramBusy){
@@ -231,33 +235,23 @@ class UltraBus extends Module{
       }
       when(isData2Uart){
         dIsProcessing()
-        dReqBuf := io.dChannel.in
-        switch(io.dChannel.in.addr(3,0)){
-          is(uartStatAddr){
-            dstat := D.U_CHECK
-          }
-          is(uartDataAddr){
-            when(io.dChannel.in.rreq){
-              dstat := D.U_LOAD
+        when(io.dChannel.in.wreq){
+          UT_start := true.B
+          UT_data := io.dChannel.in.wdata(7,0)
+          dStoreDone()
+        }
+        when(io.dChannel.in.rreq){
+          switch(io.dChannel.in.addr(3,0)){
+            is(uartStatAddr){
+              dLoadDone(U_status)
             }
-            when(io.dChannel.in.wreq){
-              dstat := D.U_STORE
+            is(uartDataAddr){
+              dLoadDone(UartReceiver.io.RxD_data)
+              UR_clear := true.B
             }
           }
         }
       }
-    }
-    is(D.U_CHECK){
-      dLoadDone(U_status)
-    }
-    is(D.U_LOAD){
-      UR_clear := true.B
-      dLoadDone(UartReceiver.io.RxD_data)
-    }
-    is(D.U_STORE){
-      UT_start := true.B
-      UT_data := dReqBuf.wdata(7,0)
-      dStoreDone()
     }
     is(D.B_WAIT){
       when(!baseramBusy){

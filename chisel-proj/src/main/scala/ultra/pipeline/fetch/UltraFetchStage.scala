@@ -48,7 +48,6 @@ class UltraFetchStage extends Module {
     pipeOutReg.bits.predictTaken := io.aside.in.predictTaken
     // Update the pcCur tp npc and send npc to cache
     pcCur := io.aside.in.npc
-    sendReq(io.aside.in.npc)
   }
   def missAction() = {
     rstAllOut()
@@ -72,6 +71,7 @@ class UltraFetchStage extends Module {
         when(io.pipe.in.ack){
           when(io.aside.in.isHit){
             hitAction()
+            sendReq(io.aside.in.npc)
           }.otherwise{
             missAction()
           }

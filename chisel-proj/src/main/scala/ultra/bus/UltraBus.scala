@@ -153,7 +153,7 @@ class UltraBus extends Module{
   val dWordCnt = Counter(dWords+1)
   val dCycleCnt = Counter(memCycles)
   val dData = RegInit(0.U(dBandWidth.W))
-  // Data State Machine Logic
+
   def dIsProcessing():Unit = {
     dRspnsReg.rrdy := false.B
     dRspnsReg.wrdy := false.B
@@ -199,7 +199,40 @@ class UltraBus extends Module{
     dCycleCnt.reset()
     extramReqReg := sramWrite(src.addr(21,2),src.wdata,src.byteSelN)
   }
-
+  def procUartReq() = {
+    when(io.dChannel.in.wreq){
+      UT_start := true.B
+      UT_data := io.dChannel.in.wdata(7,0)
+      dStoreDone()
+    }
+    when(io.dChannel.in.rreq) {
+      switch(io.dChannel.in.addr(3, 0)) {
+        is(uartStatAddr) {
+          dLoadDone(U_status)
+        }
+        is(uartDataAddr) {
+          dLoadDone(UartReceiver.io.RxD_data)
+          UR_clear := true.B
+        }
+      }
+    }
+  }
+  def procBaseramReq(req:DataReq) = {
+    when(req.rreq) {
+      dstat2BaseLoad(req)
+    }
+    when(req.wreq) {
+      dstat2BaseStore(req)
+    }
+  }
+  def procExtramReq(req: DataReq) = {
+    when(req.rreq){
+      dstat2ExtLoad(req)
+    }
+    when(req.wreq){
+      dstat2ExtStore(req)
+    }
+  }
   switch(dstat){
     is(D.IDLE){
       dRspnsReg := initDataRspns
@@ -211,13 +244,7 @@ class UltraBus extends Module{
         when(baseramBusy){
           dstat := D.B_WAIT
         }.otherwise{
-          when(io.dChannel.in.rreq) {
-            dstat2BaseLoad(io.dChannel.in)
-          }
-          when(io.dChannel.in.wreq) {
-            dstat2BaseStore(io.dChannel.in)
-          }
-
+          procBaseramReq(io.dChannel.in)
         }
       }
       when(isData2ExtRam){
@@ -225,42 +252,17 @@ class UltraBus extends Module{
         when(extramBusy){
           dstat := D.E_WAIT
         }.otherwise{
-          when(io.dChannel.in.rreq){
-            dstat2ExtLoad(io.dChannel.in)
-          }
-          when(io.dChannel.in.wreq){
-            dstat2ExtStore(io.dChannel.in)
-          }
+          procExtramReq(io.dChannel.in)
         }
       }
       when(isData2Uart){
         dIsProcessing()
-        when(io.dChannel.in.wreq){
-          UT_start := true.B
-          UT_data := io.dChannel.in.wdata(7,0)
-          dStoreDone()
-        }
-        when(io.dChannel.in.rreq){
-          switch(io.dChannel.in.addr(3,0)){
-            is(uartStatAddr){
-              dLoadDone(U_status)
-            }
-            is(uartDataAddr){
-              dLoadDone(UartReceiver.io.RxD_data)
-              UR_clear := true.B
-            }
-          }
-        }
+        procUartReq()
       }
     }
     is(D.B_WAIT){
       when(!baseramBusy){
-        when(dReqReg.rreq) {
-          dstat2BaseLoad(dReqReg)
-        }
-        when(dReqReg.wreq) {
-          dstat2BaseStore(dReqReg)
-        }
+        procBaseramReq(dReqReg)
       }
     }
     is(D.B_STORE){
@@ -277,12 +279,7 @@ class UltraBus extends Module{
     }
     is(D.E_WAIT){
       when(!extramBusy){
-        when(dReqReg.rreq){
-          dstat2ExtLoad(dReqReg)
-        }
-        when(dReqReg.wreq){
-          dstat2ExtStore(dReqReg)
-        }
+        procExtramReq(dReqReg)
       }
     }
     is(D.E_STORE){

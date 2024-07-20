@@ -59,7 +59,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
                  reset,	// src/main/scala/ultra/bus/UltraBus.scala:10:7
   input  [31:0]  io_iChannel_in_pc,	// src/main/scala/ultra/bus/UltraBus.scala:11:14
   input          io_iChannel_in_rreq,	// src/main/scala/ultra/bus/UltraBus.scala:11:14
-  output [255:0] io_iChannel_out_rdata,	// src/main/scala/ultra/bus/UltraBus.scala:11:14
+  output [127:0] io_iChannel_out_rdata,	// src/main/scala/ultra/bus/UltraBus.scala:11:14
   output         io_iChannel_out_rrdy,	// src/main/scala/ultra/bus/UltraBus.scala:11:14
                  io_iChannel_out_rvalid,	// src/main/scala/ultra/bus/UltraBus.scala:11:14
   input          io_dChannel_in_rreq,	// src/main/scala/ultra/bus/UltraBus.scala:11:14
@@ -108,7 +108,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
   reg          extramReqReg_oe;	// src/main/scala/ultra/bus/UltraBus.scala:41:29
   reg          extramReqReg_we;	// src/main/scala/ultra/bus/UltraBus.scala:41:29
   reg  [31:0]  iReqReg_pc;	// src/main/scala/ultra/bus/UltraBus.scala:48:24
-  reg  [255:0] iRspnsReg_rdata;	// src/main/scala/ultra/bus/UltraBus.scala:52:26
+  reg  [127:0] iRspnsReg_rdata;	// src/main/scala/ultra/bus/UltraBus.scala:52:26
   reg          iRspnsReg_rrdy;	// src/main/scala/ultra/bus/UltraBus.scala:52:26
   reg          iRspnsReg_rvalid;	// src/main/scala/ultra/bus/UltraBus.scala:52:26
   reg          dReqReg_rreq;	// src/main/scala/ultra/bus/UltraBus.scala:57:24
@@ -122,9 +122,9 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
   reg          dRspnsReg_wrdy;	// src/main/scala/ultra/bus/UltraBus.scala:61:26
   reg  [1:0]   istat;	// src/main/scala/ultra/bus/UltraBus.scala:66:22
   reg  [3:0]   dstat;	// src/main/scala/ultra/bus/UltraBus.scala:69:22
-  reg  [3:0]   iWordCnt_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
+  reg  [2:0]   iWordCnt_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
   reg  [1:0]   iCycleCnt_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg  [255:0] idata;	// src/main/scala/ultra/bus/UltraBus.scala:99:22
+  reg  [127:0] idata;	// src/main/scala/ultra/bus/UltraBus.scala:99:22
   reg  [1:0]   dCycleCnt_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
   always @(posedge clock) begin	// src/main/scala/ultra/bus/UltraBus.scala:10:7
     if (reset) begin	// src/main/scala/ultra/bus/UltraBus.scala:10:7
@@ -144,12 +144,12 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
       extramReqReg_oe <= 1'h1;	// src/main/scala/ultra/bus/UltraBus.scala:41:29, src/main/scala/ultra/bus/sram/SramUtils.scala:9:13
       extramReqReg_we <= 1'h1;	// src/main/scala/ultra/bus/UltraBus.scala:41:29, src/main/scala/ultra/bus/sram/SramUtils.scala:9:13
       iReqReg_pc <= 32'h80000000;	// src/main/scala/ultra/bus/UltraBus.scala:48:24, src/main/scala/ultra/bus/UltraBusUtils.scala:19:13
-      iRspnsReg_rdata <= 256'h0;	// src/main/scala/ultra/bus/UltraBus.scala:52:26, :99:22
+      iRspnsReg_rdata <= 128'h0;	// src/main/scala/ultra/bus/UltraBus.scala:52:26, :99:22
       iRspnsReg_rrdy <= 1'h1;	// src/main/scala/ultra/bus/UltraBus.scala:52:26, src/main/scala/ultra/bus/sram/SramUtils.scala:9:13
       iRspnsReg_rvalid <= 1'h0;	// src/main/scala/ultra/bus/UltraBus.scala:28:25, :52:26
       dReqReg_rreq <= 1'h0;	// src/main/scala/ultra/bus/UltraBus.scala:28:25, :57:24
       dReqReg_wreq <= 1'h0;	// src/main/scala/ultra/bus/UltraBus.scala:28:25, :57:24
-      dReqReg_byteSelN <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:57:24
+      dReqReg_byteSelN <= 4'h0;	// src/main/scala/ultra/bus/UltraBus.scala:57:24, src/main/scala/ultra/bus/UltraBusUtils.scala:50:19
       dReqReg_addr <= 32'h0;	// src/main/scala/ultra/bus/UltraBus.scala:57:24, src/main/scala/ultra/bus/sram/SramUtils.scala:14:16
       dReqReg_wdata <= 32'h0;	// src/main/scala/ultra/bus/UltraBus.scala:57:24, src/main/scala/ultra/bus/sram/SramUtils.scala:14:16
       dRspnsReg_rdata <= 64'h0;	// src/main/scala/ultra/bus/UltraBus.scala:61:26, :155:22
@@ -157,10 +157,10 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
       dRspnsReg_rvalid <= 1'h0;	// src/main/scala/ultra/bus/UltraBus.scala:28:25, :61:26
       dRspnsReg_wrdy <= 1'h1;	// src/main/scala/ultra/bus/UltraBus.scala:61:26, src/main/scala/ultra/bus/sram/SramUtils.scala:9:13
       istat <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:66:22
-      dstat <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:69:22
-      iWordCnt_value <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
+      dstat <= 4'h0;	// src/main/scala/ultra/bus/UltraBus.scala:69:22, src/main/scala/ultra/bus/UltraBusUtils.scala:50:19
+      iWordCnt_value <= 3'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
       iCycleCnt_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
-      idata <= 256'h0;	// src/main/scala/ultra/bus/UltraBus.scala:99:22
+      idata <= 128'h0;	// src/main/scala/ultra/bus/UltraBus.scala:99:22
       dCycleCnt_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
     end
     else begin	// src/main/scala/ultra/bus/UltraBus.scala:10:7
@@ -207,20 +207,20 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
         | _isData2BaseRam_T_5 | _isData2BaseRam_T_7;	// src/main/scala/ultra/bus/UltraBus.scala:55:25, :69:22, :73:13, :74:13, :81:{14,36,44}, :82:13, :83:27, :212:17
       _GEN = istat == 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:66:22, :118:17
       _GEN_0 = isData2BaseRam | baseramBusy;	// src/main/scala/ultra/bus/UltraBus.scala:73:26, :83:27, :123:29
-      baseramReqReg_sig_addr = {io_iChannel_in_pc[21:5], 3'h0};	// src/main/scala/ultra/bus/UltraBus.scala:126:{39,57}
+      baseramReqReg_sig_addr = {io_iChannel_in_pc[21:4], 2'h0};	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:126:{39,57}
       _GEN_1 = _GEN_0 ? 2'h1 : 2'h2;	// src/main/scala/ultra/bus/UltraBus.scala:72:11, :101:11, :123:{29,45}, :124:17
       _GEN_2 = ~io_iChannel_in_rreq | _GEN_0;	// src/main/scala/ultra/bus/UltraBus.scala:99:22, :121:21, :123:{29,45}
       _GEN_3 = _GEN_2 & baseramReqReg_oe;	// src/main/scala/ultra/bus/UltraBus.scala:40:30, :99:22, :121:21, :123:45
       _GEN_4 = io_iChannel_in_rreq & ~_GEN_0 | baseramReqReg_we;	// src/main/scala/ultra/bus/UltraBus.scala:40:30, :105:19, :121:21, :123:{29,45}
       _GEN_5 = istat == 2'h2;	// src/main/scala/ultra/bus/UltraBus.scala:66:22, :72:11, :118:17
-      wrap_1 = iWordCnt_value == 4'h8;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:131:27
+      wrap_1 = iWordCnt_value == 3'h4;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:78:13, :131:27
       _GEN_6 = _GEN_5 & wrap_1;	// src/main/scala/ultra/bus/UltraBus.scala:52:26, :112:20, :118:17, :131:{27,41}
       _GEN_7 = wrap_1 | baseramReqReg_oe;	// src/main/scala/ultra/bus/UltraBus.scala:40:30, :131:{27,41}, :133:23
       _GEN_8 = wrap_1 | baseramReqReg_we;	// src/main/scala/ultra/bus/UltraBus.scala:40:30, :131:{27,41}, :133:23
       wrap = iCycleCnt_value == 2'h2;	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24, src/main/scala/ultra/bus/UltraBus.scala:72:11
       _baseramReqReg_addr_T = baseramReqReg_addr + 20'h1;	// src/main/scala/ultra/bus/UltraBus.scala:40:30, :137:52
       _GEN_9 = istat == 2'h1;	// src/main/scala/ultra/bus/UltraBus.scala:66:22, :118:17, :124:17
-      baseramReqReg_sig_1_addr = {iReqReg_pc[21:5], 3'h0};	// src/main/scala/ultra/bus/UltraBus.scala:48:24, :126:57, :146:{30,48}
+      baseramReqReg_sig_1_addr = {iReqReg_pc[21:4], 2'h0};	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:48:24, :146:{30,48}
       _GEN_10 = ~_GEN_9 | _GEN_0;	// src/main/scala/ultra/bus/UltraBus.scala:99:22, :118:17, :123:29, :143:43
       _GEN_11 =
         _GEN
@@ -230,7 +230,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
       _GEN_13 = _GEN ? _GEN_3 : _GEN_5 ? _GEN_7 : _GEN_12;	// src/main/scala/ultra/bus/UltraBus.scala:40:30, :118:17, :121:21, :123:45, :131:41, :133:23, :143:43
       _GEN_14 = _GEN_9 & ~_GEN_0 | baseramReqReg_we;	// src/main/scala/ultra/bus/UltraBus.scala:40:30, :105:19, :118:17, :123:{29,45}, :143:43
       _GEN_15 = _GEN ? _GEN_4 : _GEN_5 ? _GEN_8 : _GEN_14;	// src/main/scala/ultra/bus/UltraBus.scala:40:30, :118:17, :121:21, :123:45, :131:41, :133:23, :143:43
-      if (dstat == 4'h0) begin	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:69:22, :203:16
+      if (dstat == 4'h0) begin	// src/main/scala/ultra/bus/UltraBus.scala:69:22, :203:16, src/main/scala/ultra/bus/UltraBusUtils.scala:50:19
         automatic logic isData2ExtRam;	// src/main/scala/ultra/bus/UltraBus.scala:89:26
         automatic logic isData2Uart;	// src/main/scala/ultra/bus/UltraBus.scala:93:13
         automatic logic _GEN_17;	// src/main/scala/ultra/bus/UltraBus.scala:69:22, :209:27, :211:26, :212:17, :217:37
@@ -254,7 +254,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
         _GEN_21 = ~isData2ExtRam | extramBusy;	// src/main/scala/ultra/bus/UltraBus.scala:77:25, :89:26, :158:20, :209:27, :223:26, :225:25
         _GEN_22 = ~isData2ExtRam | extramBusy | ~_GEN_18;	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/UltraBus.scala:41:29, :77:25, :89:26, :158:20, :209:27, :211:26, :214:37, :217:37, :223:26, :225:25
         _GEN_23 = io_dChannel_in_addr[3:0] == 4'hC;	// src/main/scala/ultra/bus/UltraBus.scala:244:{37,43}
-        _GEN_24 = io_dChannel_in_addr[3:0] == 4'h8;	// src/main/scala/ultra/bus/UltraBus.scala:131:27, :244:{37,43}
+        _GEN_24 = io_dChannel_in_addr[3:0] == 4'h8;	// src/main/scala/ultra/bus/UltraBus.scala:244:{37,43}
         _GEN_25 =
           isData2Uart
             ? io_dChannel_in_rreq & (_GEN_23 | _GEN_24) | io_dChannel_in_wreq
@@ -322,7 +322,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
             if (_GEN_2) begin	// src/main/scala/ultra/bus/UltraBus.scala:40:30, :99:22, :121:21, :123:45
             end
             else	// src/main/scala/ultra/bus/UltraBus.scala:40:30, :121:21, :123:45
-              baseramReqReg_byteSelN <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:40:30
+              baseramReqReg_byteSelN <= 4'h0;	// src/main/scala/ultra/bus/UltraBus.scala:40:30, src/main/scala/ultra/bus/UltraBusUtils.scala:50:19
           end
           else if (_GEN_5) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17
             if (wrap_1)	// src/main/scala/ultra/bus/UltraBus.scala:131:27
@@ -331,7 +331,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
           else if (_GEN_10) begin	// src/main/scala/ultra/bus/UltraBus.scala:40:30, :99:22, :118:17, :143:43
           end
           else	// src/main/scala/ultra/bus/UltraBus.scala:40:30, :118:17, :143:43
-            baseramReqReg_byteSelN <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:40:30
+            baseramReqReg_byteSelN <= 4'h0;	// src/main/scala/ultra/bus/UltraBus.scala:40:30, src/main/scala/ultra/bus/UltraBusUtils.scala:50:19
         end
         else	// src/main/scala/ultra/bus/UltraBus.scala:118:17, :209:27, :211:26
           baseramReqReg_byteSelN <= io_dChannel_in_byteSelN;	// src/main/scala/ultra/bus/UltraBus.scala:40:30
@@ -388,7 +388,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
         if (isData2Uart) begin	// src/main/scala/ultra/bus/UltraBus.scala:93:13
           if (io_dChannel_in_rreq) begin	// src/main/scala/ultra/bus/UltraBus.scala:11:14
             if (_GEN_23 | _GEN_24 | io_dChannel_in_wreq)	// src/main/scala/ultra/bus/UltraBus.scala:164:11, :171:11, :223:26, :238:34, :244:43
-              dstat <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:69:22
+              dstat <= 4'h0;	// src/main/scala/ultra/bus/UltraBus.scala:69:22, src/main/scala/ultra/bus/UltraBusUtils.scala:50:19
             else if (isData2ExtRam) begin	// src/main/scala/ultra/bus/UltraBus.scala:89:26
               if (extramBusy)	// src/main/scala/ultra/bus/UltraBus.scala:77:25
                 dstat <= 4'h2;	// src/main/scala/ultra/bus/UltraBus.scala:69:22, :226:17
@@ -399,7 +399,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
               dstat <= {2'h0, ~baseramBusy, 1'h1};	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:69:22, :73:26, :211:26, :212:17, :217:37, src/main/scala/ultra/bus/sram/SramUtils.scala:9:13
           end
           else if (io_dChannel_in_wreq)	// src/main/scala/ultra/bus/UltraBus.scala:11:14
-            dstat <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:69:22
+            dstat <= 4'h0;	// src/main/scala/ultra/bus/UltraBus.scala:69:22, src/main/scala/ultra/bus/UltraBusUtils.scala:50:19
           else if (isData2ExtRam & extramBusy)	// src/main/scala/ultra/bus/UltraBus.scala:77:25, :89:26, :209:27, :223:26, :225:25
             dstat <= 4'h2;	// src/main/scala/ultra/bus/UltraBus.scala:69:22, :226:17
           else if (_GEN_17)	// src/main/scala/ultra/bus/UltraBus.scala:69:22, :209:27, :211:26, :212:17, :217:37
@@ -537,7 +537,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
               if (_GEN_2) begin	// src/main/scala/ultra/bus/UltraBus.scala:40:30, :99:22, :121:21, :123:45
               end
               else	// src/main/scala/ultra/bus/UltraBus.scala:40:30, :121:21, :123:45
-                baseramReqReg_byteSelN <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:40:30
+                baseramReqReg_byteSelN <= 4'h0;	// src/main/scala/ultra/bus/UltraBus.scala:40:30, src/main/scala/ultra/bus/UltraBusUtils.scala:50:19
             end
             else if (_GEN_5) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17
               if (wrap_1)	// src/main/scala/ultra/bus/UltraBus.scala:131:27
@@ -546,7 +546,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
             else if (_GEN_10) begin	// src/main/scala/ultra/bus/UltraBus.scala:40:30, :99:22, :118:17, :143:43
             end
             else	// src/main/scala/ultra/bus/UltraBus.scala:40:30, :118:17, :143:43
-              baseramReqReg_byteSelN <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:40:30
+              baseramReqReg_byteSelN <= 4'h0;	// src/main/scala/ultra/bus/UltraBus.scala:40:30, src/main/scala/ultra/bus/UltraBusUtils.scala:50:19
           end
           else	// src/main/scala/ultra/bus/UltraBus.scala:118:17, :257:25, :261:28
             baseramReqReg_byteSelN <= dReqReg_byteSelN;	// src/main/scala/ultra/bus/UltraBus.scala:40:30, :57:24
@@ -572,7 +572,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
             else begin	// src/main/scala/ultra/bus/UltraBus.scala:40:30, :121:21, :123:45
               baseramReqReg_wData <= 32'h0;	// src/main/scala/ultra/bus/UltraBus.scala:40:30, src/main/scala/ultra/bus/sram/SramUtils.scala:14:16
               baseramReqReg_addr <= baseramReqReg_sig_addr;	// src/main/scala/ultra/bus/UltraBus.scala:40:30, :126:57
-              baseramReqReg_byteSelN <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:40:30
+              baseramReqReg_byteSelN <= 4'h0;	// src/main/scala/ultra/bus/UltraBus.scala:40:30, src/main/scala/ultra/bus/UltraBusUtils.scala:50:19
             end
           end
           else if (_GEN_5) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17
@@ -589,7 +589,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
           else begin	// src/main/scala/ultra/bus/UltraBus.scala:40:30, :118:17, :143:43
             baseramReqReg_wData <= 32'h0;	// src/main/scala/ultra/bus/UltraBus.scala:40:30, src/main/scala/ultra/bus/sram/SramUtils.scala:14:16
             baseramReqReg_addr <= baseramReqReg_sig_1_addr;	// src/main/scala/ultra/bus/UltraBus.scala:40:30, :146:48
-            baseramReqReg_byteSelN <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:40:30
+            baseramReqReg_byteSelN <= 4'h0;	// src/main/scala/ultra/bus/UltraBus.scala:40:30, src/main/scala/ultra/bus/UltraBusUtils.scala:50:19
           end
           if (_GEN_30) begin	// src/main/scala/ultra/bus/UltraBus.scala:203:16
             baseramReqReg_ce <= wrap_2 | _GEN_11;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/UltraBus.scala:40:30, :118:17, :121:21, :267:28, :269:23
@@ -597,7 +597,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
             baseramReqReg_we <= wrap_2 | _GEN_15;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/UltraBus.scala:40:30, :118:17, :121:21, :267:28, :269:23
             if (wrap_2) begin	// src/main/scala/chisel3/util/Counter.scala:73:24
               dRspnsReg_rdata <= 64'h0;	// src/main/scala/ultra/bus/UltraBus.scala:61:26, :155:22
-              dstat <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:69:22
+              dstat <= 4'h0;	// src/main/scala/ultra/bus/UltraBus.scala:69:22, src/main/scala/ultra/bus/UltraBusUtils.scala:50:19
               dCycleCnt_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
             end
             else	// src/main/scala/chisel3/util/Counter.scala:73:24
@@ -613,7 +613,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
             if (_GEN_31) begin	// src/main/scala/ultra/bus/UltraBus.scala:203:16
               if (wrap_3) begin	// src/main/scala/chisel3/util/Counter.scala:73:24
                 dRspnsReg_rdata <= {32'h0, io_baseRam_in_rData};	// src/main/scala/ultra/bus/UltraBus.scala:61:26, :168:21, src/main/scala/ultra/bus/sram/SramUtils.scala:14:16
-                dstat <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:69:22
+                dstat <= 4'h0;	// src/main/scala/ultra/bus/UltraBus.scala:69:22, src/main/scala/ultra/bus/UltraBusUtils.scala:50:19
                 dCycleCnt_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
               end
               else	// src/main/scala/chisel3/util/Counter.scala:73:24
@@ -658,7 +658,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
                 end
               end
               if (_GEN_37)	// src/main/scala/ultra/bus/UltraBus.scala:69:22, :164:11, :171:11, :203:16, :289:28, :295:28
-                dstat <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:69:22
+                dstat <= 4'h0;	// src/main/scala/ultra/bus/UltraBus.scala:69:22, src/main/scala/ultra/bus/UltraBusUtils.scala:50:19
             end
           end
         end
@@ -704,14 +704,14 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
       if (io_iChannel_in_rreq)	// src/main/scala/ultra/bus/UltraBus.scala:11:14
         iReqReg_pc <= io_iChannel_in_pc;	// src/main/scala/ultra/bus/UltraBus.scala:48:24
       if (_GEN) begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17
-        iRspnsReg_rdata <= 256'h0;	// src/main/scala/ultra/bus/UltraBus.scala:52:26, :99:22
+        iRspnsReg_rdata <= 128'h0;	// src/main/scala/ultra/bus/UltraBus.scala:52:26, :99:22
         iRspnsReg_rrdy <= ~io_iChannel_in_rreq;	// src/main/scala/ultra/bus/UltraBus.scala:28:25, :52:26, :108:20, :120:17, :121:21, src/main/scala/ultra/bus/sram/SramUtils.scala:9:13
         if (_GEN_2) begin	// src/main/scala/ultra/bus/UltraBus.scala:99:22, :121:21, :123:45
         end
         else begin	// src/main/scala/ultra/bus/UltraBus.scala:99:22, :121:21, :123:45
-          iWordCnt_value <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
+          iWordCnt_value <= 3'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
           iCycleCnt_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
-          idata <= 256'h0;	// src/main/scala/ultra/bus/UltraBus.scala:99:22
+          idata <= 128'h0;	// src/main/scala/ultra/bus/UltraBus.scala:99:22
         end
       end
       else begin	// src/main/scala/ultra/bus/UltraBus.scala:118:17
@@ -724,7 +724,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
           if (_GEN_40) begin	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:99:22, :131:41, :135:32
           end
           else	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:131:41, :135:32
-            iWordCnt_value <= iWordCnt_value + 4'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24, src/main/scala/ultra/bus/UltraBus.scala:212:17
+            iWordCnt_value <= iWordCnt_value + 3'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
           if (~wrap_1) begin	// src/main/scala/ultra/bus/UltraBus.scala:131:27
             if (wrap)	// src/main/scala/chisel3/util/Counter.scala:73:24
               iCycleCnt_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
@@ -734,14 +734,14 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
           if (_GEN_40) begin	// src/main/scala/ultra/bus/UltraBus.scala:99:22, :131:41, :135:32
           end
           else	// src/main/scala/ultra/bus/UltraBus.scala:99:22, :131:41, :135:32
-            idata <= {io_baseRam_in_rData, idata[255:32]};	// src/main/scala/ultra/bus/UltraBus.scala:99:22, :136:{40,48}
+            idata <= {io_baseRam_in_rData, idata[127:32]};	// src/main/scala/ultra/bus/UltraBus.scala:99:22, :136:{40,48}
         end
         else if (_GEN_10) begin	// src/main/scala/ultra/bus/UltraBus.scala:99:22, :118:17, :143:43
         end
         else begin	// src/main/scala/ultra/bus/UltraBus.scala:99:22, :118:17, :143:43
-          iWordCnt_value <= 4'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
+          iWordCnt_value <= 3'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
           iCycleCnt_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
-          idata <= 256'h0;	// src/main/scala/ultra/bus/UltraBus.scala:99:22
+          idata <= 128'h0;	// src/main/scala/ultra/bus/UltraBus.scala:99:22
         end
       end
       iRspnsReg_rvalid <= ~_GEN & (_GEN_6 | iRspnsReg_rvalid);	// src/main/scala/ultra/bus/UltraBus.scala:52:26, :112:20, :113:22, :118:17, :121:21, :131:41
@@ -765,12 +765,12 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
       `FIRRTL_BEFORE_INITIAL	// src/main/scala/ultra/bus/UltraBus.scala:10:7
     `endif // FIRRTL_BEFORE_INITIAL
     initial begin	// src/main/scala/ultra/bus/UltraBus.scala:10:7
-      automatic logic [31:0] _RANDOM[0:25];	// src/main/scala/ultra/bus/UltraBus.scala:10:7
+      automatic logic [31:0] _RANDOM[0:17];	// src/main/scala/ultra/bus/UltraBus.scala:10:7
       `ifdef INIT_RANDOM_PROLOG_	// src/main/scala/ultra/bus/UltraBus.scala:10:7
         `INIT_RANDOM_PROLOG_	// src/main/scala/ultra/bus/UltraBus.scala:10:7
       `endif // INIT_RANDOM_PROLOG_
       `ifdef RANDOMIZE_REG_INIT	// src/main/scala/ultra/bus/UltraBus.scala:10:7
-        for (logic [4:0] i = 5'h0; i < 5'h1A; i += 5'h1) begin
+        for (logic [4:0] i = 5'h0; i < 5'h12; i += 5'h1) begin
           _RANDOM[i] = `RANDOM;	// src/main/scala/ultra/bus/UltraBus.scala:10:7
         end	// src/main/scala/ultra/bus/UltraBus.scala:10:7
         UT_data = _RANDOM[5'h0][7:0];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :27:24
@@ -794,37 +794,29 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
            _RANDOM[5'h6],
            _RANDOM[5'h7],
            _RANDOM[5'h8],
-           _RANDOM[5'h9],
-           _RANDOM[5'hA],
-           _RANDOM[5'hB],
-           _RANDOM[5'hC],
-           _RANDOM[5'hD][0]};	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :52:26
-        iRspnsReg_rrdy = _RANDOM[5'hD][1];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :52:26
-        iRspnsReg_rvalid = _RANDOM[5'hD][2];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :52:26
-        dReqReg_rreq = _RANDOM[5'hD][3];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :52:26, :57:24
-        dReqReg_wreq = _RANDOM[5'hD][4];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :52:26, :57:24
-        dReqReg_byteSelN = _RANDOM[5'hD][8:5];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :52:26, :57:24
-        dReqReg_addr = {_RANDOM[5'hD][31:9], _RANDOM[5'hE][8:0]};	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :52:26, :57:24
-        dReqReg_wdata = {_RANDOM[5'hE][31:9], _RANDOM[5'hF][8:0]};	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :57:24
-        dRspnsReg_rdata = {_RANDOM[5'hF][31:9], _RANDOM[5'h10], _RANDOM[5'h11][8:0]};	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :57:24, :61:26
-        dRspnsReg_rrdy = _RANDOM[5'h11][9];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :61:26
-        dRspnsReg_rvalid = _RANDOM[5'h11][10];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :61:26
-        dRspnsReg_wrdy = _RANDOM[5'h11][11];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :61:26
-        istat = _RANDOM[5'h11][14:13];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :61:26, :66:22
-        dstat = _RANDOM[5'h11][18:15];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :61:26, :69:22
-        iWordCnt_value = _RANDOM[5'h11][22:19];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:10:7, :61:26
-        iCycleCnt_value = _RANDOM[5'h11][24:23];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:10:7, :61:26
+           _RANDOM[5'h9][0]};	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :52:26
+        iRspnsReg_rrdy = _RANDOM[5'h9][1];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :52:26
+        iRspnsReg_rvalid = _RANDOM[5'h9][2];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :52:26
+        dReqReg_rreq = _RANDOM[5'h9][3];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :52:26, :57:24
+        dReqReg_wreq = _RANDOM[5'h9][4];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :52:26, :57:24
+        dReqReg_byteSelN = _RANDOM[5'h9][8:5];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :52:26, :57:24
+        dReqReg_addr = {_RANDOM[5'h9][31:9], _RANDOM[5'hA][8:0]};	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :52:26, :57:24
+        dReqReg_wdata = {_RANDOM[5'hA][31:9], _RANDOM[5'hB][8:0]};	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :57:24
+        dRspnsReg_rdata = {_RANDOM[5'hB][31:9], _RANDOM[5'hC], _RANDOM[5'hD][8:0]};	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :57:24, :61:26
+        dRspnsReg_rrdy = _RANDOM[5'hD][9];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :61:26
+        dRspnsReg_rvalid = _RANDOM[5'hD][10];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :61:26
+        dRspnsReg_wrdy = _RANDOM[5'hD][11];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :61:26
+        istat = _RANDOM[5'hD][14:13];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :61:26, :66:22
+        dstat = _RANDOM[5'hD][18:15];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :61:26, :69:22
+        iWordCnt_value = _RANDOM[5'hD][21:19];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:10:7, :61:26
+        iCycleCnt_value = _RANDOM[5'hD][23:22];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:10:7, :61:26
         idata =
-          {_RANDOM[5'h11][31:25],
-           _RANDOM[5'h12],
-           _RANDOM[5'h13],
-           _RANDOM[5'h14],
-           _RANDOM[5'h15],
-           _RANDOM[5'h16],
-           _RANDOM[5'h17],
-           _RANDOM[5'h18],
-           _RANDOM[5'h19][24:0]};	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :61:26, :99:22
-        dCycleCnt_value = _RANDOM[5'h19][28:27];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:10:7, :99:22
+          {_RANDOM[5'hD][31:24],
+           _RANDOM[5'hE],
+           _RANDOM[5'hF],
+           _RANDOM[5'h10],
+           _RANDOM[5'h11][23:0]};	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :61:26, :99:22
+        dCycleCnt_value = _RANDOM[5'h11][27:26];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:10:7, :99:22
       `endif // RANDOMIZE_REG_INIT
     end // initial
     `ifdef FIRRTL_AFTER_INITIAL	// src/main/scala/ultra/bus/UltraBus.scala:10:7
@@ -832,7 +824,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
   async_transmitter #(
-    .ClkFrequency(160000000)
+    .ClkFrequency(170000000)
   ) UartTransmitter (	// src/main/scala/ultra/bus/UltraBus.scala:19:31
     .clk       (clock),
     .TxD_start (UT_start),	// src/main/scala/ultra/bus/UltraBus.scala:28:25
@@ -841,7 +833,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
     .TxD_busy  (_UartTransmitter_TxD_busy)
   );
   async_receiver #(
-    .ClkFrequency(160000000)
+    .ClkFrequency(170000000)
   ) UartReceiver (	// src/main/scala/ultra/bus/UltraBus.scala:20:28
     .clk            (clock),
     .RxD            (io_uart_rxd),
@@ -993,28 +985,28 @@ module UltraIcache(	// src/main/scala/ultra/caches/icache/UltraIcache.scala:15:7
                  reset,	// src/main/scala/ultra/caches/icache/UltraIcache.scala:15:7
   input  [31:0]  io_core_in_pc,	// src/main/scala/ultra/caches/icache/UltraIcache.scala:16:14
   input          io_core_in_rreq,	// src/main/scala/ultra/caches/icache/UltraIcache.scala:16:14
-  output [255:0] io_core_out_rdata,	// src/main/scala/ultra/caches/icache/UltraIcache.scala:16:14
+  output [127:0] io_core_out_rdata,	// src/main/scala/ultra/caches/icache/UltraIcache.scala:16:14
   output         io_core_out_rvalid,	// src/main/scala/ultra/caches/icache/UltraIcache.scala:16:14
   output [31:0]  io_bus_out_pc,	// src/main/scala/ultra/caches/icache/UltraIcache.scala:16:14
   output         io_bus_out_rreq,	// src/main/scala/ultra/caches/icache/UltraIcache.scala:16:14
-  input  [255:0] io_bus_in_rdata,	// src/main/scala/ultra/caches/icache/UltraIcache.scala:16:14
+  input  [127:0] io_bus_in_rdata,	// src/main/scala/ultra/caches/icache/UltraIcache.scala:16:14
   input          io_bus_in_rrdy,	// src/main/scala/ultra/caches/icache/UltraIcache.scala:16:14
                  io_bus_in_rvalid,	// src/main/scala/ultra/caches/icache/UltraIcache.scala:16:14
   output [31:0]  io_pc	// src/main/scala/ultra/caches/icache/UltraIcache.scala:18:17
 );
 
   wire         cacheWen;	// src/main/scala/ultra/caches/icache/UltraIcache.scala:27:29, :58:15
-  wire [255:0] _dataRam_douta;	// src/main/scala/ultra/caches/icache/UltraIcache.scala:38:23
-  wire [13:0]  _tagRam_douta;	// src/main/scala/ultra/caches/icache/UltraIcache.scala:31:22
+  wire [127:0] _dataRam_douta;	// src/main/scala/ultra/caches/icache/UltraIcache.scala:38:23
+  wire [14:0]  _tagRam_douta;	// src/main/scala/ultra/caches/icache/UltraIcache.scala:31:22
   reg  [31:0]  pcOutReg;	// src/main/scala/ultra/caches/icache/UltraIcache.scala:19:25
-  reg  [255:0] rspns2coreReg_rdata;	// src/main/scala/ultra/caches/icache/UltraIcache.scala:22:30
+  reg  [127:0] rspns2coreReg_rdata;	// src/main/scala/ultra/caches/icache/UltraIcache.scala:22:30
   reg          rspns2coreReg_rvalid;	// src/main/scala/ultra/caches/icache/UltraIcache.scala:22:30
   reg  [31:0]  req2busReg_pc;	// src/main/scala/ultra/caches/icache/UltraIcache.scala:23:27
   reg          req2busReg_rreq;	// src/main/scala/ultra/caches/icache/UltraIcache.scala:23:27
   reg  [31:0]  iReqBuf_pc;	// src/main/scala/ultra/caches/icache/UltraIcache.scala:45:24
   reg          iReqBuf_rreq;	// src/main/scala/ultra/caches/icache/UltraIcache.scala:45:24
   reg  [1:0]   stat;	// src/main/scala/ultra/caches/icache/UltraIcache.scala:46:21
-  wire [3:0]   cacheAddr = cacheWen ? iReqBuf_pc[8:5] : io_core_in_pc[8:5];	// src/main/scala/ultra/caches/icache/UltraIcache.scala:27:29, :45:24, :47:17, :48:{15,28}, :50:{15,31}, :58:15
+  wire [3:0]   cacheAddr = cacheWen ? iReqBuf_pc[7:4] : io_core_in_pc[7:4];	// src/main/scala/ultra/caches/icache/UltraIcache.scala:27:29, :45:24, :47:17, :48:{15,28}, :50:{15,31}, :58:15
   wire         _GEN = stat == 2'h0;	// src/main/scala/ultra/caches/icache/UltraIcache.scala:46:21, :58:15, :72:14
   wire         _GEN_0 = stat == 2'h1;	// src/main/scala/ultra/caches/icache/UltraIcache.scala:46:21, :58:15, :62:14
   wire         _GEN_1 = stat == 2'h2;	// src/main/scala/ultra/caches/icache/UltraIcache.scala:46:21, :58:15, :79:16
@@ -1025,7 +1017,7 @@ module UltraIcache(	// src/main/scala/ultra/caches/icache/UltraIcache.scala:15:7
   always @(posedge clock) begin	// src/main/scala/ultra/caches/icache/UltraIcache.scala:15:7
     if (reset) begin	// src/main/scala/ultra/caches/icache/UltraIcache.scala:15:7
       pcOutReg <= 32'h0;	// src/main/scala/ultra/caches/icache/UltraIcache.scala:19:25
-      rspns2coreReg_rdata <= 256'h0;	// src/main/scala/ultra/caches/icache/UltraIcache.scala:22:30, :41:30
+      rspns2coreReg_rdata <= 128'h0;	// src/main/scala/ultra/caches/icache/UltraIcache.scala:22:30, :41:30
       rspns2coreReg_rvalid <= 1'h0;	// src/main/scala/ultra/bus/UltraBusUtils.scala:24:16, src/main/scala/ultra/caches/icache/UltraIcache.scala:22:30
       req2busReg_pc <= 32'h80000000;	// src/main/scala/ultra/bus/UltraBusUtils.scala:19:13, src/main/scala/ultra/caches/icache/UltraIcache.scala:23:27
       req2busReg_rreq <= 1'h0;	// src/main/scala/ultra/bus/UltraBusUtils.scala:24:16, src/main/scala/ultra/caches/icache/UltraIcache.scala:23:27
@@ -1038,11 +1030,11 @@ module UltraIcache(	// src/main/scala/ultra/caches/icache/UltraIcache.scala:15:7
       automatic logic              _GEN_6;	// src/main/scala/ultra/caches/icache/UltraIcache.scala:23:27, :70:9, :75:29
       automatic logic              _GEN_7 = _GEN_1 | ~_GEN_3;	// src/main/scala/ultra/caches/icache/UltraIcache.scala:22:30, :34:32, :58:15, :91:29, :93:21
       automatic logic [3:0][31:0]  _GEN_8;	// src/main/scala/ultra/caches/icache/UltraIcache.scala:19:25, :58:15, :70:9
-      automatic logic [3:0][255:0] _GEN_9;	// src/main/scala/ultra/caches/icache/UltraIcache.scala:22:30, :58:15, :70:9
+      automatic logic [3:0][127:0] _GEN_9;	// src/main/scala/ultra/caches/icache/UltraIcache.scala:22:30, :58:15, :70:9
       automatic logic [3:0][31:0]  _GEN_10;	// src/main/scala/ultra/caches/icache/UltraIcache.scala:23:27, :58:15, :70:9, :84:27, :90:18
       automatic logic [3:0]        _GEN_11;	// src/main/scala/ultra/caches/icache/UltraIcache.scala:23:27, :58:15, :70:9, :84:27
       automatic logic [3:0][1:0]   _GEN_12;	// src/main/scala/ultra/caches/icache/UltraIcache.scala:58:15, :61:28, :70:9, :84:27
-      _GEN_5 = _tagRam_douta[13] & _tagRam_douta[12:0] == iReqBuf_pc[21:9];	// src/main/scala/ultra/caches/icache/UltraIcache.scala:31:22, :45:24, :68:{24,43}, :69:{26,41,55}
+      _GEN_5 = _tagRam_douta[14] & _tagRam_douta[13:0] == iReqBuf_pc[21:8];	// src/main/scala/ultra/caches/icache/UltraIcache.scala:31:22, :45:24, :68:{24,43}, :69:{26,41,55}
       _GEN_6 = _GEN_5 | ~io_bus_in_rrdy;	// src/main/scala/ultra/caches/icache/UltraIcache.scala:23:27, :68:43, :70:9, :75:29
       _GEN_8 =
         {{_GEN_7 ? pcOutReg : iReqBuf_pc},
@@ -1090,30 +1082,23 @@ module UltraIcache(	// src/main/scala/ultra/caches/icache/UltraIcache.scala:15:7
       `FIRRTL_BEFORE_INITIAL	// src/main/scala/ultra/caches/icache/UltraIcache.scala:15:7
     `endif // FIRRTL_BEFORE_INITIAL
     initial begin	// src/main/scala/ultra/caches/icache/UltraIcache.scala:15:7
-      automatic logic [31:0] _RANDOM[0:11];	// src/main/scala/ultra/caches/icache/UltraIcache.scala:15:7
+      automatic logic [31:0] _RANDOM[0:7];	// src/main/scala/ultra/caches/icache/UltraIcache.scala:15:7
       `ifdef INIT_RANDOM_PROLOG_	// src/main/scala/ultra/caches/icache/UltraIcache.scala:15:7
         `INIT_RANDOM_PROLOG_	// src/main/scala/ultra/caches/icache/UltraIcache.scala:15:7
       `endif // INIT_RANDOM_PROLOG_
       `ifdef RANDOMIZE_REG_INIT	// src/main/scala/ultra/caches/icache/UltraIcache.scala:15:7
-        for (logic [3:0] i = 4'h0; i < 4'hC; i += 4'h1) begin
-          _RANDOM[i] = `RANDOM;	// src/main/scala/ultra/caches/icache/UltraIcache.scala:15:7
+        for (logic [3:0] i = 4'h0; i < 4'h8; i += 4'h1) begin
+          _RANDOM[i[2:0]] = `RANDOM;	// src/main/scala/ultra/caches/icache/UltraIcache.scala:15:7
         end	// src/main/scala/ultra/caches/icache/UltraIcache.scala:15:7
-        pcOutReg = _RANDOM[4'h0];	// src/main/scala/ultra/caches/icache/UltraIcache.scala:15:7, :19:25
+        pcOutReg = _RANDOM[3'h0];	// src/main/scala/ultra/caches/icache/UltraIcache.scala:15:7, :19:25
         rspns2coreReg_rdata =
-          {_RANDOM[4'h1],
-           _RANDOM[4'h2],
-           _RANDOM[4'h3],
-           _RANDOM[4'h4],
-           _RANDOM[4'h5],
-           _RANDOM[4'h6],
-           _RANDOM[4'h7],
-           _RANDOM[4'h8]};	// src/main/scala/ultra/caches/icache/UltraIcache.scala:15:7, :22:30
-        rspns2coreReg_rvalid = _RANDOM[4'h9][1];	// src/main/scala/ultra/caches/icache/UltraIcache.scala:15:7, :22:30
-        req2busReg_pc = {_RANDOM[4'h9][31:2], _RANDOM[4'hA][1:0]};	// src/main/scala/ultra/caches/icache/UltraIcache.scala:15:7, :22:30, :23:27
-        req2busReg_rreq = _RANDOM[4'hA][2];	// src/main/scala/ultra/caches/icache/UltraIcache.scala:15:7, :23:27
-        iReqBuf_pc = {_RANDOM[4'hA][31:3], _RANDOM[4'hB][2:0]};	// src/main/scala/ultra/caches/icache/UltraIcache.scala:15:7, :23:27, :45:24
-        iReqBuf_rreq = _RANDOM[4'hB][3];	// src/main/scala/ultra/caches/icache/UltraIcache.scala:15:7, :45:24
-        stat = _RANDOM[4'hB][5:4];	// src/main/scala/ultra/caches/icache/UltraIcache.scala:15:7, :45:24, :46:21
+          {_RANDOM[3'h1], _RANDOM[3'h2], _RANDOM[3'h3], _RANDOM[3'h4]};	// src/main/scala/ultra/caches/icache/UltraIcache.scala:15:7, :22:30
+        rspns2coreReg_rvalid = _RANDOM[3'h5][1];	// src/main/scala/ultra/caches/icache/UltraIcache.scala:15:7, :22:30
+        req2busReg_pc = {_RANDOM[3'h5][31:2], _RANDOM[3'h6][1:0]};	// src/main/scala/ultra/caches/icache/UltraIcache.scala:15:7, :22:30, :23:27
+        req2busReg_rreq = _RANDOM[3'h6][2];	// src/main/scala/ultra/caches/icache/UltraIcache.scala:15:7, :23:27
+        iReqBuf_pc = {_RANDOM[3'h6][31:3], _RANDOM[3'h7][2:0]};	// src/main/scala/ultra/caches/icache/UltraIcache.scala:15:7, :23:27, :45:24
+        iReqBuf_rreq = _RANDOM[3'h7][3];	// src/main/scala/ultra/caches/icache/UltraIcache.scala:15:7, :45:24
+        stat = _RANDOM[3'h7][5:4];	// src/main/scala/ultra/caches/icache/UltraIcache.scala:15:7, :45:24, :46:21
       `endif // RANDOMIZE_REG_INIT
     end // initial
     `ifdef FIRRTL_AFTER_INITIAL	// src/main/scala/ultra/caches/icache/UltraIcache.scala:15:7
@@ -1123,14 +1108,14 @@ module UltraIcache(	// src/main/scala/ultra/caches/icache/UltraIcache.scala:15:7
   TagBlkMem tagRam (	// src/main/scala/ultra/caches/icache/UltraIcache.scala:31:22
     .addra (cacheAddr),	// src/main/scala/ultra/caches/icache/UltraIcache.scala:47:17, :48:15, :50:15
     .clka  (clock),
-    .dina  (_GEN_4 ? 14'h0 : {1'h1, iReqBuf_pc[21:9]}),	// src/main/scala/ultra/bus/UltraBusUtils.scala:26:15, src/main/scala/ultra/caches/icache/UltraIcache.scala:34:32, :45:24, :58:15, :93:{33,46}
+    .dina  (_GEN_4 ? 15'h0 : {1'h1, iReqBuf_pc[21:8]}),	// src/main/scala/ultra/bus/UltraBusUtils.scala:26:15, src/main/scala/ultra/caches/icache/UltraIcache.scala:34:32, :45:24, :58:15, :93:{33,46}
     .douta (_tagRam_douta),
     .wea   (cacheWen)	// src/main/scala/ultra/caches/icache/UltraIcache.scala:27:29, :58:15
   );
   DataBlkMem dataRam (	// src/main/scala/ultra/caches/icache/UltraIcache.scala:38:23
     .addra (cacheAddr),	// src/main/scala/ultra/caches/icache/UltraIcache.scala:47:17, :48:15, :50:15
     .clka  (clock),
-    .dina  (_GEN_4 ? 256'h0 : io_bus_in_rdata),	// src/main/scala/ultra/caches/icache/UltraIcache.scala:34:32, :41:30, :58:15
+    .dina  (_GEN_4 ? 128'h0 : io_bus_in_rdata),	// src/main/scala/ultra/caches/icache/UltraIcache.scala:34:32, :41:30, :58:15
     .douta (_dataRam_douta),
     .wea   (cacheWen)	// src/main/scala/ultra/caches/icache/UltraIcache.scala:27:29, :58:15
   );
@@ -1145,7 +1130,7 @@ module IbufferUnit(	// src/main/scala/ultra/caches/ibuffer/IbufferUnit.scala:7:7
   input         clock,	// src/main/scala/ultra/caches/ibuffer/IbufferUnit.scala:7:7
                 reset,	// src/main/scala/ultra/caches/ibuffer/IbufferUnit.scala:7:7
   input  [31:0] io_in_pc,	// src/main/scala/ultra/caches/ibuffer/IbufferUnit.scala:8:14
-  input  [4:0]  io_in_index,	// src/main/scala/ultra/caches/ibuffer/IbufferUnit.scala:8:14
+  input  [3:0]  io_in_index,	// src/main/scala/ultra/caches/ibuffer/IbufferUnit.scala:8:14
   input         io_in_rvalid,	// src/main/scala/ultra/caches/ibuffer/IbufferUnit.scala:8:14
   input  [31:0] io_in_inst,	// src/main/scala/ultra/caches/ibuffer/IbufferUnit.scala:8:14
   output        io_out_isMatched,	// src/main/scala/ultra/caches/ibuffer/IbufferUnit.scala:8:14
@@ -1187,7 +1172,7 @@ module IbufferUnit(	// src/main/scala/ultra/caches/ibuffer/IbufferUnit.scala:7:7
       `FIRRTL_AFTER_INITIAL	// src/main/scala/ultra/caches/ibuffer/IbufferUnit.scala:7:7
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
-  assign io_out_isMatched = {2'h0, io_in_pc[4:2]} == io_in_index;	// src/main/scala/ultra/caches/ibuffer/IbufferUnit.scala:7:7, :10:{31,49}
+  assign io_out_isMatched = {2'h0, io_in_pc[3:2]} == io_in_index;	// src/main/scala/ultra/caches/ibuffer/IbufferUnit.scala:7:7, :10:{31,49}
   assign io_out_bits_inst = buf_inst;	// src/main/scala/ultra/caches/ibuffer/IbufferUnit.scala:7:7, :11:20
   assign io_out_bits_rvalid = buf_rvalid;	// src/main/scala/ultra/caches/ibuffer/IbufferUnit.scala:7:7, :11:20
 endmodule
@@ -1205,23 +1190,11 @@ module MultiMux1(	// src/main/scala/ultra/helper/MultiMux1.scala:13:7
                 io_inputs_3_valid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
   input  [31:0] io_inputs_3_bits_inst,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
   input         io_inputs_3_bits_rvalid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
-                io_inputs_4_valid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
-  input  [31:0] io_inputs_4_bits_inst,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
-  input         io_inputs_4_bits_rvalid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
-                io_inputs_5_valid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
-  input  [31:0] io_inputs_5_bits_inst,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
-  input         io_inputs_5_bits_rvalid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
-                io_inputs_6_valid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
-  input  [31:0] io_inputs_6_bits_inst,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
-  input         io_inputs_6_bits_rvalid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
-                io_inputs_7_valid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
-  input  [31:0] io_inputs_7_bits_inst,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
-  input         io_inputs_7_bits_rvalid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
   output [31:0] io_output_bits_inst,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
   output        io_output_bits_rvalid	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
 );
 
-  wire [32:0] _io_output_bits_T_6 =
+  wire [32:0] _io_output_bits_T_2 =
     {io_inputs_0_valid ? io_inputs_0_bits_inst : 32'h0,
      io_inputs_0_valid & io_inputs_0_bits_rvalid}
     | {io_inputs_1_valid ? io_inputs_1_bits_inst : 32'h0,
@@ -1229,23 +1202,15 @@ module MultiMux1(	// src/main/scala/ultra/helper/MultiMux1.scala:13:7
     | {io_inputs_2_valid ? io_inputs_2_bits_inst : 32'h0,
        io_inputs_2_valid & io_inputs_2_bits_rvalid}
     | {io_inputs_3_valid ? io_inputs_3_bits_inst : 32'h0,
-       io_inputs_3_valid & io_inputs_3_bits_rvalid}
-    | {io_inputs_4_valid ? io_inputs_4_bits_inst : 32'h0,
-       io_inputs_4_valid & io_inputs_4_bits_rvalid}
-    | {io_inputs_5_valid ? io_inputs_5_bits_inst : 32'h0,
-       io_inputs_5_valid & io_inputs_5_bits_rvalid}
-    | {io_inputs_6_valid ? io_inputs_6_bits_inst : 32'h0,
-       io_inputs_6_valid & io_inputs_6_bits_rvalid}
-    | {io_inputs_7_valid ? io_inputs_7_bits_inst : 32'h0,
-       io_inputs_7_valid & io_inputs_7_bits_rvalid};	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:28:75, src/main/scala/ultra/helper/MultiMux1.scala:23:22, :26:{43,65}
-  assign io_output_bits_inst = _io_output_bits_T_6[32:1];	// src/main/scala/ultra/helper/MultiMux1.scala:13:7, :26:{65,78}
-  assign io_output_bits_rvalid = _io_output_bits_T_6[0];	// src/main/scala/ultra/helper/MultiMux1.scala:13:7, :26:{65,78}
+       io_inputs_3_valid & io_inputs_3_bits_rvalid};	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:28:75, src/main/scala/ultra/helper/MultiMux1.scala:23:22, :26:{43,65}
+  assign io_output_bits_inst = _io_output_bits_T_2[32:1];	// src/main/scala/ultra/helper/MultiMux1.scala:13:7, :26:{65,78}
+  assign io_output_bits_rvalid = _io_output_bits_T_2[0];	// src/main/scala/ultra/helper/MultiMux1.scala:13:7, :26:{65,78}
 endmodule
 
 module Ibuffer(	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
   input          clock,	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
                  reset,	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
-  input  [255:0] io_icache_in_rdata,	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:10:14
+  input  [127:0] io_icache_in_rdata,	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:10:14
   input          io_icache_in_rvalid,	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:10:14
   input  [31:0]  io_icache_in_pc,	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:10:14
                  io_core_in_pc,	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:10:14
@@ -1254,18 +1219,6 @@ module Ibuffer(	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
   output         io_core_out_bits_rvalid	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:10:14
 );
 
-  wire        _ibufs_7_io_out_isMatched;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-  wire [31:0] _ibufs_7_io_out_bits_inst;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-  wire        _ibufs_7_io_out_bits_rvalid;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-  wire        _ibufs_6_io_out_isMatched;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-  wire [31:0] _ibufs_6_io_out_bits_inst;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-  wire        _ibufs_6_io_out_bits_rvalid;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-  wire        _ibufs_5_io_out_isMatched;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-  wire [31:0] _ibufs_5_io_out_bits_inst;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-  wire        _ibufs_5_io_out_bits_rvalid;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-  wire        _ibufs_4_io_out_isMatched;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-  wire [31:0] _ibufs_4_io_out_bits_inst;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-  wire        _ibufs_4_io_out_bits_rvalid;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
   wire        _ibufs_3_io_out_isMatched;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
   wire [31:0] _ibufs_3_io_out_bits_inst;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
   wire        _ibufs_3_io_out_bits_rvalid;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
@@ -1278,12 +1231,12 @@ module Ibuffer(	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
   wire        _ibufs_0_io_out_isMatched;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
   wire [31:0] _ibufs_0_io_out_bits_inst;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
   wire        _ibufs_0_io_out_bits_rvalid;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-  reg  [17:0] pcTag;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:14:22
+  reg  [18:0] pcTag;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:14:22
   always @(posedge clock) begin	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
     if (reset)	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
-      pcTag <= 18'h0;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:14:22
+      pcTag <= 19'h0;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:14:22
     else if (io_icache_in_rvalid)	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:10:14
-      pcTag <= {1'h1, io_icache_in_pc[21:5]};	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7, :14:22, :16:{23,41}
+      pcTag <= {1'h1, io_icache_in_pc[21:4]};	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7, :14:22, :16:{23,41}
   end // always @(posedge)
   `ifdef ENABLE_INITIAL_REG_	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
     `ifdef FIRRTL_BEFORE_INITIAL	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
@@ -1296,7 +1249,7 @@ module Ibuffer(	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
       `endif // INIT_RANDOM_PROLOG_
       `ifdef RANDOMIZE_REG_INIT	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
         _RANDOM[/*Zero width*/ 1'b0] = `RANDOM;	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
-        pcTag = _RANDOM[/*Zero width*/ 1'b0][17:0];	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7, :14:22
+        pcTag = _RANDOM[/*Zero width*/ 1'b0][18:0];	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7, :14:22
       `endif // RANDOMIZE_REG_INIT
     end // initial
     `ifdef FIRRTL_AFTER_INITIAL	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
@@ -1307,7 +1260,7 @@ module Ibuffer(	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
     .clock              (clock),
     .reset              (reset),
     .io_in_pc           (io_core_in_pc),
-    .io_in_index        (5'h0),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:22:22
+    .io_in_index        (4'h0),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:22:22
     .io_in_rvalid       (io_icache_in_rvalid),
     .io_in_inst         (io_icache_in_rdata[31:0]),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:24:42
     .io_out_isMatched   (_ibufs_0_io_out_isMatched),
@@ -1318,7 +1271,7 @@ module Ibuffer(	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
     .clock              (clock),
     .reset              (reset),
     .io_in_pc           (io_core_in_pc),
-    .io_in_index        (5'h1),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:22:22
+    .io_in_index        (4'h1),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:22:22
     .io_in_rvalid       (io_icache_in_rvalid),
     .io_in_inst         (io_icache_in_rdata[63:32]),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:24:42
     .io_out_isMatched   (_ibufs_1_io_out_isMatched),
@@ -1329,7 +1282,7 @@ module Ibuffer(	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
     .clock              (clock),
     .reset              (reset),
     .io_in_pc           (io_core_in_pc),
-    .io_in_index        (5'h2),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:22:22
+    .io_in_index        (4'h2),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:22:22
     .io_in_rvalid       (io_icache_in_rvalid),
     .io_in_inst         (io_icache_in_rdata[95:64]),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:24:42
     .io_out_isMatched   (_ibufs_2_io_out_isMatched),
@@ -1340,56 +1293,12 @@ module Ibuffer(	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
     .clock              (clock),
     .reset              (reset),
     .io_in_pc           (io_core_in_pc),
-    .io_in_index        (5'h3),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:22:22
+    .io_in_index        (4'h3),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:22:22
     .io_in_rvalid       (io_icache_in_rvalid),
     .io_in_inst         (io_icache_in_rdata[127:96]),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:24:42
     .io_out_isMatched   (_ibufs_3_io_out_isMatched),
     .io_out_bits_inst   (_ibufs_3_io_out_bits_inst),
     .io_out_bits_rvalid (_ibufs_3_io_out_bits_rvalid)
-  );
-  IbufferUnit ibufs_4 (	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .clock              (clock),
-    .reset              (reset),
-    .io_in_pc           (io_core_in_pc),
-    .io_in_index        (5'h4),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:22:22
-    .io_in_rvalid       (io_icache_in_rvalid),
-    .io_in_inst         (io_icache_in_rdata[159:128]),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:24:42
-    .io_out_isMatched   (_ibufs_4_io_out_isMatched),
-    .io_out_bits_inst   (_ibufs_4_io_out_bits_inst),
-    .io_out_bits_rvalid (_ibufs_4_io_out_bits_rvalid)
-  );
-  IbufferUnit ibufs_5 (	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .clock              (clock),
-    .reset              (reset),
-    .io_in_pc           (io_core_in_pc),
-    .io_in_index        (5'h5),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:22:22
-    .io_in_rvalid       (io_icache_in_rvalid),
-    .io_in_inst         (io_icache_in_rdata[191:160]),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:24:42
-    .io_out_isMatched   (_ibufs_5_io_out_isMatched),
-    .io_out_bits_inst   (_ibufs_5_io_out_bits_inst),
-    .io_out_bits_rvalid (_ibufs_5_io_out_bits_rvalid)
-  );
-  IbufferUnit ibufs_6 (	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .clock              (clock),
-    .reset              (reset),
-    .io_in_pc           (io_core_in_pc),
-    .io_in_index        (5'h6),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:22:22
-    .io_in_rvalid       (io_icache_in_rvalid),
-    .io_in_inst         (io_icache_in_rdata[223:192]),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:24:42
-    .io_out_isMatched   (_ibufs_6_io_out_isMatched),
-    .io_out_bits_inst   (_ibufs_6_io_out_bits_inst),
-    .io_out_bits_rvalid (_ibufs_6_io_out_bits_rvalid)
-  );
-  IbufferUnit ibufs_7 (	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .clock              (clock),
-    .reset              (reset),
-    .io_in_pc           (io_core_in_pc),
-    .io_in_index        (5'h7),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:22:22
-    .io_in_rvalid       (io_icache_in_rvalid),
-    .io_in_inst         (io_icache_in_rdata[255:224]),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:24:42
-    .io_out_isMatched   (_ibufs_7_io_out_isMatched),
-    .io_out_bits_inst   (_ibufs_7_io_out_bits_inst),
-    .io_out_bits_rvalid (_ibufs_7_io_out_bits_rvalid)
   );
   MultiMux1 ibufMux (	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:28:23
     .io_inputs_0_valid       (_ibufs_0_io_out_isMatched),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
@@ -1404,29 +1313,17 @@ module Ibuffer(	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7
     .io_inputs_3_valid       (_ibufs_3_io_out_isMatched),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
     .io_inputs_3_bits_inst   (_ibufs_3_io_out_bits_inst),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
     .io_inputs_3_bits_rvalid (_ibufs_3_io_out_bits_rvalid),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .io_inputs_4_valid       (_ibufs_4_io_out_isMatched),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .io_inputs_4_bits_inst   (_ibufs_4_io_out_bits_inst),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .io_inputs_4_bits_rvalid (_ibufs_4_io_out_bits_rvalid),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .io_inputs_5_valid       (_ibufs_5_io_out_isMatched),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .io_inputs_5_bits_inst   (_ibufs_5_io_out_bits_inst),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .io_inputs_5_bits_rvalid (_ibufs_5_io_out_bits_rvalid),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .io_inputs_6_valid       (_ibufs_6_io_out_isMatched),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .io_inputs_6_bits_inst   (_ibufs_6_io_out_bits_inst),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .io_inputs_6_bits_rvalid (_ibufs_6_io_out_bits_rvalid),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .io_inputs_7_valid       (_ibufs_7_io_out_isMatched),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .io_inputs_7_bits_inst   (_ibufs_7_io_out_bits_inst),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
-    .io_inputs_7_bits_rvalid (_ibufs_7_io_out_bits_rvalid),	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:19:44
     .io_output_bits_inst     (io_core_out_bits_inst),
     .io_output_bits_rvalid   (io_core_out_bits_rvalid)
   );
-  assign io_core_out_hit = pcTag[17] & pcTag[16:0] == io_core_in_pc[21:5];	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7, :14:22, :36:{10,29}, :37:{12,27,44}
+  assign io_core_out_hit = pcTag[18] & pcTag[17:0] == io_core_in_pc[21:4];	// src/main/scala/ultra/caches/ibuffer/Ibuffer.scala:9:7, :14:22, :36:{10,29}, :37:{12,27,44}
 endmodule
 
 module BpUnit(	// src/main/scala/ultra/caches/bpbuffer/BpUnit.scala:9:7
   input         clock,	// src/main/scala/ultra/caches/bpbuffer/BpUnit.scala:9:7
                 reset,	// src/main/scala/ultra/caches/bpbuffer/BpUnit.scala:9:7
   input  [31:0] io_in_pc,	// src/main/scala/ultra/caches/bpbuffer/BpUnit.scala:10:14
-  input  [4:0]  io_in_index,	// src/main/scala/ultra/caches/bpbuffer/BpUnit.scala:10:14
+  input  [3:0]  io_in_index,	// src/main/scala/ultra/caches/bpbuffer/BpUnit.scala:10:14
   input         io_in_rvalid,	// src/main/scala/ultra/caches/bpbuffer/BpUnit.scala:10:14
   input  [31:0] io_in_inst,	// src/main/scala/ultra/caches/bpbuffer/BpUnit.scala:10:14
   output        io_out_isMatched,	// src/main/scala/ultra/caches/bpbuffer/BpUnit.scala:10:14
@@ -1482,7 +1379,7 @@ module BpUnit(	// src/main/scala/ultra/caches/bpbuffer/BpUnit.scala:9:7
       `FIRRTL_AFTER_INITIAL	// src/main/scala/ultra/caches/bpbuffer/BpUnit.scala:9:7
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
-  assign io_out_isMatched = {2'h0, io_in_pc[4:2]} == io_in_index;	// src/main/scala/ultra/caches/bpbuffer/BpUnit.scala:9:7, :12:{31,49}
+  assign io_out_isMatched = {2'h0, io_in_pc[3:2]} == io_in_index;	// src/main/scala/ultra/caches/bpbuffer/BpUnit.scala:9:7, :12:{31,49}
   assign io_out_bits_predictTaken = buf_predictTaken;	// src/main/scala/ultra/caches/bpbuffer/BpUnit.scala:9:7, :13:20
   assign io_out_bits_offset = buf_offset;	// src/main/scala/ultra/caches/bpbuffer/BpUnit.scala:9:7, :13:20
 endmodule
@@ -1500,23 +1397,11 @@ module MultiMux1_1(	// src/main/scala/ultra/helper/MultiMux1.scala:13:7
   input         io_inputs_3_valid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
                 io_inputs_3_bits_predictTaken,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
   input  [31:0] io_inputs_3_bits_offset,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
-  input         io_inputs_4_valid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
-                io_inputs_4_bits_predictTaken,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
-  input  [31:0] io_inputs_4_bits_offset,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
-  input         io_inputs_5_valid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
-                io_inputs_5_bits_predictTaken,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
-  input  [31:0] io_inputs_5_bits_offset,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
-  input         io_inputs_6_valid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
-                io_inputs_6_bits_predictTaken,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
-  input  [31:0] io_inputs_6_bits_offset,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
-  input         io_inputs_7_valid,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
-                io_inputs_7_bits_predictTaken,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
-  input  [31:0] io_inputs_7_bits_offset,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
   output        io_output_bits_predictTaken,	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
   output [31:0] io_output_bits_offset	// src/main/scala/ultra/helper/MultiMux1.scala:14:14
 );
 
-  wire [32:0] _io_output_bits_T_6 =
+  wire [32:0] _io_output_bits_T_2 =
     {io_inputs_0_valid & io_inputs_0_bits_predictTaken,
      io_inputs_0_valid ? io_inputs_0_bits_offset : 32'h0}
     | {io_inputs_1_valid & io_inputs_1_bits_predictTaken,
@@ -1524,41 +1409,21 @@ module MultiMux1_1(	// src/main/scala/ultra/helper/MultiMux1.scala:13:7
     | {io_inputs_2_valid & io_inputs_2_bits_predictTaken,
        io_inputs_2_valid ? io_inputs_2_bits_offset : 32'h0}
     | {io_inputs_3_valid & io_inputs_3_bits_predictTaken,
-       io_inputs_3_valid ? io_inputs_3_bits_offset : 32'h0}
-    | {io_inputs_4_valid & io_inputs_4_bits_predictTaken,
-       io_inputs_4_valid ? io_inputs_4_bits_offset : 32'h0}
-    | {io_inputs_5_valid & io_inputs_5_bits_predictTaken,
-       io_inputs_5_valid ? io_inputs_5_bits_offset : 32'h0}
-    | {io_inputs_6_valid & io_inputs_6_bits_predictTaken,
-       io_inputs_6_valid ? io_inputs_6_bits_offset : 32'h0}
-    | {io_inputs_7_valid & io_inputs_7_bits_predictTaken,
-       io_inputs_7_valid ? io_inputs_7_bits_offset : 32'h0};	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:22:71, src/main/scala/ultra/helper/MultiMux1.scala:23:22, :26:{43,65}
-  assign io_output_bits_predictTaken = _io_output_bits_T_6[32];	// src/main/scala/ultra/helper/MultiMux1.scala:13:7, :26:{65,78}
-  assign io_output_bits_offset = _io_output_bits_T_6[31:0];	// src/main/scala/ultra/helper/MultiMux1.scala:13:7, :26:{65,78}
+       io_inputs_3_valid ? io_inputs_3_bits_offset : 32'h0};	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:22:71, src/main/scala/ultra/helper/MultiMux1.scala:23:22, :26:{43,65}
+  assign io_output_bits_predictTaken = _io_output_bits_T_2[32];	// src/main/scala/ultra/helper/MultiMux1.scala:13:7, :26:{65,78}
+  assign io_output_bits_offset = _io_output_bits_T_2[31:0];	// src/main/scala/ultra/helper/MultiMux1.scala:13:7, :26:{65,78}
 endmodule
 
 module BpBuffer(	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:10:7
   input          clock,	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:10:7
                  reset,	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:10:7
-  input  [255:0] io_icache_in_rdata,	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:11:14
+  input  [127:0] io_icache_in_rdata,	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:11:14
   input          io_icache_in_rvalid,	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:11:14
   input  [31:0]  io_core_in_pc,	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:11:14
   output         io_core_out_predictTaken,	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:11:14
   output [31:0]  io_core_out_offset	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:11:14
 );
 
-  wire        _bpers_7_io_out_isMatched;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-  wire        _bpers_7_io_out_bits_predictTaken;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-  wire [31:0] _bpers_7_io_out_bits_offset;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-  wire        _bpers_6_io_out_isMatched;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-  wire        _bpers_6_io_out_bits_predictTaken;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-  wire [31:0] _bpers_6_io_out_bits_offset;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-  wire        _bpers_5_io_out_isMatched;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-  wire        _bpers_5_io_out_bits_predictTaken;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-  wire [31:0] _bpers_5_io_out_bits_offset;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-  wire        _bpers_4_io_out_isMatched;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-  wire        _bpers_4_io_out_bits_predictTaken;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-  wire [31:0] _bpers_4_io_out_bits_offset;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
   wire        _bpers_3_io_out_isMatched;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
   wire        _bpers_3_io_out_bits_predictTaken;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
   wire [31:0] _bpers_3_io_out_bits_offset;	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
@@ -1575,7 +1440,7 @@ module BpBuffer(	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:10:7
     .clock                    (clock),
     .reset                    (reset),
     .io_in_pc                 (io_core_in_pc),
-    .io_in_index              (5'h0),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:16:22
+    .io_in_index              (4'h0),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:16:22
     .io_in_rvalid             (io_icache_in_rvalid),
     .io_in_inst               (io_icache_in_rdata[31:0]),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:18:42
     .io_out_isMatched         (_bpers_0_io_out_isMatched),
@@ -1586,7 +1451,7 @@ module BpBuffer(	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:10:7
     .clock                    (clock),
     .reset                    (reset),
     .io_in_pc                 (io_core_in_pc),
-    .io_in_index              (5'h1),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:16:22
+    .io_in_index              (4'h1),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:16:22
     .io_in_rvalid             (io_icache_in_rvalid),
     .io_in_inst               (io_icache_in_rdata[63:32]),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:18:42
     .io_out_isMatched         (_bpers_1_io_out_isMatched),
@@ -1597,7 +1462,7 @@ module BpBuffer(	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:10:7
     .clock                    (clock),
     .reset                    (reset),
     .io_in_pc                 (io_core_in_pc),
-    .io_in_index              (5'h2),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:16:22
+    .io_in_index              (4'h2),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:16:22
     .io_in_rvalid             (io_icache_in_rvalid),
     .io_in_inst               (io_icache_in_rdata[95:64]),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:18:42
     .io_out_isMatched         (_bpers_2_io_out_isMatched),
@@ -1608,56 +1473,12 @@ module BpBuffer(	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:10:7
     .clock                    (clock),
     .reset                    (reset),
     .io_in_pc                 (io_core_in_pc),
-    .io_in_index              (5'h3),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:16:22
+    .io_in_index              (4'h3),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:16:22
     .io_in_rvalid             (io_icache_in_rvalid),
     .io_in_inst               (io_icache_in_rdata[127:96]),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:18:42
     .io_out_isMatched         (_bpers_3_io_out_isMatched),
     .io_out_bits_predictTaken (_bpers_3_io_out_bits_predictTaken),
     .io_out_bits_offset       (_bpers_3_io_out_bits_offset)
-  );
-  BpUnit bpers_4 (	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .clock                    (clock),
-    .reset                    (reset),
-    .io_in_pc                 (io_core_in_pc),
-    .io_in_index              (5'h4),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:16:22
-    .io_in_rvalid             (io_icache_in_rvalid),
-    .io_in_inst               (io_icache_in_rdata[159:128]),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:18:42
-    .io_out_isMatched         (_bpers_4_io_out_isMatched),
-    .io_out_bits_predictTaken (_bpers_4_io_out_bits_predictTaken),
-    .io_out_bits_offset       (_bpers_4_io_out_bits_offset)
-  );
-  BpUnit bpers_5 (	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .clock                    (clock),
-    .reset                    (reset),
-    .io_in_pc                 (io_core_in_pc),
-    .io_in_index              (5'h5),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:16:22
-    .io_in_rvalid             (io_icache_in_rvalid),
-    .io_in_inst               (io_icache_in_rdata[191:160]),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:18:42
-    .io_out_isMatched         (_bpers_5_io_out_isMatched),
-    .io_out_bits_predictTaken (_bpers_5_io_out_bits_predictTaken),
-    .io_out_bits_offset       (_bpers_5_io_out_bits_offset)
-  );
-  BpUnit bpers_6 (	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .clock                    (clock),
-    .reset                    (reset),
-    .io_in_pc                 (io_core_in_pc),
-    .io_in_index              (5'h6),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:16:22
-    .io_in_rvalid             (io_icache_in_rvalid),
-    .io_in_inst               (io_icache_in_rdata[223:192]),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:18:42
-    .io_out_isMatched         (_bpers_6_io_out_isMatched),
-    .io_out_bits_predictTaken (_bpers_6_io_out_bits_predictTaken),
-    .io_out_bits_offset       (_bpers_6_io_out_bits_offset)
-  );
-  BpUnit bpers_7 (	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .clock                    (clock),
-    .reset                    (reset),
-    .io_in_pc                 (io_core_in_pc),
-    .io_in_index              (5'h7),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:16:22
-    .io_in_rvalid             (io_icache_in_rvalid),
-    .io_in_inst               (io_icache_in_rdata[255:224]),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:18:42
-    .io_out_isMatched         (_bpers_7_io_out_isMatched),
-    .io_out_bits_predictTaken (_bpers_7_io_out_bits_predictTaken),
-    .io_out_bits_offset       (_bpers_7_io_out_bits_offset)
   );
   MultiMux1_1 bpMux (	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:22:21
     .io_inputs_0_valid             (_bpers_0_io_out_isMatched),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
@@ -1672,18 +1493,6 @@ module BpBuffer(	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:10:7
     .io_inputs_3_valid             (_bpers_3_io_out_isMatched),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
     .io_inputs_3_bits_predictTaken (_bpers_3_io_out_bits_predictTaken),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
     .io_inputs_3_bits_offset       (_bpers_3_io_out_bits_offset),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .io_inputs_4_valid             (_bpers_4_io_out_isMatched),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .io_inputs_4_bits_predictTaken (_bpers_4_io_out_bits_predictTaken),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .io_inputs_4_bits_offset       (_bpers_4_io_out_bits_offset),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .io_inputs_5_valid             (_bpers_5_io_out_isMatched),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .io_inputs_5_bits_predictTaken (_bpers_5_io_out_bits_predictTaken),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .io_inputs_5_bits_offset       (_bpers_5_io_out_bits_offset),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .io_inputs_6_valid             (_bpers_6_io_out_isMatched),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .io_inputs_6_bits_predictTaken (_bpers_6_io_out_bits_predictTaken),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .io_inputs_6_bits_offset       (_bpers_6_io_out_bits_offset),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .io_inputs_7_valid             (_bpers_7_io_out_isMatched),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .io_inputs_7_bits_predictTaken (_bpers_7_io_out_bits_predictTaken),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
-    .io_inputs_7_bits_offset       (_bpers_7_io_out_bits_offset),	// src/main/scala/ultra/caches/bpbuffer/BpBuffer.scala:13:44
     .io_output_bits_predictTaken   (io_core_out_predictTaken),
     .io_output_bits_offset         (io_core_out_offset)
   );
@@ -1701,12 +1510,12 @@ module UltraFetchPlugin(	// src/main/scala/ultra/caches/UltraFetchPlugin.scala:1
   output         io_core_out_predictTaken,	// src/main/scala/ultra/caches/UltraFetchPlugin.scala:11:14
   output [31:0]  io_bus_out_pc,	// src/main/scala/ultra/caches/UltraFetchPlugin.scala:11:14
   output         io_bus_out_rreq,	// src/main/scala/ultra/caches/UltraFetchPlugin.scala:11:14
-  input  [255:0] io_bus_in_rdata,	// src/main/scala/ultra/caches/UltraFetchPlugin.scala:11:14
+  input  [127:0] io_bus_in_rdata,	// src/main/scala/ultra/caches/UltraFetchPlugin.scala:11:14
   input          io_bus_in_rrdy,	// src/main/scala/ultra/caches/UltraFetchPlugin.scala:11:14
                  io_bus_in_rvalid	// src/main/scala/ultra/caches/UltraFetchPlugin.scala:11:14
 );
 
-  wire [255:0] _icache_io_core_out_rdata;	// src/main/scala/ultra/caches/UltraFetchPlugin.scala:15:22
+  wire [127:0] _icache_io_core_out_rdata;	// src/main/scala/ultra/caches/UltraFetchPlugin.scala:15:22
   wire         _icache_io_core_out_rvalid;	// src/main/scala/ultra/caches/UltraFetchPlugin.scala:15:22
   wire [31:0]  _icache_io_pc;	// src/main/scala/ultra/caches/UltraFetchPlugin.scala:15:22
   UltraIcache icache (	// src/main/scala/ultra/caches/UltraFetchPlugin.scala:15:22
@@ -2993,7 +2802,7 @@ module UltraCpu(	// src/main/scala/ultra/UltraCpu.scala:10:7
   wire         _fetchStage_io_pipe_out_bits_predictTaken;	// src/main/scala/ultra/UltraCpu.scala:34:26
   wire [31:0]  _fetchStage_io_aside_out_pc;	// src/main/scala/ultra/UltraCpu.scala:34:26
   wire         _fetchStage_io_aside_out_rreq;	// src/main/scala/ultra/UltraCpu.scala:34:26
-  wire [255:0] _bus_io_iChannel_out_rdata;	// src/main/scala/ultra/UltraCpu.scala:25:19
+  wire [127:0] _bus_io_iChannel_out_rdata;	// src/main/scala/ultra/UltraCpu.scala:25:19
   wire         _bus_io_iChannel_out_rrdy;	// src/main/scala/ultra/UltraCpu.scala:25:19
   wire         _bus_io_iChannel_out_rvalid;	// src/main/scala/ultra/UltraCpu.scala:25:19
   wire [63:0]  _bus_io_dChannel_out_rdata;	// src/main/scala/ultra/UltraCpu.scala:25:19

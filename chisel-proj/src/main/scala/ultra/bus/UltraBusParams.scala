@@ -3,14 +3,14 @@ import chisel3._
 import chisel3.util._
 object UltraBusParams {
   val wordLength = 32
-  val iWords = 8
+  val iWords = 4
   val iOffsetWidth = 2 + log2Ceil(iWords)
   val dWords = 2
   val dOffsetWidth = 2 + log2Ceil(dWords)
   val iBandWidth = iWords * wordLength
   val dBandWidth = dWords * wordLength
   val _M = math.pow(10,6).toInt
-  val cpuFrequency = 160 * _M
+  val cpuFrequency = 170 * _M
   val sramFrequency = 60 * _M
   val memCycles = 3
 

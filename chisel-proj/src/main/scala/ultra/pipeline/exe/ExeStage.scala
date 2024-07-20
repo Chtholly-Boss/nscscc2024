@@ -17,6 +17,7 @@ class ExeStage extends Module {
   object ExeState extends ChiselEnum {
     val
     IDLE,
+    MUL,
     LOAD_BLOCK,
     LOADING,
     STORE_BLOCK
@@ -186,34 +187,7 @@ class ExeStage extends Module {
   }
 
   val loadWctrlBuf = RegInit(initExeOut)
-  def fillLoadSlot(nstat:Type) = {
-    when(decode.req){
-      // Check if collision exists
-      when(
-        decode.readInfo.reg_1.addr === loadWctrlBuf.bits.addr ||
-          decode.readInfo.reg_2.addr === loadWctrlBuf.bits.addr ||
-          decode.bits.wCtrl.addr === loadWctrlBuf.bits.addr
-      ){
-        // Do nothing
-      }.otherwise{
-        switch(decode.bits.exeOp.opType){
-          is(tp.arith,tp.shift,tp.logic){
-            io.pipe.decode.out.ack := true.B
-            processComp()
-          }
-          is(tp.branch){
-            io.pipe.decode.out.ack := true.B
-            processBranch()
-          }
-          is(tp.jump){
-            io.pipe.decode.out.ack := true.B
-            processJump()
-          }
-        }
-      }
-    }
-    exstat := nstat
-  }
+
   switch(exstat){
     is(IDLE){
       default()
@@ -227,7 +201,7 @@ class ExeStage extends Module {
       when(io.aside.in.rrdy){
         processLoad(asideOutBuf)
       }.otherwise{
-        fillLoadSlot(LOAD_BLOCK)
+        exstat := LOAD_BLOCK
       }
     }
     is(LOADING){

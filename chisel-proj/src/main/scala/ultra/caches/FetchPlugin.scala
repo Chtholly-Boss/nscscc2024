@@ -20,7 +20,8 @@ class FetchPlugin extends Module {
       IDLE,
       SCAN,
       SEND,
-      WAIT
+      WAIT,
+      PADDING
     = Value
   }
   import State._
@@ -134,8 +135,13 @@ class FetchPlugin extends Module {
         cache_addr := pc2cacheAddr(iReqBuf.pc)
         tagWdata := 1.U(1.W) ## pc2tag(iReqBuf.pc)
         lineWdata := io.bus.in.rdata
-        fpstat := SCAN
+        fpstat := PADDING
       }
+    }
+    is(PADDING){
+      cache_we := false.B
+      cache_addr := pc2cacheAddr(nReqBuf.pc)
+      fpstat := SCAN
     }
   }
 }

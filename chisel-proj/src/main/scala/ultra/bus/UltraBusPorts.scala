@@ -50,7 +50,6 @@ object UltraBusPorts {
     val in = Input(new DataReq)
     val out = Output(new DataRspns)
   }
-
   // --- Sram Channel ---
   class SramMasterIo extends Bundle {
     val in = Input(new SramResponse)
@@ -60,5 +59,12 @@ object UltraBusPorts {
   class UartMasterIo extends Bundle {
     val txd = Output(UInt(1.W))
     val rxd = Input(UInt(1.W))
+  }
+  class UltraBusIo extends Bundle {
+    val iChannel = new InstSlaveIo
+    val dChannel = new DataSlaveIo
+    val baseRam = new SramMasterIo
+    val extRam = new SramMasterIo
+    val uart = new UartMasterIo
   }
 }

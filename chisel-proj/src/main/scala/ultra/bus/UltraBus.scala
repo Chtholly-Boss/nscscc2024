@@ -8,22 +8,13 @@ import ultra.bus.uart.{async_receiver, async_transmitter}
 import sram.SramUtils._
 
 class UltraBus extends Module{
-  val io = IO(new Bundle() {
-    val iChannel = new InstSlaveIo
-    val dChannel = new DataSlaveIo
-    val baseRam = new SramMasterIo
-    val extRam = new SramMasterIo
-    val uart = new UartMasterIo
-  })
-  // --- Uart ---
+  val io = IO(new UltraBusIo)
+  // ---------------------Uart Module----------------------------------
+  // ------------------------------------------------------------------
   val UartTransmitter = Module(new async_transmitter(cpuFrequency))
   val UartReceiver = Module(new async_receiver(cpuFrequency))
   io.uart.txd := UartTransmitter.io.TxD
   UartReceiver.io.RxD := io.uart.rxd
-  /**
-   * Change Uart Input to Reg type
-   * May benefit to the Time Constraint
-   */
   val UT_data = RegInit(0.U(8.W))
   val UT_start = RegInit(false.B)
   val UR_clear = RegInit(false.B)
@@ -36,64 +27,21 @@ class UltraBus extends Module{
   UartTransmitter.io.TxD_data := UT_data
   UartTransmitter.io.TxD_start := UT_start
   UartReceiver.io.RxD_clear := UR_clear
-  // Signals to Communicate with BaseRam and ExtRam
-  val baseramReqReg = RegInit(initSramReq)
-  val extramReqReg = RegInit(initSramReq)
-  io.baseRam.out := baseramReqReg
-  io.extRam.out := extramReqReg
-  val baseramInWire = WireDefault(io.baseRam.in)
-  val extramInWire = WireDefault(io.extRam.in)
-  // Signals to Communicate with FetchStage and ExeStage
-  val iHasReq = WireDefault(io.iChannel.in.rreq)
+  // -------------------------------------------------------------------
+  // -------------------------------------------------------------------
+  // InstChannel Signals and Utils
+  // -------------------------------------------------------------------
+  val isInstHasReq = WireDefault(io.iChannel.in.rreq)
   val iReqReg = RegInit(initInstReq)
-  when(iHasReq) {
+  when(isInstHasReq) {
     iReqReg := io.iChannel.in
   }
   val iRspnsReg = RegInit(initInstRspns)
-
-  val dHasReq = WireDefault(
-    io.dChannel.in.rreq | io.dChannel.in.wreq
-  )
-  val dReqReg = RegInit(initDataReq)
-  when(dHasReq) {
-    dReqReg := io.dChannel.in
-  }
-  val dRspnsReg = RegInit(initDataRspns)
   io.iChannel.out := iRspnsReg
-  io.dChannel.out := dRspnsReg
-  // Instruction State Machine
+
   import UltraBusUtils.{InstState => I}
   val istat = RegInit(I.IDLE)
-  // Data State Machine
-  import UltraBusUtils.{DataState => D}
-  val dstat = RegInit(D.IDLE)
-  // Status Signals
-  val baseramBusy = WireDefault(
-    istat === I.B_LOAD ||
-      dstat === D.B_LOAD ||
-      dstat === D.B_STORE
-  )
-  val extramBusy = WireDefault(
-    dstat === D.E_STORE ||
-      dstat === D.E_LOAD
-  )
-  val isData2BaseRam = WireDefault(
-    (dHasReq && io.dChannel.in.addr(31,22) === baseSramAddr) ||
-      dstat === D.B_WAIT ||
-      dstat === D.B_STORE ||
-      dstat === D.B_LOAD
-  )
-  val isData2ExtRam = WireDefault(
-    (dHasReq && io.dChannel.in.addr(31,22) === extSramAddr) ||
-      dstat === D.E_WAIT ||
-      dstat === D.E_LOAD ||
-      dstat === D.E_STORE
-  )
-  val isData2Uart = WireDefault(
-    dHasReq && io.dChannel.in.addr(31,24) === uartAddr
-  )
 
-  // Instruction Handy Functions
   val iWordCnt = Counter(iWords+1)
   val iCycleCnt = Counter(memCycles)
   val idata = RegInit(0.U(iBandWidth.W))
@@ -114,42 +62,32 @@ class UltraBus extends Module{
     iRspnsReg.rdata := rdata
     istat := I.IDLE
   }
-  // Instruction State Machine Logic
-  switch(istat) {
-    is (I.IDLE) {
-      iRspnsReg := initInstRspns
-      when(iHasReq) {
-        instIsProcessing()
-        when(isData2BaseRam || baseramBusy) {
-          istat := I.WAIT
-        }.otherwise {
-          istat2Load(io.iChannel.in.pc(21,iOffsetWidth) ## 0.U((iOffsetWidth-2).W))
-        }
-      }
-    }
-    is (I.B_LOAD) {
-      when(iWordCnt.value === iWords.U) {
-        iLoadDone(idata)
-        baseramReqReg := initSramReq
-      }.otherwise{
-        when (iCycleCnt.inc()) {
-          idata := baseramInWire.rData ## idata(iBandWidth-1,32)
-          baseramReqReg.addr := baseramReqReg.addr + 1.U
-          iWordCnt.inc()
-        }
-      }
-    }
-    is (I.WAIT) {
-      when(isData2BaseRam || baseramBusy) {
-        istat := I.WAIT
-      }.otherwise{
-        istat2Load(iReqReg.pc(21,iOffsetWidth) ## 0.U((iOffsetWidth-2).W))
-      }
-    }
+  // -------------------------------------------------------------------
+  // Data Channel Signals and Utils
+  // -------------------------------------------------------------------
+  val dHasReq = WireDefault(
+    io.dChannel.in.rreq | io.dChannel.in.wreq
+  )
+  val dReqReg = RegInit(initDataReq)
+  when(dHasReq) {
+    dReqReg := io.dChannel.in
   }
+  val dRspnsReg = RegInit(initDataRspns)
+  io.dChannel.out := dRspnsReg
 
-
-  // Data Handy Functions
+  import UltraBusUtils.{DataState => D}
+  val dstat = RegInit(D.IDLE)
+  val isData2BaseRam = WireDefault(
+    (dHasReq && io.dChannel.in.addr(31,22) === baseSramAddr) ||
+      dstat === D.B_WAIT
+  )
+  val isData2ExtRam = WireDefault(
+    (dHasReq && io.dChannel.in.addr(31,22) === extSramAddr) ||
+      dstat === D.E_WAIT
+  )
+  val isData2Uart = WireDefault(
+    dHasReq && io.dChannel.in.addr(31,24) === uartAddr
+  )
   val dWordCnt = Counter(dWords+1)
   val dCycleCnt = Counter(memCycles)
   val dData = RegInit(0.U(dBandWidth.W))
@@ -233,6 +171,60 @@ class UltraBus extends Module{
       dstat2ExtStore(req)
     }
   }
+  // -------------------------------------------------------------------
+  // Base Sram Signals
+  val baseramReqReg = RegInit(initSramReq)
+  io.baseRam.out := baseramReqReg
+  val isBaseramBusy = WireDefault(
+    istat === I.B_LOAD ||
+      dstat === D.B_LOAD ||
+      dstat === D.B_STORE
+  )
+  // Ext Sram Signal
+  val extramReqReg = RegInit(initSramReq)
+  io.extRam.out := extramReqReg
+  val extramBusy = WireDefault(
+    dstat === D.E_STORE ||
+      dstat === D.E_LOAD
+  )
+  // -------------------------------------------------------------------
+  // Processing Instruction Request
+  // -------------------------------------------------------------------
+  switch(istat) {
+    is (I.IDLE) {
+      iRspnsReg := initInstRspns
+      when(isInstHasReq) {
+        instIsProcessing()
+        when(isData2BaseRam || isBaseramBusy) {
+          istat := I.WAIT
+        }.otherwise {
+          istat2Load(io.iChannel.in.pc(21,iOffsetWidth) ## 0.U((iOffsetWidth-2).W))
+        }
+      }
+    }
+    is (I.B_LOAD) {
+      when(iWordCnt.value === iWords.U) {
+        iLoadDone(idata)
+        baseramReqReg := initSramReq
+      }.otherwise{
+        when (iCycleCnt.inc()) {
+          idata := io.baseRam.in.rData ## idata(iBandWidth-1,32)
+          baseramReqReg.addr := baseramReqReg.addr + 1.U
+          iWordCnt.inc()
+        }
+      }
+    }
+    is (I.WAIT) {
+      when(isData2BaseRam || isBaseramBusy) {
+        istat := I.WAIT
+      }.otherwise{
+        istat2Load(iReqReg.pc(21,iOffsetWidth) ## 0.U((iOffsetWidth-2).W))
+      }
+    }
+  }
+  // -------------------------------------------------------------------
+  // Processing Data Request
+  // -------------------------------------------------------------------
   switch(dstat){
     is(D.IDLE){
       dRspnsReg := initDataRspns
@@ -241,7 +233,7 @@ class UltraBus extends Module{
       UT_data := 0.U
       when(isData2BaseRam){
         dIsProcessing()
-        when(baseramBusy){
+        when(isBaseramBusy){
           dstat := D.B_WAIT
         }.otherwise{
           procBaseramReq(io.dChannel.in)
@@ -261,7 +253,7 @@ class UltraBus extends Module{
       }
     }
     is(D.B_WAIT){
-      when(!baseramBusy){
+      when(!isBaseramBusy){
         procBaseramReq(dReqReg)
       }
     }
@@ -273,7 +265,7 @@ class UltraBus extends Module{
     }
     is(D.B_LOAD){
       when(dCycleCnt.inc()){
-        dLoadDone(baseramInWire.rData)
+        dLoadDone(io.baseRam.in.rData)
         baseramReqReg := initSramReq
       }
     }
@@ -290,9 +282,10 @@ class UltraBus extends Module{
     }
     is(D.E_LOAD){
       when(dCycleCnt.inc()){
-        dLoadDone(extramInWire.rData)
+        dLoadDone(io.extRam.in.rData)
         extramReqReg := initSramReq
       }
     }
   }
+  // -------------------------------------------------------------------
 }

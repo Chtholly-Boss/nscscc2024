@@ -75,6 +75,8 @@ class UltraFetchStage extends Module {
           }.otherwise{
             missAction()
           }
+        }.otherwise{
+          sendReq(pcCur)
         }
       }
     }

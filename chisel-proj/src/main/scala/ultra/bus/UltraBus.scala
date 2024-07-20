@@ -197,17 +197,16 @@ class UltraBus extends Module{
             procBaseramReq(io.dChannel.in)
           }
         }
-      }
-
-      when(isData2ExtRam){
-        when(extramBusy){
-          dstat := D.E_WAIT
-        }.otherwise{
-          procExtramReq(io.dChannel.in)
+        when(isData2ExtRam){
+          when(extramBusy){
+            dstat := D.E_WAIT
+          }.otherwise{
+            procExtramReq(io.dChannel.in)
+          }
         }
-      }
-      when(isData2Uart){
-        procUartReq(io.dChannel.in)
+        when(isData2Uart){
+          procUartReq(io.dChannel.in)
+        }
       }
     }
     is(D.B_WAIT){

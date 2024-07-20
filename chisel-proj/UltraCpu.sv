@@ -824,7 +824,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
   async_transmitter #(
-    .ClkFrequency(150000000)
+    .ClkFrequency(160000000)
   ) UartTransmitter (	// src/main/scala/ultra/bus/UltraBus.scala:19:31
     .clk       (clock),
     .TxD_start (UT_start),	// src/main/scala/ultra/bus/UltraBus.scala:28:25
@@ -833,7 +833,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
     .TxD_busy  (_UartTransmitter_TxD_busy)
   );
   async_receiver #(
-    .ClkFrequency(150000000)
+    .ClkFrequency(160000000)
   ) UartReceiver (	// src/main/scala/ultra/bus/UltraBus.scala:20:28
     .clk            (clock),
     .RxD            (io_uart_rxd),
@@ -1008,24 +1008,22 @@ module UltraFetchPlugin(	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala
   reg  [31:0]     nReqBuf_pc;	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:46:24
   wire            isHit = _tagRam_douta[14] & _tagRam_douta[13:0] == nReqBuf_pc[21:8];	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:30:22, :46:24, :51:{20,39}, :52:{22,37}, :61:7
   wire [127:0]    _instSel_T_2 = _dataRam_douta >> {121'h0, nReqBuf_pc[3:0], 3'h0};	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:31:23, :46:24, :55:{31,45,63}
-  wire            _GEN = fpstat == 2'h0;	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:12:7, :28:23, :96:17
-  wire            _GEN_0 = fpstat == 2'h1;	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:12:7, :28:23, :96:17
+  wire            _GEN = fpstat == 2'h0;	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:12:7, :28:23, :95:17
+  wire            _GEN_0 = fpstat == 2'h1;	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:12:7, :28:23, :95:17
   wire [31:0]     _io_core_out_predictTaken_npc_T = nReqBuf_pc + 32'h4;	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:46:24, :64:30
-  wire            _GEN_1 = _GEN_0 & isHit;	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:17:15, :51:39, :86:21, :96:17, :104:18
-  wire            _GEN_2 = _GEN | ~_GEN_1;	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:17:15, :86:21, :96:17, :104:18
-  wire            _GEN_3 = isHit | ~io_bus_in_rrdy;	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:45:24, :51:39, :104:18, :118:29
-  wire            _GEN_4 = fpstat == 2'h2;	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:12:7, :28:23, :96:17
-  wire            _GEN_5 = _GEN_4 & io_bus_in_rrdy;	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:45:24, :91:13, :96:17, :127:27
-  wire            _GEN_6 = _GEN | _GEN_0 | _GEN_4;	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:32:29, :96:17, :98:28, :104:18
-  wire            cache_we = ~_GEN_6 & (&fpstat) & io_bus_in_rvalid;	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:28:23, :32:29, :96:17, :98:28, :104:18
-  wire            _GEN_7 = (&fpstat) & io_bus_in_rvalid;	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:28:23, :33:31, :96:17, :135:29, :137:20
-  wire [3:0][3:0] _GEN_8 =
-    {{_GEN_4 | ~_GEN_7 ? 4'h0 : iReqBuf_pc[7:4]},
+  wire            _GEN_1 = _GEN_0 & isHit;	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:17:15, :51:39, :86:21, :95:17, :103:18
+  wire            _GEN_2 = _GEN | ~_GEN_1;	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:17:15, :86:21, :95:17, :103:18
+  wire            _GEN_3 = fpstat == 2'h2;	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:12:7, :28:23, :95:17
+  wire            _GEN_4 = _GEN | _GEN_0 | _GEN_3;	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:32:29, :95:17, :97:28, :103:18
+  wire            cache_we = ~_GEN_4 & (&fpstat) & io_bus_in_rvalid;	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:28:23, :32:29, :95:17, :97:28, :103:18
+  wire            _GEN_5 = (&fpstat) & io_bus_in_rvalid;	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:28:23, :33:31, :95:17, :135:29, :137:20
+  wire [3:0][3:0] _GEN_6 =
+    {{_GEN_3 | ~_GEN_5 ? 4'h0 : iReqBuf_pc[7:4]},
      {4'h0},
      {isHit & io_core_in_rreq ? io_core_in_pc[7:4] : 4'h0},
-     {io_core_in_rreq ? io_core_in_pc[7:4] : 4'h0}};	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:33:31, :45:24, :51:39, :58:7, :81:16, :96:17, :98:28, :104:18, :111:30, :135:29, :137:20
-  wire [3:0]      cache_addr = _GEN_8[fpstat];	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:28:23, :33:31, :96:17, :98:28, :104:18
-  wire            _GEN_9 = _GEN_6 | ~_GEN_7;	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:32:29, :33:31, :34:29, :96:17, :98:28, :104:18, :135:29, :137:20
+     {io_core_in_rreq ? io_core_in_pc[7:4] : 4'h0}};	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:33:31, :45:24, :51:39, :58:7, :81:16, :95:17, :97:28, :103:18, :110:30, :135:29, :137:20
+  wire [3:0]      cache_addr = _GEN_6[fpstat];	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:28:23, :33:31, :95:17, :97:28, :103:18
+  wire            _GEN_7 = _GEN_4 | ~_GEN_5;	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:32:29, :33:31, :34:29, :95:17, :97:28, :103:18, :135:29, :137:20
   always @(posedge clock) begin	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:12:7
     if (reset) begin	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:12:7
       fpstat <= 2'h0;	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:12:7, :28:23
@@ -1033,24 +1031,18 @@ module UltraFetchPlugin(	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala
       nReqBuf_pc <= 32'h0;	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:46:24, :54:28
     end
     else begin	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:12:7
-      automatic logic [1:0]      _GEN_10 = {1'h1, io_bus_in_rrdy};	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:51:31, :118:29, :120:18, :122:18
-      automatic logic [3:0][1:0] _GEN_11;	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:96:17, :98:28, :104:18, :127:27
-      _GEN_11 =
-        {{_GEN_7 ? 2'h1 : fpstat},
-         {_GEN_10},
-         {isHit ? {1'h0, io_core_in_rreq} : _GEN_10},
-         {io_core_in_rreq ? 2'h1 : fpstat}};	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:12:7, :28:23, :33:31, :51:39, :96:17, :98:28, :99:16, :104:18, :111:30, :113:18, :115:18, :118:29, :120:18, :122:18, :127:27, :135:29, :137:20, :140:16, src/main/scala/ultra/pipeline/fetch/UltraFetchUtils.scala:19:16
-      fpstat <= _GEN_11[fpstat];	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:28:23, :96:17, :98:28, :104:18, :127:27
-      if (~_GEN) begin	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:17:15, :96:17
-        if (_GEN_0) begin	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:96:17
-          if (_GEN_3) begin	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:45:24, :104:18, :118:29
-          end
-          else	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:45:24, :104:18, :118:29
-            iReqBuf_pc <= nReqBuf_pc;	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:45:24, :46:24
-        end
-        else if (_GEN_5)	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:45:24, :91:13, :96:17, :127:27
-          iReqBuf_pc <= nReqBuf_pc;	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:45:24, :46:24
+      automatic logic [1:0]      _GEN_8 = {1'h1, io_bus_in_rrdy};	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:51:31, :117:29, :120:18, :122:18
+      automatic logic [3:0][1:0] _GEN_9;	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:95:17, :97:28, :103:18, :127:27
+      _GEN_9 =
+        {{_GEN_5 ? 2'h1 : fpstat},
+         {_GEN_8},
+         {isHit ? {1'h0, io_core_in_rreq} : _GEN_8},
+         {io_core_in_rreq ? 2'h1 : fpstat}};	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:12:7, :28:23, :33:31, :51:39, :95:17, :97:28, :98:16, :103:18, :110:30, :112:18, :114:18, :117:29, :120:18, :122:18, :127:27, :135:29, :137:20, :140:16, src/main/scala/ultra/pipeline/fetch/UltraFetchUtils.scala:19:16
+      fpstat <= _GEN_9[fpstat];	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:28:23, :95:17, :97:28, :103:18, :127:27
+      if (_GEN | ~_GEN_0 | isHit | ~io_bus_in_rrdy) begin	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:18:14, :45:24, :51:39, :95:17, :103:18, :117:29
       end
+      else	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:45:24, :95:17
+        iReqBuf_pc <= nReqBuf_pc;	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:45:24, :46:24
       if (io_core_in_rreq)	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:13:14
         nReqBuf_pc <= io_core_in_pc;	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:46:24
     end
@@ -1078,20 +1070,20 @@ module UltraFetchPlugin(	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
   TagBlkMem tagRam (	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:30:22
-    .addra (cache_addr),	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:96:17, :98:28
+    .addra (cache_addr),	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:95:17, :97:28
     .clka  (clock),
-    .dina  (_GEN_9 ? 15'h0 : {1'h1, iReqBuf_pc[21:8]}),	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:34:29, :45:24, :51:31, :61:7, :96:17, :138:30
+    .dina  (_GEN_7 ? 15'h0 : {1'h1, iReqBuf_pc[21:8]}),	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:34:29, :45:24, :51:31, :61:7, :95:17, :138:30
     .douta (_tagRam_douta),
-    .wea   (cache_we)	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:32:29, :96:17, :98:28, :104:18
+    .wea   (cache_we)	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:32:29, :95:17, :97:28, :103:18
   );
   DataBlkMem dataRam (	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:31:23
-    .addra (cache_addr),	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:96:17, :98:28
+    .addra (cache_addr),	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:95:17, :97:28
     .clka  (clock),
-    .dina  (_GEN_9 ? 128'h0 : io_bus_in_rdata),	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:34:29, :35:30, :96:17
+    .dina  (_GEN_7 ? 128'h0 : io_bus_in_rdata),	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:34:29, :35:30, :95:17
     .douta (_dataRam_douta),
-    .wea   (cache_we)	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:32:29, :96:17, :98:28, :104:18
+    .wea   (cache_we)	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:32:29, :95:17, :97:28, :103:18
   );
-  assign io_core_out_inst = _GEN_2 ? 32'h0 : _instSel_T_2[31:0];	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:12:7, :17:15, :54:28, :55:{11,31}, :96:17
+  assign io_core_out_inst = _GEN_2 ? 32'h0 : _instSel_T_2[31:0];	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:12:7, :17:15, :54:28, :55:{11,31}, :95:17
   assign io_core_out_npc =
     _GEN_2
       ? 32'h0
@@ -1103,22 +1095,22 @@ module UltraFetchPlugin(	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala
           : _instSel_T_2[31:26] == 6'h15 | _instSel_T_2[31:26] == 6'h14
               ? nReqBuf_pc
                 + {{4{_instSel_T_2[9]}}, _instSel_T_2[9:0], _instSel_T_2[25:10], 2'h0}
-              : _io_core_out_predictTaken_npc_T;	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:12:7, :17:15, :46:24, :54:28, :55:31, :64:{26,30}, :66:{16,24}, :68:{18,31}, :70:{15,29,36}, :75:{13,27,34,47}, :96:17
+              : _io_core_out_predictTaken_npc_T;	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:12:7, :17:15, :46:24, :54:28, :55:31, :64:{26,30}, :66:{16,24}, :68:{18,31}, :70:{15,29,36}, :75:{13,27,34,47}, :95:17
   assign io_core_out_predictTaken =
     ~_GEN & _GEN_1
     & (_instSel_T_2[31:26] == 6'h16 | _instSel_T_2[31:26] == 6'h19
        | _instSel_T_2[31:26] == 6'h17
          ? _instSel_T_2[25]
-         : _instSel_T_2[31:26] == 6'h15 | _instSel_T_2[31:26] == 6'h14);	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:12:7, :17:15, :55:31, :66:{16,24}, :68:{18,31}, :86:21, :96:17, :104:18
-  assign io_core_out_isHit = ~_GEN & _GEN_0 & isHit;	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:12:7, :17:15, :51:39, :96:17
+         : _instSel_T_2[31:26] == 6'h15 | _instSel_T_2[31:26] == 6'h14);	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:12:7, :17:15, :55:31, :66:{16,24}, :68:{18,31}, :86:21, :95:17, :103:18
+  assign io_core_out_isHit = ~_GEN & _GEN_0 & isHit;	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:12:7, :17:15, :51:39, :95:17
   assign io_bus_out_pc =
     _GEN
       ? 32'h80000000
       : _GEN_0
-          ? (_GEN_3 ? 32'h80000000 : nReqBuf_pc)
-          : _GEN_5 ? iReqBuf_pc : 32'h80000000;	// src/main/scala/ultra/bus/UltraBusUtils.scala:19:13, src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:12:7, :18:14, :45:24, :46:24, :91:13, :93:19, :96:17, :104:18, :118:29, :127:27
+          ? (isHit | ~io_bus_in_rrdy ? 32'h80000000 : nReqBuf_pc)
+          : _GEN_3 & io_bus_in_rrdy ? iReqBuf_pc : 32'h80000000;	// src/main/scala/ultra/bus/UltraBusUtils.scala:19:13, src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:12:7, :18:14, :45:24, :46:24, :51:39, :92:19, :95:17, :103:18, :117:29, :127:27
   assign io_bus_out_rreq =
-    ~_GEN & (_GEN_0 ? ~isHit & io_bus_in_rrdy : _GEN_4 & io_bus_in_rrdy);	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:12:7, :17:15, :18:14, :51:39, :96:17, :104:18, :118:29, :127:27
+    ~_GEN & (_GEN_0 ? ~isHit & io_bus_in_rrdy : _GEN_3 & io_bus_in_rrdy);	// src/main/scala/ultra/pipeline/UltraFetchPlugin.scala:12:7, :17:15, :18:14, :51:39, :95:17, :103:18, :117:29, :127:27
 endmodule
 
 module Decoder_2RI12(	// src/main/scala/ultra/pipeline/decode/decoders/Decoder_2RI12.scala:7:7

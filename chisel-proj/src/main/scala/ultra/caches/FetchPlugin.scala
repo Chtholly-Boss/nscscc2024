@@ -85,7 +85,6 @@ class FetchPlugin extends Module {
     io.core.out.inst := inst
   }
   def refillAction(pc:UInt) = {
-    iReqBuf := nReqBuf
     io.bus.out.rreq := true.B
     io.bus.out.pc := pc
   }
@@ -114,6 +113,7 @@ class FetchPlugin extends Module {
       }.otherwise{
         when(io.bus.in.rrdy){
           refillAction(nReqBuf.pc)
+          iReqBuf := nReqBuf
           fpstat := WAIT
         }.otherwise{
           fpstat := SEND

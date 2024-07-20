@@ -1,14 +1,15 @@
-package ultra.caches
+package ultra.pipeline
+
 import chisel3._
 import chisel3.util._
 import ultra.bus.UltraBusPorts._
-import ultra.pipeline.fetch.UltraFetchPorts._
-import ultra.caches.blkmem.BlockMem
-import ultra.caches.icache.IcacheParams._
-import ultra.pipeline.fetch.UltraFetchUtils.FetchAsideUtils._
 import ultra.bus.UltraBusUtils._
-import ultra.pipeline.decode.UltraDecodeParams.{instWidth, _2RI16 => Inst}
-class FetchPlugin extends Module {
+import ultra.caches.blkmem._
+import ultra.caches.icache.IcacheParams._
+import ultra.pipeline.decode.UltraDecodeParams.{_2RI16 => Inst}
+import ultra.pipeline.fetch.UltraFetchPorts._
+import ultra.pipeline.fetch.UltraFetchUtils.FetchAsideUtils._
+class UltraFetchPlugin extends Module {
   val io = IO(new Bundle() {
     val core = new FetchAsidePorts.UltraFetchAsideSlaveIo
     val bus = new InstMasterIo
@@ -17,27 +18,29 @@ class FetchPlugin extends Module {
   io.bus.out := initInstReq
   object State extends ChiselEnum {
     val
-      IDLE,
-      SCAN,
-      SEND,
-      WAIT
+    IDLE,
+    SCAN,
+    SEND,
+    WAIT
     = Value
   }
   import State._
   val fpstat = RegInit(IDLE)
   // Memory
-  val tagRam = Module(new BlockMem(depth,1 + tagWidth))
-  val dataRam = Module(new BlockMem(depth,bandwidth))
+  val tagRam = Module(new TagBlkMem)
+  val dataRam = Module(new DataBlkMem)
   val cache_we = WireDefault(false.B)
   val cache_addr = WireDefault(0.U(indexWidth.W))
   val tagWdata = WireDefault(0.U((1+tagWidth).W))
   val lineWdata = WireDefault(0.U(bandwidth.W))
-  tagRam.io.in.addr := cache_addr
-  tagRam.io.in.wen := cache_we
-  tagRam.io.in.wdata := tagWdata
-  dataRam.io.in.addr := cache_addr
-  dataRam.io.in.wen := cache_we
-  dataRam.io.in.wdata := lineWdata
+  tagRam.io.clka := clock
+  tagRam.io.addra := cache_addr
+  tagRam.io.wea := cache_we
+  tagRam.io.dina := tagWdata
+  dataRam.io.clka := clock
+  dataRam.io.addra := cache_addr
+  dataRam.io.wea  := cache_we
+  dataRam.io.dina := lineWdata
   // request buffer
   val iReqBuf = RegInit(initUltraFetchAsideOut())
   val nReqBuf = RegInit(initUltraFetchAsideOut()) // newest req
@@ -45,11 +48,11 @@ class FetchPlugin extends Module {
     nReqBuf := io.core.in
   }
   val isHit = WireDefault(
-    tagRam.io.out.rdata(validBit) === 1.U &&
-      tagRam.io.out.rdata(tagWidth-1,0) === pc2tag(nReqBuf.pc)
+    tagRam.io.douta(validBit) === 1.U &&
+      tagRam.io.douta(tagWidth-1,0) === pc2tag(nReqBuf.pc)
   )
   val instSel = WireDefault(0.U(32.W))
-  instSel := dataRam.io.out.rdata >> (nReqBuf.pc(offsetWidth-1,0) << 3)
+  instSel := dataRam.io.douta >> (nReqBuf.pc(offsetWidth-1,0) << 3)
   // Handy Functions
   def pc2cacheAddr(pc:UInt):UInt = {
     pc(offsetWidth+indexWidth,offsetWidth)

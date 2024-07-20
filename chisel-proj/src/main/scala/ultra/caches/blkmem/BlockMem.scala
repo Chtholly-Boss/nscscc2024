@@ -14,7 +14,9 @@ class BlockMem(depth:Int,width:Int) extends Module {
   io.out.rdata := outReg
   when (io.in.wen) {
     regs(io.in.addr) := io.in.wdata
-  }.otherwise {
+    outReg := io.in.wdata
+  }.otherwise{
     outReg := regs(io.in.addr)
   }
+
 }

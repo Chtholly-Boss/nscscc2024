@@ -14,8 +14,22 @@ object UltraFetchUtils {
       init.predictTaken := false.B
       init
     }
+    def initUltraFetchAsideIn() = {
+      val init = Wire(new UltraFetchAsideIn)
+      init.npc := 0.U
+      init.inst := 0.U
+      init.predictTaken := false.B
+      init.isHit := false.B
+      init
+    }
     def initFetchAsideOut():FetchAsideOut = {
       val init = Wire(new FetchAsideOut)
+      init.pc := 0.U
+      init.rreq := false.B
+      init
+    }
+    def initUltraFetchAsideOut() = {
+      val init = Wire(new UltraFetchAsideOut)
       init.pc := 0.U
       init.rreq := false.B
       init

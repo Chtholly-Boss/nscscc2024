@@ -1,81 +1,82 @@
 package ultra.pipeline.fetch
 import chisel3._
 import chisel3.util._
-import UltraFetchPorts.FetchIo
-import UltraFetchUtils.FetchAsideUtils._
+import UltraFetchPorts.UltraFetchIo
 import UltraFetchUtils.FetchPipeUtils._
+import UltraFetchUtils.FetchAsideUtils._
 import UltraFetchParams._
 class UltraFetchStage extends Module {
-  val io = IO(new FetchIo)
-  // Ports Signal Initialization
+  val io = IO(new UltraFetchIo)
   val pipeOutReg = RegInit(initFetchOut())
   io.pipe.out := pipeOutReg
   io.aside.out := initFetchAsideOut()
-  val npc = RegInit(pcRst)
-  io.aside.out.pc := npc
-  // Internal Utils
-  object FetchState extends ChiselEnum {
+  object State  extends ChiselEnum{
     val
-      RST,  // rst to init pc
-      WAIT, // Wait for buffer refill
-      READY, // wait for ack
-      MISS // mispredict branch
+      RST,
+      WAIT,
+      READY
     = Value
   }
-  import FetchState._
+  import State._
   val fstat = RegInit(RST)
-  def getInstInBuf():Unit = {
-    // Initialize to avoid onchip bugs
+  val pcCur = RegInit(pcRst)
+  // Handy Functions
+  def rstAllOut() = {
+    io.aside.out := initUltraFetchAsideOut()
     pipeOutReg := initFetchOut()
-    io.aside.out.rreq := false.B
-
+  }
+  def sendReq(pc:UInt) = {
+    io.aside.out.rreq := true.B
+    io.aside.out.pc := pc
+  }
+  def rstAction() = {
+    rstAllOut()
+    sendReq(pcRst)
+    fstat := WAIT
+  }
+  def misPredictAction() = {
+    rstAllOut()
+    sendReq(io.pipe.br.npc)
+    pcCur := io.pipe.br.npc
+  }
+  def hitAction() = {
+    rstAllOut()
     fstat := READY
     pipeOutReg.req := true.B
-    pipeOutReg.bits.pc := npc
+    pipeOutReg.bits.pc := pcCur
     pipeOutReg.bits.inst := io.aside.in.inst
     pipeOutReg.bits.predictTaken := io.aside.in.predictTaken
-    npc := (io.aside.in.pcOffset.asSInt + npc.asSInt).asUInt
+    // Update the pcCur tp npc and send npc to cache
+    pcCur := io.aside.in.npc
+    sendReq(io.aside.in.npc)
   }
-  def refillInstInBuf():Unit = {
-    // Initialize to avoid onchip bugs
-    pipeOutReg := initFetchOut()
-    io.aside.out.rreq := false.B
-
+  def missAction() = {
+    rstAllOut()
+    sendReq(pcCur)
     fstat := WAIT
-    io.aside.out.rreq := true.B
   }
-  def checkBuf():Unit = {
-    when(io.aside.in.isInBuf){
-      getInstInBuf()
-    }.otherwise{
-      refillInstInBuf()
-    }
-  }
-  // Working Logic
   when(io.pipe.br.isMispredict){
-    fstat := MISS
-    npc := io.pipe.br.npc
-    pipeOutReg := initFetchOut()
+    misPredictAction()
+    fstat := WAIT
   }.otherwise{
     switch(fstat){
-      is (RST) {
-        refillInstInBuf()
+      is(RST){
+        rstAction()
       }
-      is (WAIT) {
-        when(io.aside.in.rvalid){
-          checkBuf()
+      is(WAIT){
+        when(io.aside.in.isHit){
+          hitAction()
         }
       }
-      is (READY) {
+      is(READY){
         when(io.pipe.in.ack){
-          checkBuf()
+          when(io.aside.in.isHit){
+            hitAction()
+          }.otherwise{
+            missAction()
+          }
         }
-      }
-      is (MISS){
-        checkBuf()
       }
     }
   }
-
-
 }

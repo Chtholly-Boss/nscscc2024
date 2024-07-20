@@ -5,9 +5,9 @@ import ultra.bus.sram.SramPorts._
 import ultra.caches._
 import ultra.pipeline.fetch._
 import ultra.pipeline.regfile.Regfile
-import ultra.pipeline.decode._
+import ultra.pipeline.decode.UltraDecodeStage
 import ultra.pipeline.exe._
-class UltraCpu extends Module {
+class AlphaCpu extends Module {
   val io = IO(new Bundle() {
     val baseSram = new Bundle() {
       val req = Output(new SramRequest)
@@ -32,7 +32,7 @@ class UltraCpu extends Module {
   io.uart.txd := bus.io.uart.txd
 
   val fetchStage = Module(new UltraFetchStage)
-  val fetchPlugin = Module(new UltraFetchPlugin)
+  val fetchPlugin = Module(new FetchPlugin)
   fetchStage.io.aside.in <> fetchPlugin.io.core.out
   fetchStage.io.aside.out <> fetchPlugin.io.core.in
   fetchPlugin.io.bus.in <> bus.io.iChannel.out
@@ -58,7 +58,4 @@ class UltraCpu extends Module {
   exeStage.io.pipe.br <> fetchStage.io.pipe.br
 
   exeStage.io.pipe.wback.out.bits <> regfile.io.wChannel
-}
-object UltraCpu extends App {
-  emitVerilog(new UltraCpu)
 }

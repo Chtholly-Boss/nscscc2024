@@ -87,4 +87,12 @@ object UltraExePorts {
     val pipe = new ExePipePorts.ExePipeIo
     val aside = new ExeAsidePorts.ExeAsideMasterIo
   }
+  // This Aside Io will directly connect to the bus
+  class AlphaExeIo extends Bundle {
+    val pipe = new ExePipePorts.ExePipeIo
+    val aside = new Bundle() {
+      val in = Input(new DataRspns)
+      val out = Output(new DataReq)
+    }
+  }
 }

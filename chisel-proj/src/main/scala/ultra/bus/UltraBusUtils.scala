@@ -23,7 +23,7 @@ object UltraBusUtils {
     val init = Wire(new InstRspns)
     init.rdata := 0.U
     init.rvalid := false.B
-    init.rrdy := true.B
+    init.rrdy := false.B
     init
   }
 

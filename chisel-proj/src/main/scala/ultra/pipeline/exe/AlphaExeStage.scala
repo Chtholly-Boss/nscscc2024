@@ -27,7 +27,7 @@ class AlphaExeStage extends Module {
   // Handy Functions
   def bypassPreWr(addr:UInt,data:UInt):UInt= {
     val res = WireDefault(data)
-    when(preWrBuf.en && preWrBuf.addr === addr){
+    when(preWrBuf.en && (preWrBuf.addr === addr)){
       res := preWrBuf.data
     }
     res
@@ -38,7 +38,7 @@ class AlphaExeStage extends Module {
   val regRight = WireDefault(
     bypassPreWr(decodeIn.readInfo.reg_2.addr,decodeIn.bits.operands.regData_2)
   )
-  val aluRight = WireDefault(decodeIn.bits.operands.regData_2)
+  val aluRight = WireDefault(regRight)
   when(decodeIn.bits.operands.hasImm){
     aluRight := decodeIn.bits.operands.imm
   }

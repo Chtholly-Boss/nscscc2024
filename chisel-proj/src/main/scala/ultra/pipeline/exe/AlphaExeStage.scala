@@ -86,13 +86,38 @@ class AlphaExeStage extends Module {
     val res = WireDefault(0.U(32.W))
     switch(decodeIn.bits.exeOp.opFunc){
       is(Arithmetic.add){
-           res := (opLeft.asSInt + opRight.asSInt).asUInt
+        res := (opLeft.asSInt + opRight.asSInt).asUInt
+      }
+      is(Arithmetic.sltu){
+        res := 0.U(31.W) ## (opLeft < opRight).asUInt
       }
     }
     res
   }
-  def procShift() = {
+  def procLogic(opLeft:UInt,opRight:UInt):UInt = {
+    val res = WireDefault(0.U(32.W))
+    switch(decodeIn.bits.exeOp.opFunc){
+      is(Logic.or){
+        res := opLeft | opRight
+      }
+      is(Logic.and){
+        res := opLeft & opRight
+      }
+      is(Logic.xor){
+        res := opLeft ^ opRight
+      }
+    }
+    res
+  }
 
+  def procShift(opLeft: UInt, opRight: UInt): UInt = {
+    val res = WireDefault(0.U(32.W))
+    switch(decodeIn.bits.exeOp.opFunc) {
+      is(Shift.srl) {
+        res := opLeft >> opRight(4, 0)
+      }
+    }
+    res
   }
 
   val branchTarget = WireDefault(
@@ -114,11 +139,29 @@ class AlphaExeStage extends Module {
           res.npc := defaultTarget
         }
       }
+      is(Branch.bge){
+        when(opLeft.asSInt >= opRight.asSInt){
+          res.isMispredict := !decodeIn.fetchInfo.predictTaken
+          res.npc := branchTarget
+        }.otherwise{
+          res.isMispredict := decodeIn.fetchInfo.predictTaken
+          res.npc := defaultTarget
+        }
+      }
+      is(Branch.beq){
+        when(opLeft === opRight){
+          res.isMispredict := !decodeIn.fetchInfo.predictTaken
+          res.npc := branchTarget
+        }.otherwise{
+          res.isMispredict := decodeIn.fetchInfo.predictTaken
+          res.npc := defaultTarget
+        }
+      }
     }
     res
   }
   def byteMask(func:UInt,addr:UInt):UInt = {
-    val byteSelN = WireDefault("b0000".U)
+    val byteSelN = WireDefault("b0000".U(4.W))
     when(func === 2.U){
       switch(addr){
         is("b00".U){
@@ -137,6 +180,24 @@ class AlphaExeStage extends Module {
     }
     byteSelN
   }
+  def byteSelInWords(byteSelN:UInt,data:UInt):UInt = {
+    val res = WireDefault(data)
+    switch(byteSelN){
+      is("b1110".U){
+        res := data(7,0)
+      }
+      is("b1101".U){
+        res := data(15,8)
+      }
+      is("b1011".U){
+        res := data(23,16)
+      }
+      is("b0111".U){
+        res := data(31,24)
+      }
+    }
+    res
+  }
   val loadInfoBuf = RegInit(initWctrl)
   val asideOutInfo = WireDefault(initExeAsideOut)
   asideOutInfo.rreq := decodeIn.bits.exeOp.opType === tp.load
@@ -144,6 +205,7 @@ class AlphaExeStage extends Module {
   asideOutInfo.addr := (regLeft.asSInt + decodeIn.bits.operands.imm.asSInt).asUInt
   asideOutInfo.wdata := regRight
   asideOutInfo.byteSelN := byteMask(decodeIn.bits.exeOp.opFunc,asideOutInfo.addr(1,0))
+  val asideOutBuf = RegInit(initExeAsideOut)
   // State Machine Logic
   switch(exStat){
     is(IDLE){
@@ -160,6 +222,18 @@ class AlphaExeStage extends Module {
             store2regfile(true.B,decodeIn.bits.wCtrl.addr,procArith(regLeft,aluRight))
             storePreWrRes(true.B,decodeIn.bits.wCtrl.addr,procArith(regLeft,aluRight))
           }
+          is(tp.logic){
+            exStat := IDLE
+            io.pipe.decode.out.ack := true.B
+            store2regfile(true.B,decodeIn.bits.wCtrl.addr,procLogic(regLeft,aluRight))
+            storePreWrRes(true.B,decodeIn.bits.wCtrl.addr,procLogic(regLeft,aluRight))
+          }
+          is(tp.shift){
+            exStat := IDLE
+            io.pipe.decode.out.ack := true.B
+            store2regfile(true.B,decodeIn.bits.wCtrl.addr,procShift(regLeft,aluRight))
+            storePreWrRes(true.B,decodeIn.bits.wCtrl.addr,procShift(regLeft,aluRight))
+          }
           is(tp.branch){
             exStat := IDLE
             io.pipe.decode.out.ack := true.B
@@ -172,6 +246,7 @@ class AlphaExeStage extends Module {
               exStat := LOADING
               io.pipe.decode.out.ack := true.B
               io.aside.out := asideOutInfo
+              asideOutBuf := asideOutInfo
               loadInfoBuf := decodeIn.bits.wCtrl
             }
           }
@@ -189,8 +264,12 @@ class AlphaExeStage extends Module {
       when(io.aside.in.rvalid){
         exStat := IDLE
         // TODO: Sel bytes in words
-        store2regfile(true.B,loadInfoBuf.addr,io.aside.in.rdata)
-        storePreWrRes(true.B,loadInfoBuf.addr,io.aside.in.rdata)
+        store2regfile(true.B,loadInfoBuf.addr,byteSelInWords(
+          asideOutBuf.byteSelN,io.aside.in.rdata
+        ))
+        storePreWrRes(true.B,loadInfoBuf.addr,byteSelInWords(
+          asideOutBuf.byteSelN,io.aside.in.rdata
+        ))
       }
     }
   }

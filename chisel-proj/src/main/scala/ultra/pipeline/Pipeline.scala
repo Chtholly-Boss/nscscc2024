@@ -28,7 +28,7 @@ class Pipeline extends Module {
   decodeStage.io.pipe.fetch.in <> fetchStage.io.pipe.out
   decodeStage.io.pipe.fetch.out <> fetchStage.io.pipe.in
 
-  val exeStage = Module(new AlphaExeStage)
+  val exeStage = Module(new BetaExeStage)
   exeStage.io.aside.in := io.dChannel.in
   io.dChannel.out := exeStage.io.aside.out
 

@@ -91,6 +91,9 @@ class AlphaExeStage extends Module {
       is(Arithmetic.sltu){
         res := 0.U(31.W) ## (opLeft < opRight).asUInt
       }
+      is(Arithmetic.sub){
+        res := (opLeft.asSInt - opRight.asSInt).asUInt
+      }
     }
     res
   }
@@ -115,6 +118,9 @@ class AlphaExeStage extends Module {
     switch(decodeIn.bits.exeOp.opFunc) {
       is(Shift.srl) {
         res := opLeft >> opRight(4, 0)
+      }
+      is(Shift.sll) {
+        res := opLeft << opRight(4,0)
       }
     }
     res
@@ -241,6 +247,14 @@ class AlphaExeStage extends Module {
             storePreWrRes(decodeIn.bits.wCtrl)
             io.pipe.br := procBranch(regLeft,regRight)
           }
+          is(tp.jump){
+            exStat := IDLE
+            store2regfile(decodeIn.bits.wCtrl)
+            storePreWrRes(decodeIn.bits.wCtrl)
+            io.pipe.decode.out.ack := true.B
+            io.pipe.br.isMispredict := true.B
+            io.pipe.br.npc := (regLeft.asSInt + decodeIn.bits.operands.imm.asSInt).asUInt
+          }
           is(tp.load){
             when(io.aside.in.rrdy){
               exStat := LOADING
@@ -263,7 +277,6 @@ class AlphaExeStage extends Module {
     is(LOADING){
       when(io.aside.in.rvalid){
         exStat := IDLE
-        // TODO: Sel bytes in words
         store2regfile(true.B,loadInfoBuf.addr,byteSelInWords(
           asideOutBuf.byteSelN,io.aside.in.rdata
         ))

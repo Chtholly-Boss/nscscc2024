@@ -12,7 +12,7 @@ object UltraBusParams {
   val _M = math.pow(10,6).toInt
   val cpuFrequency = 200 * _M
   val sramFrequency = 60 * _M
-  val memCycles = 4
+  val memCycles = 5
 
   val initPcAddr = "h8000_0000".U
   // Sram Virtual Addr(31,22)

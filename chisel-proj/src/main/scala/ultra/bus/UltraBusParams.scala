@@ -5,7 +5,7 @@ object UltraBusParams {
   val wordLength = 32
   val iWords = 4
   val iOffsetWidth = 2 + log2Ceil(iWords)
-  val dWords = 2
+  val dWords = 1
   val dOffsetWidth = 2 + log2Ceil(dWords)
   val iBandWidth = iWords * wordLength
   val dBandWidth = dWords * wordLength

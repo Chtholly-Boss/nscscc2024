@@ -38,6 +38,7 @@ class AlphaExeStage extends Module {
   val regRight = WireDefault(
     bypassPreWr(decodeIn.readInfo.reg_2.addr,decodeIn.bits.operands.regData_2)
   )
+
   val aluRight = WireDefault(regRight)
   when(decodeIn.bits.operands.hasImm){
     aluRight := decodeIn.bits.operands.imm
@@ -186,24 +187,6 @@ class AlphaExeStage extends Module {
     }
     byteSelN
   }
-  def byteSelInWords(byteSelN:UInt,data:UInt):UInt = {
-    val res = WireDefault(data)
-    switch(byteSelN){
-      is("b1110".U){
-        res := data(7,0)
-      }
-      is("b1101".U){
-        res := data(15,8)
-      }
-      is("b1011".U){
-        res := data(23,16)
-      }
-      is("b0111".U){
-        res := data(31,24)
-      }
-    }
-    res
-  }
   val loadInfoBuf = RegInit(initWctrl)
   val asideOutInfo = WireDefault(initExeAsideOut)
   asideOutInfo.rreq := decodeIn.bits.exeOp.opType === tp.load
@@ -211,7 +194,6 @@ class AlphaExeStage extends Module {
   asideOutInfo.addr := (regLeft.asSInt + decodeIn.bits.operands.imm.asSInt).asUInt
   asideOutInfo.wdata := regRight
   asideOutInfo.byteSelN := byteMask(decodeIn.bits.exeOp.opFunc,asideOutInfo.addr(1,0))
-  val asideOutBuf = RegInit(initExeAsideOut)
   // State Machine Logic
   switch(exStat){
     is(IDLE){
@@ -260,7 +242,6 @@ class AlphaExeStage extends Module {
               exStat := LOADING
               io.pipe.decode.out.ack := true.B
               io.aside.out := asideOutInfo
-              asideOutBuf := asideOutInfo
               loadInfoBuf := decodeIn.bits.wCtrl
             }
           }
@@ -277,12 +258,8 @@ class AlphaExeStage extends Module {
     is(LOADING){
       when(io.aside.in.rvalid){
         exStat := IDLE
-        store2regfile(true.B,loadInfoBuf.addr,byteSelInWords(
-          asideOutBuf.byteSelN,io.aside.in.rdata
-        ))
-        storePreWrRes(true.B,loadInfoBuf.addr,byteSelInWords(
-          asideOutBuf.byteSelN,io.aside.in.rdata
-        ))
+        store2regfile(true.B,loadInfoBuf.addr,io.aside.in.rdata)
+        storePreWrRes(true.B,loadInfoBuf.addr,io.aside.in.rdata)
       }
     }
   }

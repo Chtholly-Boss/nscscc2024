@@ -74,6 +74,27 @@ class UltraBus extends Module{
     dHasReq && io.dChannel.in.addr(31,24) === uartAddr
   )
   val dCycleCnt = Counter(memCycles)
+  def byteSelInWords(byteSelN:UInt,data:UInt):UInt = {
+    val res = WireDefault(data)
+    switch(byteSelN){
+      is("b1110".U){
+        res := data(7,0)
+      }
+      is("b1101".U){
+        res := data(15,8)
+      }
+      is("b1011".U){
+        res := data(23,16)
+      }
+      is("b0111".U){
+        res := data(31,24)
+      }
+      is("b0000".U){
+        res := data
+      }
+    }
+    res
+  }
   def ackDataReq() = {
     dReqReg := io.dChannel.in
     dCycleCnt.reset()
@@ -226,7 +247,7 @@ class UltraBus extends Module{
       when(dCycleCnt.inc()){
         dstat := D.IDLE
         io.dChannel.out.rvalid := true.B
-        io.dChannel.out.rdata := io.baseRam.in.rData
+        io.dChannel.out.rdata := byteSelInWords(dReqReg.byteSelN,io.baseRam.in.rData)
         baseramReqReg := initSramReq
       }
     }
@@ -246,7 +267,7 @@ class UltraBus extends Module{
       when(dCycleCnt.inc()){
         dstat := D.IDLE
         io.dChannel.out.rvalid := true.B
-        io.dChannel.out.rdata := io.extRam.in.rData
+        io.dChannel.out.rdata := byteSelInWords(dReqReg.byteSelN,io.extRam.in.rData)
         extramReqReg := initSramReq
       }
     }

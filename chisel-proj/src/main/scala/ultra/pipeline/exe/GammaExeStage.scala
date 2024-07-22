@@ -145,7 +145,7 @@ class GammaExeStage extends Module {
       }
     }
     is(MS.DONE){
-      when(rStat === RS.RUNNING && io.aside.in.rvalid){
+      when(io.aside.in.rvalid){
         // Do nothing
       }.otherwise{
         mStat := MS.IDLE
@@ -173,7 +173,7 @@ class GammaExeStage extends Module {
   }
   // Request Process
   when(decodeIn.req){
-    when(rStat === RS.RUNNING && io.aside.in.rvalid){
+    when(io.aside.in.rvalid){
       // Do nothing
     }.elsewhen(mStat === MS.DONE){
       // Do nothing.
@@ -193,11 +193,11 @@ class GammaExeStage extends Module {
                 ack := true.B
                 mCounter.reset()
                 mOperandBuf.left := regLeft
-                mOperandBuf.right := aluRight
+                mOperandBuf.right := regRight
                 mWrBuf := decodeIn.bits.wCtrl
                 mStat := MS.WORK
               }.otherwise{
-                // Do nothing
+                // wait until mStat turn to IDLE
               }
             }.otherwise{
               ack := true.B

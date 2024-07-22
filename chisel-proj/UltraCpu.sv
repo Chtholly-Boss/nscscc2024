@@ -98,7 +98,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
   reg  [31:0]  iReqReg_pc;	// src/main/scala/ultra/bus/UltraBus.scala:35:24
   reg  [1:0]   istat;	// src/main/scala/ultra/bus/UltraBus.scala:37:22
   reg  [2:0]   iWordCnt_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg  [1:0]   iCycleCnt_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
+  reg  [2:0]   iCycleCnt_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
   reg  [127:0] idata;	// src/main/scala/ultra/bus/UltraBus.scala:40:22
   reg          dReqReg_rreq;	// src/main/scala/ultra/bus/UltraBus.scala:61:24
   reg          dReqReg_wreq;	// src/main/scala/ultra/bus/UltraBus.scala:61:24
@@ -106,7 +106,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
   reg  [31:0]  dReqReg_addr;	// src/main/scala/ultra/bus/UltraBus.scala:61:24
   reg  [31:0]  dReqReg_wdata;	// src/main/scala/ultra/bus/UltraBus.scala:61:24
   reg  [3:0]   dstat;	// src/main/scala/ultra/bus/UltraBus.scala:64:22
-  reg  [1:0]   dCycleCnt_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
+  reg  [2:0]   dCycleCnt_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
   reg  [31:0]  baseramReqReg_wData;	// src/main/scala/ultra/bus/UltraBus.scala:152:30
   reg  [19:0]  baseramReqReg_addr;	// src/main/scala/ultra/bus/UltraBus.scala:152:30
   reg  [3:0]   baseramReqReg_byteSelN;	// src/main/scala/ultra/bus/UltraBus.scala:152:30
@@ -124,11 +124,11 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
   wire         _GEN_0 = dstat == 4'h1;	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :64:22, :208:16
   wire         _GEN_1 = dstat == 4'h5;	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :64:22, :208:16
   wire         _GEN_2 = dstat == 4'h3;	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :64:22, :208:16
-  wire         wrap_3 = dCycleCnt_value == 2'h2;	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24, src/main/scala/ultra/bus/UltraBus.scala:71:13
+  wire         wrap_3 = dCycleCnt_value == 3'h4;	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24, src/main/scala/ultra/bus/UltraBus.scala:164:13
   wire         _GEN_3 = dstat == 4'h2;	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :64:22, :208:16
   wire         _GEN_4 = dstat == 4'h9;	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :64:22, :208:16
   wire         _GEN_5 = dstat == 4'h4;	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :64:22, :208:16
-  wire         wrap_5 = dCycleCnt_value == 2'h2;	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24, src/main/scala/ultra/bus/UltraBus.scala:71:13
+  wire         wrap_5 = dCycleCnt_value == 3'h4;	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24, src/main/scala/ultra/bus/UltraBus.scala:164:13
   wire         _GEN_6 = dstat == 4'h6;	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :64:22, :208:16
   wire         _GEN_7 = dstat == 4'h7;	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :64:22, :208:16
   wire         _GEN_8 = _GEN_3 | _GEN_4;	// src/main/scala/ultra/bus/UltraBus.scala:59:19, :208:16
@@ -139,9 +139,9 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
       UT_start <= 1'h0;	// src/main/scala/ultra/bus/UltraBus.scala:19:25
       UR_clear <= 1'h0;	// src/main/scala/ultra/bus/UltraBus.scala:19:25, :20:25
       iReqReg_pc <= 32'h80000000;	// src/main/scala/ultra/bus/UltraBus.scala:35:24, src/main/scala/ultra/bus/UltraBusUtils.scala:19:13
-      istat <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:37:22
+      istat <= 2'h0;	// src/main/scala/ultra/bus/UltraBus.scala:37:22, :50:25
       iWordCnt_value <= 3'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
-      iCycleCnt_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
+      iCycleCnt_value <= 3'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
       idata <= 128'h0;	// src/main/scala/ultra/bus/UltraBus.scala:40:22
       dReqReg_rreq <= 1'h0;	// src/main/scala/ultra/bus/UltraBus.scala:19:25, :61:24
       dReqReg_wreq <= 1'h0;	// src/main/scala/ultra/bus/UltraBus.scala:19:25, :61:24
@@ -149,7 +149,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
       dReqReg_addr <= 32'h0;	// src/main/scala/ultra/bus/UltraBus.scala:61:24, src/main/scala/ultra/bus/UltraBusUtils.scala:57:16
       dReqReg_wdata <= 32'h0;	// src/main/scala/ultra/bus/UltraBus.scala:61:24, src/main/scala/ultra/bus/UltraBusUtils.scala:57:16
       dstat <= 4'h0;	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :64:22
-      dCycleCnt_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
+      dCycleCnt_value <= 3'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
       baseramReqReg_wData <= 32'h0;	// src/main/scala/ultra/bus/UltraBus.scala:152:30, src/main/scala/ultra/bus/UltraBusUtils.scala:57:16
       baseramReqReg_addr <= 20'h0;	// src/main/scala/ultra/bus/UltraBus.scala:152:30, src/main/scala/ultra/bus/sram/SramUtils.scala:13:15
       baseramReqReg_byteSelN <= 4'hF;	// src/main/scala/ultra/bus/UltraBus.scala:152:30, src/main/scala/ultra/bus/sram/SramUtils.scala:12:19
@@ -190,16 +190,16 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
       isBaseramBusy = istat == 2'h2 | dstat == 4'h3 | dstat == 4'h5;	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :37:22, :64:22, :71:13, :155:11, :156:{13,26}, :157:13
       extramBusy = dstat == 4'h9 | dstat == 4'h4;	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :64:22, :163:{11,25}, :164:13
       _GEN_10 = isData2BaseRam | isBaseramBusy;	// src/main/scala/ultra/bus/UltraBus.scala:66:62, :156:26, :174:29
-      baseramReqReg_sig_addr = {io_iChannel_in_pc[21:4], 2'h0};	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:50:{7,25}
+      baseramReqReg_sig_addr = {io_iChannel_in_pc[21:4], 2'h0};	// src/main/scala/ultra/bus/UltraBus.scala:50:{7,25}
       _GEN_11 = ~io_iChannel_in_rreq | _GEN_10;	// src/main/scala/ultra/bus/UltraBus.scala:152:30, :172:26, :174:{29,47}
       _GEN_12 = _GEN_11 & baseramReqReg_oe;	// src/main/scala/ultra/bus/UltraBus.scala:152:30, :172:26, :174:47
       _GEN_13 = io_iChannel_in_rreq & ~_GEN_10 | baseramReqReg_we;	// src/main/scala/ultra/bus/UltraBus.scala:152:30, :172:26, :174:{29,47}, :178:25
       _GEN_14 = wrap_1 | baseramReqReg_oe;	// src/main/scala/ultra/bus/UltraBus.scala:152:30, :183:{27,41}, :187:23
       _GEN_15 = wrap_1 | baseramReqReg_we;	// src/main/scala/ultra/bus/UltraBus.scala:152:30, :183:{27,41}, :187:23
-      wrap = iCycleCnt_value == 2'h2;	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24, src/main/scala/ultra/bus/UltraBus.scala:71:13
+      wrap = iCycleCnt_value == 3'h4;	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24, src/main/scala/ultra/bus/UltraBus.scala:164:13
       _baseramReqReg_addr_T = baseramReqReg_addr + 20'h1;	// src/main/scala/ultra/bus/UltraBus.scala:152:30, :191:52
       _GEN_16 = istat == 2'h1;	// src/main/scala/ultra/bus/UltraBus.scala:37:22, :169:17, :175:17
-      baseramReqReg_sig_1_addr = {iReqReg_pc[21:4], 2'h0};	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:35:24, :50:{7,25}
+      baseramReqReg_sig_1_addr = {iReqReg_pc[21:4], 2'h0};	// src/main/scala/ultra/bus/UltraBus.scala:35:24, :50:{7,25}
       _GEN_17 = ~_GEN_16 | _GEN_10;	// src/main/scala/ultra/bus/UltraBus.scala:152:30, :169:17, :174:29, :197:45
       _GEN_18 =
         (|istat)
@@ -215,7 +215,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
         automatic logic wrap_4;	// src/main/scala/chisel3/util/Counter.scala:73:24
         _GEN_23 = dReqReg_wreq | dReqReg_rreq;	// src/main/scala/ultra/bus/UltraBus.scala:61:24, :111:19, :115:19, :117:21
         _GEN_24 = dReqReg_wreq | dReqReg_rreq;	// src/main/scala/ultra/bus/UltraBus.scala:61:24, :111:19, :113:21, :115:19, :117:21, :169:17
-        wrap_4 = dCycleCnt_value == 2'h2;	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24, src/main/scala/ultra/bus/UltraBus.scala:71:13
+        wrap_4 = dCycleCnt_value == 3'h4;	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24, src/main/scala/ultra/bus/UltraBus.scala:164:13
         if (_GEN_0) begin	// src/main/scala/ultra/bus/UltraBus.scala:208:16
           if (isBaseramBusy) begin	// src/main/scala/ultra/bus/UltraBus.scala:156:26
             if (|istat) begin	// src/main/scala/ultra/bus/UltraBus.scala:37:22, :42:33
@@ -310,15 +310,15 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
         else begin	// src/main/scala/ultra/bus/UltraBus.scala:208:16
           automatic logic wrap_2;	// src/main/scala/chisel3/util/Counter.scala:73:24
           automatic logic _GEN_25;	// src/main/scala/ultra/bus/UltraBus.scala:169:17, :208:16, :247:28, :251:23
-          wrap_2 = dCycleCnt_value == 2'h2;	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24, src/main/scala/ultra/bus/UltraBus.scala:71:13
+          wrap_2 = dCycleCnt_value == 3'h4;	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24, src/main/scala/ultra/bus/UltraBus.scala:164:13
           _GEN_25 = _GEN_2 & wrap_3;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/UltraBus.scala:169:17, :208:16, :247:28, :251:23
           if (_GEN_1) begin	// src/main/scala/ultra/bus/UltraBus.scala:208:16
             if (wrap_2) begin	// src/main/scala/chisel3/util/Counter.scala:73:24
               dstat <= 4'h0;	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :64:22
-              dCycleCnt_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
+              dCycleCnt_value <= 3'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
             end
             else	// src/main/scala/chisel3/util/Counter.scala:73:24
-              dCycleCnt_value <= dCycleCnt_value + 2'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24, src/main/scala/ultra/bus/UltraBus.scala:175:17
+              dCycleCnt_value <= dCycleCnt_value + 3'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24, src/main/scala/ultra/bus/UltraBus.scala:215:19
             baseramReqReg_ce <= wrap_2 | _GEN_18;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/UltraBus.scala:152:30, :169:17, :172:26, :240:28, :243:23
             baseramReqReg_oe <= wrap_2 | _GEN_20;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/UltraBus.scala:152:30, :169:17, :172:26, :240:28, :243:23
             baseramReqReg_we <= wrap_2 | _GEN_22;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/UltraBus.scala:152:30, :169:17, :172:26, :240:28, :243:23
@@ -327,10 +327,10 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
             if (_GEN_2) begin	// src/main/scala/ultra/bus/UltraBus.scala:208:16
               if (wrap_3) begin	// src/main/scala/chisel3/util/Counter.scala:73:24
                 dstat <= 4'h0;	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :64:22
-                dCycleCnt_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
+                dCycleCnt_value <= 3'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
               end
               else	// src/main/scala/chisel3/util/Counter.scala:73:24
-                dCycleCnt_value <= dCycleCnt_value + 2'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24, src/main/scala/ultra/bus/UltraBus.scala:175:17
+                dCycleCnt_value <= dCycleCnt_value + 3'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24, src/main/scala/ultra/bus/UltraBus.scala:215:19
             end
             else if (_GEN_3) begin	// src/main/scala/ultra/bus/UltraBus.scala:208:16
               if (~extramBusy) begin	// src/main/scala/ultra/bus/UltraBus.scala:163:25
@@ -345,15 +345,15 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
                 dstat <= 4'h0;	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :64:22
               if (_GEN_4) begin	// src/main/scala/ultra/bus/UltraBus.scala:208:16
                 if (wrap_4)	// src/main/scala/chisel3/util/Counter.scala:73:24
-                  dCycleCnt_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
+                  dCycleCnt_value <= 3'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
                 else	// src/main/scala/chisel3/util/Counter.scala:73:24
-                  dCycleCnt_value <= dCycleCnt_value + 2'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24, src/main/scala/ultra/bus/UltraBus.scala:175:17
+                  dCycleCnt_value <= dCycleCnt_value + 3'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24, src/main/scala/ultra/bus/UltraBus.scala:215:19
               end
               else if (_GEN_5) begin	// src/main/scala/ultra/bus/UltraBus.scala:208:16
                 if (wrap_5)	// src/main/scala/chisel3/util/Counter.scala:73:24
-                  dCycleCnt_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
+                  dCycleCnt_value <= 3'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
                 else	// src/main/scala/chisel3/util/Counter.scala:73:24
-                  dCycleCnt_value <= dCycleCnt_value + 2'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24, src/main/scala/ultra/bus/UltraBus.scala:175:17
+                  dCycleCnt_value <= dCycleCnt_value + 3'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24, src/main/scala/ultra/bus/UltraBus.scala:215:19
               end
             end
             baseramReqReg_ce <= _GEN_25 | _GEN_18;	// src/main/scala/ultra/bus/UltraBus.scala:152:30, :169:17, :172:26, :208:16, :247:28, :251:23
@@ -444,7 +444,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
         automatic logic       _GEN_33;	// src/main/scala/ultra/bus/UltraBus.scala:160:29, :223:26, :224:25
         isData2ExtRam = dHasReq & io_dChannel_in_addr[31:22] == 10'h201 | dstat == 4'h2;	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :60:49, :64:22, :66:36, :70:{14,44,61}, :71:13
         isData2Uart = dHasReq & io_dChannel_in_addr[31:24] == 8'hBF;	// src/main/scala/ultra/bus/UltraBus.scala:60:49, :74:{13,35,43}
-        _GEN_27 = {2'h0, ~isBaseramBusy, 1'h1};	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:115:19, :156:26, :214:30, :215:19, src/main/scala/ultra/bus/UltraBusUtils.scala:55:15
+        _GEN_27 = {2'h0, ~isBaseramBusy, 1'h1};	// src/main/scala/ultra/bus/UltraBus.scala:50:25, :115:19, :156:26, :214:30, :215:19, src/main/scala/ultra/bus/UltraBusUtils.scala:55:15
         _GEN_28 = dHasReq & isData2BaseRam;	// src/main/scala/ultra/bus/UltraBus.scala:60:49, :64:22, :66:62, :211:20, :213:29, :214:30
         _GEN_29 = ~_GEN_28 | isBaseramBusy;	// src/main/scala/ultra/bus/UltraBus.scala:64:22, :156:26, :169:17, :211:20, :213:29, :214:30
         _GEN_31 = ~_GEN_28 | isBaseramBusy | ~_GEN_30;	// src/main/scala/ultra/bus/UltraBus.scala:64:22, :111:19, :113:21, :115:19, :117:21, :156:26, :169:17, :211:20, :213:29, :214:30
@@ -493,7 +493,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
             dstat <= io_dChannel_in_wreq ? 4'h5 : 4'h3;	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :64:22, :111:19, :115:19, :116:13
         end
         if (dHasReq)	// src/main/scala/ultra/bus/UltraBus.scala:60:49
-          dCycleCnt_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
+          dCycleCnt_value <= 3'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
         if (_GEN_29) begin	// src/main/scala/ultra/bus/UltraBus.scala:169:17, :211:20, :213:29, :214:30
           if (|istat) begin	// src/main/scala/ultra/bus/UltraBus.scala:37:22, :42:33
             if (_GEN) begin	// src/main/scala/ultra/bus/UltraBus.scala:169:17
@@ -621,7 +621,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
         _GEN_34 = ~_GEN | wrap_1 | ~wrap;	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24, src/main/scala/ultra/bus/UltraBus.scala:40:22, :169:17, :183:{27,41}, :189:32
         if (_GEN) begin	// src/main/scala/ultra/bus/UltraBus.scala:169:17
           if (wrap_1)	// src/main/scala/ultra/bus/UltraBus.scala:183:27
-            istat <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:37:22
+            istat <= 2'h0;	// src/main/scala/ultra/bus/UltraBus.scala:37:22, :50:25
         end
         else if (_GEN_16) begin	// src/main/scala/ultra/bus/UltraBus.scala:169:17
           if (_GEN_10)	// src/main/scala/ultra/bus/UltraBus.scala:174:29
@@ -632,13 +632,13 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
         if (_GEN_34) begin	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:40:22, :169:17, :183:41
         end
         else	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:169:17, :183:41
-          iWordCnt_value <= iWordCnt_value + 3'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
+          iWordCnt_value <= iWordCnt_value + 3'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24, src/main/scala/ultra/bus/UltraBus.scala:215:19
         if (~_GEN | wrap_1) begin	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:169:17, :183:{27,41}
         end
         else if (wrap)	// src/main/scala/chisel3/util/Counter.scala:73:24
-          iCycleCnt_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
+          iCycleCnt_value <= 3'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
         else	// src/main/scala/chisel3/util/Counter.scala:73:24
-          iCycleCnt_value <= iCycleCnt_value + 2'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24, src/main/scala/ultra/bus/UltraBus.scala:175:17
+          iCycleCnt_value <= iCycleCnt_value + 3'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24, src/main/scala/ultra/bus/UltraBus.scala:215:19
         if (_GEN_34) begin	// src/main/scala/ultra/bus/UltraBus.scala:40:22, :169:17, :183:41
         end
         else	// src/main/scala/ultra/bus/UltraBus.scala:40:22, :169:17, :183:41
@@ -650,7 +650,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
         else	// src/main/scala/ultra/bus/UltraBus.scala:174:29
           istat <= 2'h2;	// src/main/scala/ultra/bus/UltraBus.scala:37:22, :71:13
         iWordCnt_value <= 3'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
-        iCycleCnt_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
+        iCycleCnt_value <= 3'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
         idata <= 128'h0;	// src/main/scala/ultra/bus/UltraBus.scala:40:22
       end
       if (~(|dstat) & dHasReq) begin	// src/main/scala/ultra/bus/UltraBus.scala:60:49, :61:24, :64:22, :99:13, :147:33, :208:16, :211:20
@@ -681,32 +681,32 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
         iReqReg_pc = {_RANDOM[4'h0][31:10], _RANDOM[4'h1][9:0]};	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :18:24, :35:24
         istat = _RANDOM[4'h1][12:11];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :35:24, :37:22
         iWordCnt_value = _RANDOM[4'h1][15:13];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:10:7, :35:24
-        iCycleCnt_value = _RANDOM[4'h1][17:16];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:10:7, :35:24
+        iCycleCnt_value = _RANDOM[4'h1][18:16];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:10:7, :35:24
         idata =
-          {_RANDOM[4'h1][31:18],
+          {_RANDOM[4'h1][31:19],
            _RANDOM[4'h2],
            _RANDOM[4'h3],
            _RANDOM[4'h4],
-           _RANDOM[4'h5][17:0]};	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :35:24, :40:22
-        dReqReg_rreq = _RANDOM[4'h5][18];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :40:22, :61:24
-        dReqReg_wreq = _RANDOM[4'h5][19];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :40:22, :61:24
-        dReqReg_byteSelN = _RANDOM[4'h5][23:20];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :40:22, :61:24
-        dReqReg_addr = {_RANDOM[4'h5][31:24], _RANDOM[4'h6][23:0]};	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :40:22, :61:24
-        dReqReg_wdata = {_RANDOM[4'h6][31:24], _RANDOM[4'h7][23:0]};	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :61:24
-        dstat = _RANDOM[4'h7][27:24];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :61:24, :64:22
-        dCycleCnt_value = _RANDOM[4'h7][29:28];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:10:7, :61:24
-        baseramReqReg_wData = {_RANDOM[4'h7][31:30], _RANDOM[4'h8][29:0]};	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :61:24, :152:30
-        baseramReqReg_addr = {_RANDOM[4'h8][31:30], _RANDOM[4'h9][17:0]};	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :152:30
-        baseramReqReg_byteSelN = _RANDOM[4'h9][21:18];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :152:30
-        baseramReqReg_ce = _RANDOM[4'h9][22];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :152:30
-        baseramReqReg_oe = _RANDOM[4'h9][23];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :152:30
-        baseramReqReg_we = _RANDOM[4'h9][24];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :152:30
-        extramReqReg_wData = {_RANDOM[4'h9][31:25], _RANDOM[4'hA][24:0]};	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :152:30, :160:29
-        extramReqReg_addr = {_RANDOM[4'hA][31:25], _RANDOM[4'hB][12:0]};	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :160:29
-        extramReqReg_byteSelN = _RANDOM[4'hB][16:13];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :160:29
-        extramReqReg_ce = _RANDOM[4'hB][17];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :160:29
-        extramReqReg_oe = _RANDOM[4'hB][18];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :160:29
-        extramReqReg_we = _RANDOM[4'hB][19];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :160:29
+           _RANDOM[4'h5][18:0]};	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :35:24, :40:22
+        dReqReg_rreq = _RANDOM[4'h5][19];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :40:22, :61:24
+        dReqReg_wreq = _RANDOM[4'h5][20];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :40:22, :61:24
+        dReqReg_byteSelN = _RANDOM[4'h5][24:21];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :40:22, :61:24
+        dReqReg_addr = {_RANDOM[4'h5][31:25], _RANDOM[4'h6][24:0]};	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :40:22, :61:24
+        dReqReg_wdata = {_RANDOM[4'h6][31:25], _RANDOM[4'h7][24:0]};	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :61:24
+        dstat = _RANDOM[4'h7][28:25];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :61:24, :64:22
+        dCycleCnt_value = _RANDOM[4'h7][31:29];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/UltraBus.scala:10:7, :61:24
+        baseramReqReg_wData = _RANDOM[4'h8];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :152:30
+        baseramReqReg_addr = _RANDOM[4'h9][19:0];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :152:30
+        baseramReqReg_byteSelN = _RANDOM[4'h9][23:20];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :152:30
+        baseramReqReg_ce = _RANDOM[4'h9][24];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :152:30
+        baseramReqReg_oe = _RANDOM[4'h9][25];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :152:30
+        baseramReqReg_we = _RANDOM[4'h9][26];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :152:30
+        extramReqReg_wData = {_RANDOM[4'h9][31:27], _RANDOM[4'hA][26:0]};	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :152:30, :160:29
+        extramReqReg_addr = {_RANDOM[4'hA][31:27], _RANDOM[4'hB][14:0]};	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :160:29
+        extramReqReg_byteSelN = _RANDOM[4'hB][18:15];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :160:29
+        extramReqReg_ce = _RANDOM[4'hB][19];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :160:29
+        extramReqReg_oe = _RANDOM[4'hB][20];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :160:29
+        extramReqReg_we = _RANDOM[4'hB][21];	// src/main/scala/ultra/bus/UltraBus.scala:10:7, :160:29
       `endif // RANDOMIZE_REG_INIT
     end // initial
     `ifdef FIRRTL_AFTER_INITIAL	// src/main/scala/ultra/bus/UltraBus.scala:10:7
@@ -714,7 +714,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
   async_transmitter #(
-    .ClkFrequency(160000000)
+    .ClkFrequency(240000000)
   ) UartTransmitter (	// src/main/scala/ultra/bus/UltraBus.scala:14:31
     .clk       (clock),
     .TxD_start (UT_start),	// src/main/scala/ultra/bus/UltraBus.scala:19:25
@@ -723,7 +723,7 @@ module UltraBus(	// src/main/scala/ultra/bus/UltraBus.scala:10:7
     .TxD_busy  (_UartTransmitter_TxD_busy)
   );
   async_receiver #(
-    .ClkFrequency(160000000)
+    .ClkFrequency(240000000)
   ) UartReceiver (	// src/main/scala/ultra/bus/UltraBus.scala:15:28
     .clk            (clock),
     .RxD            (io_uart_rxd),
@@ -1921,6 +1921,7 @@ module GammaExeStage(	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:1
   reg  [4:0]  mWrBuf_addr;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:126:23
   reg  [31:0] mOperandBuf_left;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:135:28
   reg  [31:0] mOperandBuf_right;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:135:28
+  reg         wrap;	// src/main/scala/chisel3/util/Counter.scala:61:40
   wire        _GEN_8 = mStat == 2'h1;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:125:22, :138:16, :198:23
   wire        _GEN_9 = mStat == 2'h2;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:78:15, :125:22, :138:16
   wire        _GEN_10 = ~(|mStat) | _GEN_8 | ~_GEN_9 | io_aside_in_rvalid;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:71:16, :125:22, :138:16, :148:31
@@ -1947,7 +1948,7 @@ module GammaExeStage(	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:1
   wire        _GEN_17 = io_pipe_decode_in_bits_exeOp_opType == 4'h0;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:10:7, :186:43
   wire        _GEN_18 = io_pipe_decode_in_bits_exeOp_opType == 4'h3;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:10:7, :186:43
   wire        _GEN_19 = io_pipe_decode_in_bits_exeOp_opFunc == 3'h4;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:191:45
-  wire        _GEN_20 = io_aside_in_rvalid | _GEN_9 | _GEN_15 | _GEN_16 | _GEN_17;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:135:28, :138:16, :176:29, :178:34, :181:{30,44}, :183:{36,50}, :186:43
+  wire        _GEN_20 = io_aside_in_rvalid | _GEN_9 | _GEN_15 | _GEN_16 | _GEN_17;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:138:16, :176:29, :178:34, :181:{30,44}, :183:{36,50}, :186:43
   wire        _GEN_21 = io_pipe_decode_in_bits_exeOp_opFunc == 3'h1;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:209:49
   wire [31:0] _io_pipe_wback_out_bits_data_T_2 = regLeft + aluRight;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:28:26, :29:60, :30:11, :40:29, :41:38, :42:14, :211:55
   wire        _GEN_22 = io_pipe_decode_in_bits_exeOp_opFunc == 3'h3;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:209:49
@@ -1964,7 +1965,7 @@ module GammaExeStage(	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:1
   wire        _GEN_27 = regLeft == regRight;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:28:26, :29:60, :30:11, :268:30
   wire        _GEN_28 = $signed(regLeft) >= $signed(regRight);	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:28:26, :29:60, :30:11, :286:37
   wire        _GEN_29 = io_pipe_decode_in_bits_exeOp_opType == 4'h5;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:10:7, :186:43
-  wire        _GEN_30 = ~io_pipe_decode_in_req | _GEN_20;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:135:28, :138:16, :175:21, :176:29, :178:34, :181:44, :183:50, :186:43
+  wire        _GEN_30 = ~io_pipe_decode_in_req | _GEN_20;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:138:16, :175:21, :176:29, :178:34, :181:44, :183:50, :186:43
   wire        io_pipe_wback_out_bits_en_0 =
     _GEN_30
       ? _GEN_11
@@ -1991,7 +1992,7 @@ module GammaExeStage(	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:1
   wire        _GEN_37 = io_pipe_decode_in_bits_exeOp_opType == 4'h7;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:10:7, :186:43
   wire        _GEN_38 =
     ~io_pipe_decode_in_req | _GEN_36
-    | ~(_GEN_35 ? ~(|rStat) & io_aside_in_rrdy : _GEN_37 & ~wStat & _GEN_5);	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:60:22, :70:24, :71:16, :102:22, :104:16, :109:29, :135:28, :175:21, :176:29, :178:34, :181:44, :183:50, :186:43, :308:36, :312:37, :314:30, :323:36, :326:58, :327:30
+    | ~(_GEN_35 ? ~(|rStat) & io_aside_in_rrdy : _GEN_37 & ~wStat & _GEN_5);	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:60:22, :70:24, :71:16, :102:22, :104:16, :109:29, :138:16, :175:21, :176:29, :178:34, :181:44, :183:50, :186:43, :308:36, :312:37, :314:30, :323:36, :326:58, :327:30
   always @(posedge clock) begin	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:10:7
     if (reset) begin	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:10:7
       preWrBuf_bits_en <= 1'h0;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:13:28, :24:25
@@ -2014,13 +2015,16 @@ module GammaExeStage(	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:1
       mWrBuf_addr <= 5'h0;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:126:23, src/main/scala/ultra/pipeline/regfile/RegfileUtils.scala:10:15
       mOperandBuf_left <= 32'h0;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:135:28, src/main/scala/ultra/pipeline/regfile/RegfileUtils.scala:11:15
       mOperandBuf_right <= 32'h0;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:135:28, src/main/scala/ultra/pipeline/regfile/RegfileUtils.scala:11:15
+      wrap <= 1'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:13:28
     end
     else begin	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:10:7
-      automatic logic _GEN_39;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:103:24, :186:43, :323:36, :325:23
-      automatic logic _GEN_40 =
+      automatic logic _GEN_39;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:138:16, :175:21, :176:29
+      automatic logic _GEN_40;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:103:24, :186:43, :323:36, :325:23
+      automatic logic _GEN_41 =
         io_aside_in_rvalid | _GEN_9 | _GEN_15 | _GEN_16 | _GEN_17 | _GEN_18 | _GEN_24
         | _GEN_25 | _GEN_26 | _GEN_29 | _GEN_35;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:103:24, :138:16, :176:29, :178:34, :181:{30,44}, :183:{36,50}, :186:43
-      _GEN_39 = _GEN_37 & ~wStat;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:102:22, :103:24, :104:16, :186:43, :323:36, :325:23
+      _GEN_39 = ~io_pipe_decode_in_req | _GEN_20 | ~(_GEN_18 & _GEN_19 & ~(|mStat));	// src/main/scala/chisel3/util/Counter.scala:98:11, src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:125:22, :138:16, :175:21, :176:29, :178:34, :181:44, :183:50, :186:43, :191:{45,64}, :192:38
+      _GEN_40 = _GEN_37 & ~wStat;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:102:22, :103:24, :104:16, :186:43, :323:36, :325:23
       preWrBuf_bits_en <= io_pipe_wback_out_bits_en_0;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:24:25, :138:16, :175:21, :176:29
       preWrBuf_bits_addr <= io_pipe_wback_out_bits_addr_0;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:24:25, :138:16, :175:21, :176:29
       if (_GEN_30)	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:138:16, :175:21, :176:29
@@ -2057,7 +2061,7 @@ module GammaExeStage(	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:1
       end
       else	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:186:43
         preWrBuf_bits_data <= _GEN_33;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:24:25, :138:16, :186:43, :265:30, :303:30
-      if (~io_pipe_decode_in_req | _GEN_36 | ~(_GEN_35 & ~(|rStat))) begin	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:60:22, :70:24, :71:16, :135:28, :175:21, :176:29, :178:34, :181:44, :183:50, :186:43, :308:36, :310:23
+      if (~io_pipe_decode_in_req | _GEN_36 | ~(_GEN_35 & ~(|rStat))) begin	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:60:22, :70:24, :71:16, :138:16, :175:21, :176:29, :178:34, :181:44, :183:50, :186:43, :308:36, :310:23
         if (|rStat) begin	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:60:22, :71:16
           if (_GEN) begin	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:71:16
             if (io_aside_in_rrdy)	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:11:14
@@ -2077,8 +2081,8 @@ module GammaExeStage(	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:1
         rReqBuf_wdata <= regRight;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:28:26, :29:60, :30:11, :70:24
       end
       wStat <=
-        io_pipe_decode_in_req & ~_GEN_40 & _GEN_39 & ~_GEN_5 | (~wStat | ~_GEN_6) & wStat;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:71:16, :102:22, :103:24, :104:16, :109:{29,50}, :110:22, :111:15, :175:21, :176:29, :178:34, :181:44, :183:50, :186:43, :323:36, :325:23, :326:58, :329:23
-      if (~io_pipe_decode_in_req | _GEN_40 | ~_GEN_39) begin	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:103:24, :135:28, :175:21, :176:29, :178:34, :181:44, :183:50, :186:43, :323:36, :325:23
+        io_pipe_decode_in_req & ~_GEN_41 & _GEN_40 & ~_GEN_5 | (~wStat | ~_GEN_6) & wStat;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:71:16, :102:22, :103:24, :104:16, :109:{29,50}, :110:22, :111:15, :175:21, :176:29, :178:34, :181:44, :183:50, :186:43, :323:36, :325:23, :326:58, :329:23
+      if (~io_pipe_decode_in_req | _GEN_41 | ~_GEN_40) begin	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:103:24, :138:16, :175:21, :176:29, :178:34, :181:44, :183:50, :186:43, :323:36, :325:23
       end
       else begin	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:103:24, :175:21, :176:29
         wReqBuf_rreq <= asideOutDefault_rreq;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:103:24, :166:54
@@ -2087,10 +2091,12 @@ module GammaExeStage(	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:1
         wReqBuf_byteSelN <= asideOutDefault_byteSelN;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:103:24, :170:28, :171:43, :172:30
         wReqBuf_wdata <= regRight;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:28:26, :29:60, :30:11, :103:24
       end
-      if (~io_pipe_decode_in_req | _GEN_20 | ~(_GEN_18 & _GEN_19 & ~(|mStat))) begin	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:125:22, :135:28, :138:16, :175:21, :176:29, :178:34, :181:44, :183:50, :186:43, :191:{45,64}, :192:38, :195:34
+      if (_GEN_39) begin	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:135:28, :138:16, :175:21, :176:29
         if (|mStat) begin	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:125:22, :138:16
-          if (_GEN_8)	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:138:16
-            mStat <= 2'h2;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:78:15, :125:22
+          if (_GEN_8) begin	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:138:16
+            if (wrap)	// src/main/scala/chisel3/util/Counter.scala:61:40
+              mStat <= 2'h2;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:78:15, :125:22
+          end
           else if (_GEN_9)	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:138:16
             mStat <= {io_aside_in_rvalid, 1'h0};	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:13:28, :125:22, :148:31, :149:15, :151:15
         end
@@ -2101,6 +2107,7 @@ module GammaExeStage(	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:1
         mOperandBuf_left <= regLeft;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:28:26, :29:60, :30:11, :135:28
         mOperandBuf_right <= regRight;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:28:26, :29:60, :30:11, :135:28
       end
+      wrap <= _GEN_39 & ((|mStat) & _GEN_8 ? wrap - 1'h1 : wrap);	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24, src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:125:22, :138:16, :175:21, :176:29
     end
   end // always @(posedge)
   `ifdef ENABLE_INITIAL_REG_	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:10:7
@@ -2136,6 +2143,7 @@ module GammaExeStage(	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:1
         mWrBuf_addr = _RANDOM[4'h8][26:22];	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:10:7, :103:24, :126:23
         mOperandBuf_left = {_RANDOM[4'h9][31:27], _RANDOM[4'hA][26:0]};	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:10:7, :135:28
         mOperandBuf_right = {_RANDOM[4'hA][31:27], _RANDOM[4'hB][26:0]};	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:10:7, :135:28
+        wrap = _RANDOM[4'hB][27];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:10:7, :135:28
       `endif // RANDOMIZE_REG_INIT
     end // initial
     `ifdef FIRRTL_AFTER_INITIAL	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:10:7
@@ -2190,7 +2198,7 @@ module GammaExeStage(	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:1
                : _GEN_21
                    ? (_GEN_27 ? defaultTarget : branchTarget)
                    : _GEN_22 ? (_GEN_28 ? branchTarget : defaultTarget) : 32'h0)
-          : _GEN_29 ? regLeft + io_pipe_decode_in_bits_operands_imm : 32'h0;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:10:7, :15:16, :28:26, :29:60, :30:11, :45:35, :48:35, :135:28, :171:35, :175:21, :176:29, :178:34, :181:44, :183:50, :186:43, :209:49, :266:47, :268:{30,43}, :270:34, :273:34, :277:{30,43}, :279:34, :282:34, :286:{37,56}, :288:34, :291:34, :305:{28,47}, src/main/scala/ultra/pipeline/regfile/RegfileUtils.scala:11:15
+          : _GEN_29 ? regLeft + io_pipe_decode_in_bits_operands_imm : 32'h0;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:10:7, :15:16, :28:26, :29:60, :30:11, :45:35, :48:35, :138:16, :171:35, :175:21, :176:29, :178:34, :181:44, :183:50, :186:43, :209:49, :266:47, :268:{30,43}, :270:34, :273:34, :277:{30,43}, :279:34, :282:34, :286:{37,56}, :288:34, :291:34, :305:{28,47}, src/main/scala/ultra/pipeline/regfile/RegfileUtils.scala:11:15
   assign io_aside_out_rreq =
     _GEN_38
       ? (_GEN_7 ? wReqBuf_rreq : (|rStat) & _GEN_0 & rReqBuf_rreq)

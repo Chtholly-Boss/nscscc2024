@@ -5,8 +5,8 @@ import UltraExePorts._
 import UltraExeUtils._
 import UltraExeParams.{ExeType => tp}
 import UltraExeParams._
-import com.google.protobuf.DescriptorProtos.MethodOptions.IdempotencyLevel
 import ultra.pipeline.regfile.RegfileUtils.initWctrl
+import ultra.bus.UltraBusParams._
 class GammaExeStage extends Module {
   val io = IO(new AlphaExeIo)
   def initAllOut() = {
@@ -134,7 +134,7 @@ class GammaExeStage extends Module {
   val mHasHazard = WireDefault(mrAwHazard || mwAwHazard)
   val mOperandBuf = RegInit(initOperands)
   val mRes = WireDefault((mOperandBuf.left.asSInt * mOperandBuf.right.asSInt).asUInt)
-  val mCounter = Counter(1)
+  val mCounter = Counter(mulCycles)
   switch(mStat){
     is(MS.IDLE){
       // Determined by the req process

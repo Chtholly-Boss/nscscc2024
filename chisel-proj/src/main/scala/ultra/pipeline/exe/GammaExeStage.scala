@@ -125,16 +125,16 @@ class GammaExeStage extends Module {
   val mStat = RegInit(MS.IDLE)
   val mWrBuf = RegInit(initWctrl)
   val mrAwHazard = WireDefault(
-    decodeIn.readInfo.reg_1.addr === rWrBuf.addr ||
-      decodeIn.readInfo.reg_2.addr === rWrBuf.addr
+    decodeIn.readInfo.reg_1.addr === mWrBuf.addr ||
+      decodeIn.readInfo.reg_2.addr === mWrBuf.addr
   )
   val mwAwHazard = WireDefault(
-    decodeIn.bits.wCtrl.addr === rWrBuf.addr
+    decodeIn.bits.wCtrl.addr === mWrBuf.addr
   )
   val mHasHazard = WireDefault(mrAwHazard || mwAwHazard)
   val mOperandBuf = RegInit(initOperands)
   val mRes = WireDefault((mOperandBuf.left.asSInt * mOperandBuf.right.asSInt).asUInt)
-  val mCounter = Counter(3)
+  val mCounter = Counter(2)
   switch(mStat){
     is(MS.IDLE){
       // Determined by the req process
@@ -155,7 +155,6 @@ class GammaExeStage extends Module {
         }
         exeOut.bits.addr := mWrBuf.addr
         exeOut.bits.data := mRes
-
       }
     }
   }

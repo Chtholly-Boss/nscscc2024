@@ -140,9 +140,7 @@ class GammaExeStage extends Module {
           is(tp.arith){
             when(decodeIn.bits.exeOp.opFunc === Arithmetic.mul){
               //TODO: Multiplication
-
-
-
+              ack := true.B
             }.otherwise{
               ack := true.B
               exeOut.bits.en := true.B

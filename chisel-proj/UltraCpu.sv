@@ -2078,10 +2078,8 @@ module GammaExeStage(	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:1
             if (wrap)	// src/main/scala/chisel3/util/Counter.scala:61:40
               mStat <= 2'h2;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:78:15, :125:22
           end
-          else if (~_GEN_9 | io_aside_in_rvalid) begin	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:125:22, :138:16, :148:31
-          end
-          else	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:125:22, :138:16, :148:31
-            mStat <= 2'h0;	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:83:15, :125:22
+          else if (_GEN_9)	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:138:16
+            mStat <= {io_aside_in_rvalid, 1'h0};	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:13:28, :125:22, :148:31, :149:15, :151:15
         end
       end
       else begin	// src/main/scala/ultra/pipeline/exe/GammaExeStage.scala:135:28, :175:21, :176:29

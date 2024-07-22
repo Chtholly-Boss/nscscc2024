@@ -146,7 +146,7 @@ class GammaExeStage extends Module {
     }
     is(MS.DONE){
       when(io.aside.in.rvalid){
-        // Do nothing
+        mStat := MS.DONE
       }.otherwise{
         mStat := MS.IDLE
         exeOut.bits.en := true.B

@@ -134,7 +134,7 @@ class GammaExeStage extends Module {
   val mHasHazard = WireDefault(mrAwHazard || mwAwHazard)
   val mOperandBuf = RegInit(initOperands)
   val mRes = WireDefault((mOperandBuf.left.asSInt * mOperandBuf.right.asSInt).asUInt)
-  val mCounter = Counter(2)
+  val mCounter = Counter(3)
   switch(mStat){
     is(MS.IDLE){
       // Determined by the req process

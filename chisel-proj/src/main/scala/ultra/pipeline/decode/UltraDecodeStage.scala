@@ -73,6 +73,11 @@ class UltraDecodeStage extends Module {
           }.otherwise{
             default()
           }
+        }.otherwise{
+          io.aside.out.reg_1 := pipeOutReg.readInfo.reg_1
+          io.aside.out.reg_2 := pipeOutReg.readInfo.reg_2
+          pipeOutReg.bits.operands.regData_1 := io.aside.in.regLeft
+          pipeOutReg.bits.operands.regData_2 := io.aside.in.regRight
         }
       }
     }

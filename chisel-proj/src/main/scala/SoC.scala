@@ -16,7 +16,7 @@ class SoC extends Module {
   })
   val cpu = Module(new Cpu)
   val baseRam = Module(new BaseSram("./func/bintests/matrix.txt"))
-  val extRam = Module(new ExtSram("./func/bintests/matrix.txt"))
+  val extRam = Module(new ExtSram("./func/bintests/data.txt"))
 
   cpu.io.baseSram.req <> baseRam.io.in
   cpu.io.baseSram.rspns <> baseRam.io.out

@@ -183,7 +183,7 @@ class GammaExeStage extends Module {
         // Do nothing
       }.elsewhen(mStat =/= MS.IDLE && mHasHazard){
         // Do nothing
-      }otherwise{
+      }.otherwise{
         switch(decodeIn.bits.exeOp.opType){
           is(tp.nop){
             ack := true.B

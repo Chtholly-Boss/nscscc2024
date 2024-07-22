@@ -115,6 +115,53 @@ class GammaExeStage extends Module {
   //****************************************************
   //***************************************************
   //***************************************************
+  object MS extends ChiselEnum {
+    val
+      IDLE,
+      WORK,
+      DONE
+    = Value
+  }
+  val mStat = RegInit(MS.IDLE)
+  val mWrBuf = RegInit(initWctrl)
+  val mrAwHazard = WireDefault(
+    decodeIn.readInfo.reg_1.addr === rWrBuf.addr ||
+      decodeIn.readInfo.reg_2.addr === rWrBuf.addr
+  )
+  val mwAwHazard = WireDefault(
+    decodeIn.bits.wCtrl.addr === rWrBuf.addr
+  )
+  val mHasHazard = WireDefault(mrAwHazard || mwAwHazard)
+  val mOperandBuf = RegInit(initOperands)
+  val mRes = WireDefault((mOperandBuf.left.asSInt * mOperandBuf.right.asSInt).asUInt)
+  val mCounter = Counter(2)
+  switch(mStat){
+    is(MS.IDLE){
+      // Determined by the req process
+    }
+    is(MS.WORK){
+      when(mCounter.inc()){
+        mStat := MS.DONE
+      }
+    }
+    is(MS.DONE){
+      when(rStat === RS.RUNNING && io.aside.in.rvalid){
+        // Do nothing
+      }.otherwise{
+        mStat := MS.IDLE
+        exeOut.bits.en := true.B
+        when(mWrBuf.addr === 0.U){
+          exeOut.bits.en := false.B
+        }
+        exeOut.bits.addr := mWrBuf.addr
+        exeOut.bits.data := mRes
+
+      }
+    }
+  }
+  //****************************************************
+  //***************************************************
+  //***************************************************
   // Default aside out Info
   val asideOutDefault = WireDefault(initExeAsideOut)
   asideOutDefault.rreq := decodeIn.bits.exeOp.opType === tp.load
@@ -129,18 +176,30 @@ class GammaExeStage extends Module {
   when(decodeIn.req){
     when(rStat === RS.RUNNING && io.aside.in.rvalid){
       // Do nothing
-    }.otherwise{
+    }.elsewhen(mStat === MS.DONE){
+      // Do nothing.
+    }otherwise{
       when(rStat =/= RS.IDLE && rHasHazard){
         // Do nothing
-      }.otherwise{
+      }.elsewhen(mStat =/= MS.IDLE && mHasHazard){
+        // Do nothing
+      }otherwise{
         switch(decodeIn.bits.exeOp.opType){
           is(tp.nop){
             ack := true.B
           }
           is(tp.arith){
             when(decodeIn.bits.exeOp.opFunc === Arithmetic.mul){
-              //TODO: Multiplication
-              ack := true.B
+              when(mStat === MS.IDLE){
+                ack := true.B
+                mCounter.reset()
+                mOperandBuf.left := regLeft
+                mOperandBuf.right := aluRight
+                mWrBuf := decodeIn.bits.wCtrl
+                mStat := MS.WORK
+              }.otherwise{
+                // Do nothing
+              }
             }.otherwise{
               ack := true.B
               exeOut.bits.en := true.B

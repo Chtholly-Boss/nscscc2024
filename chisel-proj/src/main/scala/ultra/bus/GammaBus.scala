@@ -49,6 +49,7 @@ class GammaBus extends Module {
    *  - dwStat: data write state
    *  - bRamStat: BaseSram load/store state
    *  - eRamStat: ExtSram load/store state
+   *  - uStat: Uart Check/Load/Store state
    */
   object WS extends ChiselEnum {
     val
@@ -67,7 +68,9 @@ class GammaBus extends Module {
   object BS extends ChiselEnum {
     val
       IDLE,
-      INST_LOAD
+      INST_LOAD,
+      DATA_LOAD,
+      DATA_STORE
     = Value
   }
   val bRamStat = RegInit(BS.IDLE)
@@ -81,14 +84,23 @@ class GammaBus extends Module {
   }
   val eRamStat = RegInit(ES.IDLE)
 
-  val isBramBusy = WireDefault(!(bRamStat === BS.IDLE))
   val isEramBusy = WireDefault(!(eRamStat === ES.IDLE))
 
+  object US extends ChiselEnum {
+    val
+      IDLE,
+      LOAD,
+      STORE
+    = Value
+  }
+  val uStat = RegInit(US.IDLE)
   /**
    * Buffers:
+   * - irBuf: instruction load request buffer
    * - drBuf: data load request buffer
    * - dwBuf: data store request buffer
    */
+  val irBuf = RegInit(initInstReq)
   val drBuf = RegInit(initDataReq)
   val dwBuf = RegInit(initDataReq)
 
@@ -106,14 +118,15 @@ class GammaBus extends Module {
    * Instruction Channel Side Logic:
    * TODO: Need to Handle Structure Hazard
    */
+  val isInst2BaseLoad = RegInit(false.B)
+  val inst2BaseLoad = WireDefault(isInst2BaseLoad)
   switch(irStat){
     is(WS.IDLE){
       when(io.iChannel.in.rreq){
         irStat := WS.WAIT
-        iWordCounter.reset()
-        bRamCounter.reset()
-        bRamOutReg := sramReadWord(pc2BaseAddr(io.iChannel.in.pc))
-        bRamStat := BS.INST_LOAD
+        irBuf := io.iChannel.in
+        inst2BaseLoad := true.B
+        isInst2BaseLoad := true.B
       }
     }
     is(WS.WAIT){
@@ -127,7 +140,10 @@ class GammaBus extends Module {
    */
   val isData2ExtLoadBlock = RegInit(false.B)
   val isData2ExtStoreBlock = RegInit(false.B)
-
+  val isData2BaseLoad = RegInit(false.B)
+  val isData2BaseStore = RegInit(false.B)
+  val data2BaseLoad = WireDefault(isData2BaseLoad)
+  val data2BaseStore = WireDefault(isData2BaseStore)
   switch(drStat){
     is(WS.IDLE){
       when(io.dChannel.in.rreq){
@@ -141,6 +157,13 @@ class GammaBus extends Module {
             eRamOutReg := sramRead(io.dChannel.in.addr(21,2),io.dChannel.in.byteSelN)
             eRamStat := ES.LOAD
           }
+        }
+        when(io.dChannel.in.addr(31,24) === uartAddr){
+          uStat := US.LOAD
+        }
+        when(io.dChannel.in.addr(31,22) === baseSramAddr){
+          isData2BaseLoad := true.B
+          data2BaseLoad := true.B
         }
       }
     }
@@ -166,6 +189,13 @@ class GammaBus extends Module {
             eRamStat := ES.STORE
           }
         }
+        when(io.dChannel.in.addr(31,24) === uartAddr){
+          uStat := US.STORE
+        }
+        when(io.dChannel.in.addr(31,22) === baseSramAddr){
+          isData2BaseStore := true.B
+          data2BaseStore := true.B
+        }
       }
     }
     is(WS.WAIT){
@@ -178,7 +208,39 @@ class GammaBus extends Module {
   val irData = RegInit(0.U(iBandWidth.W))
   switch(bRamStat){
     is(BS.IDLE){
-      // Determined by irStat/drStat/dwStat
+      when(data2BaseStore){
+        isData2BaseStore := false.B
+        bRamCounter.reset()
+        bRamStat := BS.DATA_STORE
+        when(io.dChannel.in.wreq){
+          bRamOutReg := sramWrite(
+            io.dChannel.in.addr(21,2),
+            io.dChannel.in.wdata,
+            io.dChannel.in.byteSelN
+          )
+        }.otherwise{
+          bRamOutReg := sramWrite(dwBuf.addr(21,2),dwBuf.wdata,dwBuf.byteSelN)
+        }
+      }.elsewhen(data2BaseLoad){
+        isData2BaseLoad := false.B
+        bRamCounter.reset()
+        bRamStat := BS.DATA_LOAD
+        when(io.dChannel.in.rreq){
+          bRamOutReg := sramRead(io.dChannel.in.addr(21,2),io.dChannel.in.byteSelN)
+        }.otherwise{
+          bRamOutReg := sramRead(drBuf.addr(21,2),drBuf.byteSelN)
+        }
+      }.elsewhen(inst2BaseLoad){
+        isInst2BaseLoad := false.B
+        iWordCounter.reset()
+        bRamCounter.reset()
+        bRamStat := BS.INST_LOAD
+        when(io.iChannel.in.rreq){
+          bRamOutReg := sramReadWord(pc2BaseAddr(io.iChannel.in.pc))
+        }.otherwise{
+          bRamOutReg := sramReadWord(pc2BaseAddr(irBuf.pc))
+        }
+      }
     }
     is(BS.INST_LOAD){
       when(iWordCounter.value === iWords.U){
@@ -192,6 +254,21 @@ class GammaBus extends Module {
           bRamOutReg.addr := bRamOutReg.addr + 1.U
           iWordCounter.inc()
         }
+      }
+    }
+    is(BS.DATA_LOAD){
+      when(bRamCounter.inc()){
+        drStat := WS.IDLE
+        io.dChannel.out.rvalid := true.B
+        io.dChannel.out.rdata := byteSelInWords(drBuf.byteSelN,io.baseRam.in.rData)
+        bRamStat := BS.IDLE
+      }
+    }
+    is(BS.DATA_STORE){
+      when(bRamCounter.inc()){
+        dwStat := WS.IDLE
+        io.dChannel.out.wdone := true.B
+        bRamStat := BS.IDLE
       }
     }
   }
@@ -237,6 +314,38 @@ class GammaBus extends Module {
           eRamStat := ES.IDLE
         }
       }
+    }
+  }
+
+  /**
+   * Uart Side Logic
+   */
+  switch(uStat){
+    is(US.IDLE){
+      uTstart := false.B
+      uTdata := 0.U
+      uRclear := false.B
+    }
+    is(US.LOAD){
+      uStat := US.IDLE
+      drStat := WS.IDLE
+      io.dChannel.out.rvalid := true.B
+      switch(drBuf.addr(3,0)){
+        is(uartStatAddr){
+          io.dChannel.out.rdata := uStatus
+        }
+        is(uartDataAddr){
+          io.dChannel.out.rdata := uReceiver.io.RxD_data
+          uRclear := true.B
+        }
+      }
+    }
+    is(US.STORE){
+      uStat := US.IDLE
+      dwStat := WS.IDLE
+      io.dChannel.out.wdone := true.B
+      uTstart := true.B
+      uTdata := dwBuf.wdata(7,0)
     }
   }
 }

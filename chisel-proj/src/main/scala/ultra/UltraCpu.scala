@@ -1,6 +1,6 @@
 package ultra
 import chisel3._
-import ultra.bus.UltraBus
+import ultra.bus.{GammaBus, UltraBus}
 import ultra.bus.sram.SramPorts._
 import ultra.pipeline.UltraPipeline
 class UltraCpu extends Module {
@@ -18,7 +18,7 @@ class UltraCpu extends Module {
       val rxd = Input(UInt(1.W))
     }
   })
-  val bus = Module(new UltraBus)
+  val bus = Module(new GammaBus)
   // Interface to the outside
   bus.io.baseRam.in <> io.baseSram.rspns
   bus.io.baseRam.out <> io.baseSram.req

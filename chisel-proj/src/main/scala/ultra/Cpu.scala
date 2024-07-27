@@ -1,6 +1,6 @@
 package ultra
 import chisel3._
-import ultra.bus.UltraBus
+import ultra.bus.{GammaBus, UltraBus}
 import ultra.bus.sram.SramPorts._
 import ultra.pipeline.Pipeline
 class Cpu extends Module {

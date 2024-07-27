@@ -140,6 +140,9 @@ class GammaBus extends Module {
    */
   val isData2ExtLoadBlock = RegInit(false.B)
   val isData2ExtStoreBlock = RegInit(false.B)
+  val data2ExtLoadBlock = WireDefault(isData2ExtLoadBlock)
+  val data2ExtStoreBlock = WireDefault(isData2ExtStoreBlock)
+
   val isData2BaseLoad = RegInit(false.B)
   val isData2BaseStore = RegInit(false.B)
   val data2BaseLoad = WireDefault(isData2BaseLoad)
@@ -152,13 +155,14 @@ class GammaBus extends Module {
         when(io.dChannel.in.addr(31,22) === extSramAddr){
           when(isEramBusy){
             isData2ExtLoadBlock := true.B
+            data2ExtLoadBlock := true.B
           }.otherwise{
             eRamCounter.reset()
             eRamOutReg := sramRead(io.dChannel.in.addr(21,2),io.dChannel.in.byteSelN)
             eRamStat := ES.LOAD
           }
         }
-        when(io.dChannel.in.addr(31,24) === uartAddr){
+        when(io.dChannel.in.addr(31,22) === uartAddr){
           uStat := US.LOAD
         }
         when(io.dChannel.in.addr(31,22) === baseSramAddr){
@@ -179,6 +183,7 @@ class GammaBus extends Module {
         when(io.dChannel.in.addr(31,22) === extSramAddr){
           when(isEramBusy){
             isData2ExtStoreBlock := true.B
+            data2ExtStoreBlock := true.B
           }.otherwise{
             eRamCounter.reset()
             eRamOutReg := sramWrite(
@@ -189,7 +194,7 @@ class GammaBus extends Module {
             eRamStat := ES.STORE
           }
         }
-        when(io.dChannel.in.addr(31,24) === uartAddr){
+        when(io.dChannel.in.addr(31,22) === uartAddr){
           uStat := US.STORE
         }
         when(io.dChannel.in.addr(31,22) === baseSramAddr){
@@ -247,7 +252,7 @@ class GammaBus extends Module {
         io.iChannel.out.rvalid := true.B
         io.iChannel.out.rdata := irData
         irStat := WS.IDLE
-        bRamStat := BS.IDLE // TODO
+        bRamStat := BS.IDLE
       }.otherwise{
         when(bRamCounter.inc()){
           irData := io.baseRam.in.rData ## irData(iBandWidth-1,32)
@@ -285,10 +290,10 @@ class GammaBus extends Module {
         drStat := WS.IDLE
         io.dChannel.out.rvalid := true.B
         io.dChannel.out.rdata := byteSelInWords(drBuf.byteSelN,io.extRam.in.rData)
+        isData2ExtLoadBlock := false.B
 
-        when(isData2ExtStoreBlock){
+        when(data2ExtStoreBlock){
           eRamStat := ES.STORE
-          isData2ExtStoreBlock := false.B
           eRamCounter.reset()
           eRamOutReg := sramWrite(
             dwBuf.addr(21,2),
@@ -304,10 +309,10 @@ class GammaBus extends Module {
       when(eRamCounter.inc()){
         dwStat := WS.IDLE
         io.dChannel.out.wdone := true.B
+        isData2ExtStoreBlock := false.B
 
-        when(isData2ExtLoadBlock){
+        when(data2ExtLoadBlock){
           eRamStat := ES.LOAD
-          isData2ExtLoadBlock := false.B
           eRamCounter.reset()
           eRamOutReg := sramRead(drBuf.addr(21,2),drBuf.byteSelN)
         }.otherwise{

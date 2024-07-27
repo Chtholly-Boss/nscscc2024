@@ -29,7 +29,7 @@ object UltraBusParams {
 
   // Uart Virtual Addr
   // For simplicity,Check (31,24) is enough
-  val uartAddr = "hbf".U
+  val uartAddr = "b1011_1111_11".U
   // Status and Data Addr:Virtual Addr(3,0)
   val uartStatAddr = "hc".U
   val uartDataAddr = "h8".U

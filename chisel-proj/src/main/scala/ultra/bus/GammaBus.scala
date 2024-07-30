@@ -116,7 +116,6 @@ class GammaBus extends Module {
 
   /**
    * Instruction Channel Side Logic:
-   * TODO: Need to Handle Structure Hazard
    */
   val isInst2BaseLoad = RegInit(false.B)
   val inst2BaseLoad = WireDefault(isInst2BaseLoad)
@@ -136,7 +135,6 @@ class GammaBus extends Module {
 
   /**
    * Data Channel Side Logic
-   * TODO: Need to Support BaseRam Load/Store
    */
   val isData2ExtLoadBlock = RegInit(false.B)
   val isData2ExtStoreBlock = RegInit(false.B)
@@ -295,11 +293,19 @@ class GammaBus extends Module {
         when(data2ExtStoreBlock){
           eRamStat := ES.STORE
           eRamCounter.reset()
-          eRamOutReg := sramWrite(
-            dwBuf.addr(21,2),
-            dwBuf.wdata,
-            dwBuf.byteSelN
-          )
+          when(io.dChannel.in.wreq){
+            eRamOutReg := sramWrite(
+              io.dChannel.in.addr(21,2),
+              io.dChannel.in.wdata,
+              io.dChannel.in.byteSelN
+            )
+          }.otherwise{
+            eRamOutReg := sramWrite(
+              dwBuf.addr(21,2),
+              dwBuf.wdata,
+              dwBuf.byteSelN
+            )
+          }
         }.otherwise{
           eRamStat := ES.IDLE
         }
@@ -310,11 +316,14 @@ class GammaBus extends Module {
         dwStat := WS.IDLE
         io.dChannel.out.wdone := true.B
         isData2ExtStoreBlock := false.B
-
         when(data2ExtLoadBlock){
           eRamStat := ES.LOAD
           eRamCounter.reset()
-          eRamOutReg := sramRead(drBuf.addr(21,2),drBuf.byteSelN)
+          when(io.dChannel.in.rreq){
+            eRamOutReg := sramRead(io.dChannel.in.addr(21,2),io.dChannel.in.byteSelN)
+          }.otherwise{
+            eRamOutReg := sramRead(drBuf.addr(21,2),drBuf.byteSelN)
+          }
         }.otherwise{
           eRamStat := ES.IDLE
         }

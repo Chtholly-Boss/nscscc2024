@@ -6,7 +6,7 @@ import UltraBusUtils._
 import UltraBusParams._
 import ultra.bus.uart.{async_receiver, async_transmitter}
 import sram.SramUtils._
-import ultra.bus.GammaBus.{byteSelInWords, pc2BaseAddr}
+import ultra.bus.GammaBus.{byteSelInWords, pc2BaseAddr, va2deviceAddr}
 class GammaBus extends Module {
   val io = IO(new UltraBusIo)
   io.iChannel.out := initInstRspns
@@ -150,20 +150,20 @@ class GammaBus extends Module {
       when(io.dChannel.in.rreq){
         drStat := WS.WAIT
         drBuf := io.dChannel.in
-        when(io.dChannel.in.addr(31,22) === extSramAddr){
+        when(va2deviceAddr(io.dChannel.in.addr) === extSramAddr){
           when(isEramBusy){
             isData2ExtLoadBlock := true.B
             data2ExtLoadBlock := true.B
           }.otherwise{
             eRamCounter.reset()
-            eRamOutReg := sramRead(io.dChannel.in.addr(21,2),io.dChannel.in.byteSelN)
+            eRamOutReg := sramReadWord(io.dChannel.in.addr(21,2))
             eRamStat := ES.LOAD
           }
         }
-        when(io.dChannel.in.addr(31,22) === uartAddr){
+        when(va2deviceAddr(io.dChannel.in.addr) === uartAddr){
           uStat := US.LOAD
         }
-        when(io.dChannel.in.addr(31,22) === baseSramAddr){
+        when(va2deviceAddr(io.dChannel.in.addr) === baseSramAddr){
           isData2BaseLoad := true.B
           data2BaseLoad := true.B
         }
@@ -178,7 +178,7 @@ class GammaBus extends Module {
       when(io.dChannel.in.wreq){
         dwStat := WS.WAIT
         dwBuf := io.dChannel.in
-        when(io.dChannel.in.addr(31,22) === extSramAddr){
+        when(va2deviceAddr(io.dChannel.in.addr) === extSramAddr){
           when(isEramBusy){
             isData2ExtStoreBlock := true.B
             data2ExtStoreBlock := true.B
@@ -192,10 +192,10 @@ class GammaBus extends Module {
             eRamStat := ES.STORE
           }
         }
-        when(io.dChannel.in.addr(31,22) === uartAddr){
+        when(va2deviceAddr(io.dChannel.in.addr) === uartAddr){
           uStat := US.STORE
         }
-        when(io.dChannel.in.addr(31,22) === baseSramAddr){
+        when(va2deviceAddr(io.dChannel.in.addr) === baseSramAddr){
           isData2BaseStore := true.B
           data2BaseStore := true.B
         }
@@ -229,9 +229,9 @@ class GammaBus extends Module {
         bRamCounter.reset()
         bRamStat := BS.DATA_LOAD
         when(io.dChannel.in.rreq){
-          bRamOutReg := sramRead(io.dChannel.in.addr(21,2),io.dChannel.in.byteSelN)
+          bRamOutReg := sramReadWord(io.dChannel.in.addr(21,2))
         }.otherwise{
-          bRamOutReg := sramRead(drBuf.addr(21,2),drBuf.byteSelN)
+          bRamOutReg := sramReadWord(drBuf.addr(21,2))
         }
       }.elsewhen(inst2BaseLoad){
         isInst2BaseLoad := false.B
@@ -320,9 +320,9 @@ class GammaBus extends Module {
           eRamStat := ES.LOAD
           eRamCounter.reset()
           when(io.dChannel.in.rreq){
-            eRamOutReg := sramRead(io.dChannel.in.addr(21,2),io.dChannel.in.byteSelN)
+            eRamOutReg := sramReadWord(io.dChannel.in.addr(21,2))
           }.otherwise{
-            eRamOutReg := sramRead(drBuf.addr(21,2),drBuf.byteSelN)
+            eRamOutReg := sramReadWord(drBuf.addr(21,2))
           }
         }.otherwise{
           eRamStat := ES.IDLE
@@ -389,5 +389,8 @@ object GammaBus {
       }
     }
     res
+  }
+  def va2deviceAddr(addr:Bits) = {
+    addr(23,22)
   }
 }

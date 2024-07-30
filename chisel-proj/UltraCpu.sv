@@ -120,26 +120,24 @@ module GammaBus(	// src/main/scala/ultra/bus/GammaBus.scala:10:7
   reg  [31:0]  dwBuf_addr;	// src/main/scala/ultra/bus/GammaBus.scala:105:22
   reg  [31:0]  dwBuf_wdata;	// src/main/scala/ultra/bus/GammaBus.scala:105:22
   reg  [2:0]   iWordCounter_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg  [2:0]   bRamCounter_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
-  reg  [2:0]   eRamCounter_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
+  reg  [1:0]   bRamCounter_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
+  reg  [1:0]   eRamCounter_value;	// src/main/scala/chisel3/util/Counter.scala:61:40
   reg          isInst2BaseLoad;	// src/main/scala/ultra/bus/GammaBus.scala:120:32
   reg          isData2ExtLoadBlock;	// src/main/scala/ultra/bus/GammaBus.scala:139:36
   reg          isData2ExtStoreBlock;	// src/main/scala/ultra/bus/GammaBus.scala:140:37
   reg          isData2BaseLoad;	// src/main/scala/ultra/bus/GammaBus.scala:144:32
   reg          isData2BaseStore;	// src/main/scala/ultra/bus/GammaBus.scala:145:33
   reg  [127:0] irData;	// src/main/scala/ultra/bus/GammaBus.scala:211:23
-  wire         _GEN = bRamStat == 2'h0;	// src/main/scala/ultra/bus/GammaBus.scala:76:25, :212:19, :369:25
+  wire         _GEN = bRamStat == 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/GammaBus.scala:76:25, :212:19
   wire         _GEN_0 = bRamStat == 2'h1;	// src/main/scala/ultra/bus/GammaBus.scala:76:25, :160:22, :212:19
   wire         wrap_1 = iWordCounter_value == 3'h4;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/GammaBus.scala:249:31
   wire         _GEN_1 = _GEN | ~(_GEN_0 & wrap_1);	// src/main/scala/ultra/bus/GammaBus.scala:12:19, :212:19, :249:{31,44}, :251:31
   wire         _GEN_2 = bRamStat == 2'h2;	// src/main/scala/ultra/bus/GammaBus.scala:76:25, :192:22, :212:19
-  wire         wrap_2 = bRamCounter_value == 3'h4;	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24, src/main/scala/ultra/bus/GammaBus.scala:249:31
   wire         _GEN_3 = _GEN | _GEN_0;	// src/main/scala/ultra/bus/GammaBus.scala:148:17, :212:19
-  wire         _GEN_4 = _GEN_3 | ~(_GEN_2 & wrap_2);	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/GammaBus.scala:148:17, :212:19, :263:30, :264:16
-  wire         _GEN_5 = eRamStat == 2'h0;	// src/main/scala/ultra/bus/GammaBus.scala:85:25, :282:19, :369:25
+  wire         _GEN_4 = _GEN_3 | ~(_GEN_2 & (&bRamCounter_value));	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24, src/main/scala/ultra/bus/GammaBus.scala:148:17, :212:19, :263:30, :264:16
+  wire         _GEN_5 = eRamStat == 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/GammaBus.scala:85:25, :282:19
   wire         _GEN_6 = eRamStat == 2'h1;	// src/main/scala/ultra/bus/GammaBus.scala:85:25, :160:22, :282:19
-  wire         wrap_4 = eRamCounter_value == 3'h4;	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24, src/main/scala/ultra/bus/GammaBus.scala:249:31
-  wire         _GEN_7 = _GEN_6 & wrap_4;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/GammaBus.scala:212:19, :282:19, :287:30, :288:16
+  wire         _GEN_7 = _GEN_6 & (&eRamCounter_value);	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24, src/main/scala/ultra/bus/GammaBus.scala:212:19, :282:19, :287:30, :288:16
   wire         _GEN_8 = _GEN_5 | ~_GEN_7;	// src/main/scala/ultra/bus/GammaBus.scala:212:19, :282:19, :287:30, :288:16
   wire [31:0]  _GEN_9 =
     _GEN_8
@@ -163,7 +161,7 @@ module GammaBus(	// src/main/scala/ultra/bus/GammaBus.scala:10:7
                   : drBuf_byteSelN == 4'h7
                       ? {24'h0, io_extRam_in_rData[31:24]}
                       : io_extRam_in_rData;	// src/main/scala/ultra/bus/GammaBus.scala:10:7, :13:19, :104:22, :148:17, :212:19, :282:19, :374:22, :376:{13,20}, :379:{13,20}, :382:{13,20}, :385:{13,20}, src/main/scala/ultra/bus/UltraBusUtils.scala:57:16
-  wire         _GEN_10 = uStat == 2'h0;	// src/main/scala/ultra/bus/GammaBus.scala:96:22, :337:16, :369:25
+  wire         _GEN_10 = uStat == 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/GammaBus.scala:96:22, :337:16
   wire         _GEN_11 = uStat == 2'h1;	// src/main/scala/ultra/bus/GammaBus.scala:96:22, :160:22, :337:16
   wire         _GEN_12 = _GEN_10 | ~_GEN_11;	// src/main/scala/ultra/bus/GammaBus.scala:282:19, :337:16, :345:14
   wire         _GEN_13 = drBuf_addr[3:0] == 4'hC;	// src/main/scala/ultra/bus/GammaBus.scala:10:7, :104:22, :347:{24,30}
@@ -188,9 +186,9 @@ module GammaBus(	// src/main/scala/ultra/bus/GammaBus.scala:10:7
       irStat <= 1'h0;	// src/main/scala/ultra/bus/GammaBus.scala:60:23, src/main/scala/ultra/bus/UltraBusUtils.scala:24:16
       drStat <= 1'h0;	// src/main/scala/ultra/bus/GammaBus.scala:61:23, src/main/scala/ultra/bus/UltraBusUtils.scala:24:16
       dwStat <= 1'h0;	// src/main/scala/ultra/bus/GammaBus.scala:62:23, src/main/scala/ultra/bus/UltraBusUtils.scala:24:16
-      bRamStat <= 2'h0;	// src/main/scala/ultra/bus/GammaBus.scala:76:25, :369:25
-      eRamStat <= 2'h0;	// src/main/scala/ultra/bus/GammaBus.scala:85:25, :369:25
-      uStat <= 2'h0;	// src/main/scala/ultra/bus/GammaBus.scala:96:22, :369:25
+      bRamStat <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/GammaBus.scala:76:25
+      eRamStat <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/GammaBus.scala:85:25
+      uStat <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/GammaBus.scala:96:22
       irBuf_pc <= 32'h80000000;	// src/main/scala/ultra/bus/GammaBus.scala:103:22, src/main/scala/ultra/bus/UltraBusUtils.scala:19:13
       drBuf_byteSelN <= 4'h0;	// src/main/scala/ultra/bus/GammaBus.scala:10:7, :104:22
       drBuf_addr <= 32'h0;	// src/main/scala/ultra/bus/GammaBus.scala:104:22, src/main/scala/ultra/bus/UltraBusUtils.scala:57:16
@@ -198,8 +196,8 @@ module GammaBus(	// src/main/scala/ultra/bus/GammaBus.scala:10:7
       dwBuf_addr <= 32'h0;	// src/main/scala/ultra/bus/GammaBus.scala:105:22, src/main/scala/ultra/bus/UltraBusUtils.scala:57:16
       dwBuf_wdata <= 32'h0;	// src/main/scala/ultra/bus/GammaBus.scala:105:22, src/main/scala/ultra/bus/UltraBusUtils.scala:57:16
       iWordCounter_value <= 3'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
-      bRamCounter_value <= 3'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
-      eRamCounter_value <= 3'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
+      bRamCounter_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
+      eRamCounter_value <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
       isInst2BaseLoad <= 1'h0;	// src/main/scala/ultra/bus/GammaBus.scala:120:32, src/main/scala/ultra/bus/UltraBusUtils.scala:24:16
       isData2ExtLoadBlock <= 1'h0;	// src/main/scala/ultra/bus/GammaBus.scala:139:36, src/main/scala/ultra/bus/UltraBusUtils.scala:24:16
       isData2ExtStoreBlock <= 1'h0;	// src/main/scala/ultra/bus/GammaBus.scala:140:37, src/main/scala/ultra/bus/UltraBusUtils.scala:24:16
@@ -220,12 +218,12 @@ module GammaBus(	// src/main/scala/ultra/bus/GammaBus.scala:10:7
       automatic logic            _GEN_22;	// src/main/scala/ultra/bus/GammaBus.scala:19:27, :148:17, :150:32, :153:65, :154:27
       automatic logic            _GEN_23;	// src/main/scala/ultra/bus/GammaBus.scala:19:27, :148:17, :150:32, :153:65, :154:27
       automatic logic            _GEN_24;	// src/main/scala/ultra/bus/GammaBus.scala:19:27, :148:17, :150:32, :153:65, :154:27
-      automatic logic            _GEN_25 = io_dChannel_in_addr[23:22] == 2'h0;	// src/main/scala/ultra/bus/GammaBus.scala:166:49, :369:25, :394:9
+      automatic logic            _GEN_25 = io_dChannel_in_addr[23:22] == 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/GammaBus.scala:166:49, :394:9
       automatic logic            data2BaseLoad;	// src/main/scala/ultra/bus/GammaBus.scala:144:32, :148:17, :150:32, :166:66, :167:27
       automatic logic            _GEN_26;	// src/main/scala/ultra/bus/GammaBus.scala:62:23, :176:17, :178:32, :179:16
       automatic logic            data2ExtStoreBlock;	// src/main/scala/ultra/bus/GammaBus.scala:140:37, :176:17, :178:32, :181:65, :182:27, :183:34
       automatic logic            _GEN_27;	// src/main/scala/ultra/bus/GammaBus.scala:148:17, :176:17, :178:32, :181:65, :182:27
-      automatic logic [2:0]      _GEN_28;	// src/main/scala/ultra/bus/GammaBus.scala:148:17, :176:17, :178:32, :181:65, :182:27
+      automatic logic [1:0]      _GEN_28;	// src/main/scala/ultra/bus/GammaBus.scala:148:17, :176:17, :178:32, :181:65, :182:27
       automatic logic            _GEN_29;	// src/main/scala/ultra/bus/GammaBus.scala:148:17, :182:27, :187:24
       automatic logic            _GEN_30;	// src/main/scala/ultra/bus/GammaBus.scala:148:17, :182:27, :187:24
       automatic logic [1:0]      _GEN_31;	// src/main/scala/ultra/bus/GammaBus.scala:148:17, :176:17, :178:32, :195:62, :196:17
@@ -235,17 +233,17 @@ module GammaBus(	// src/main/scala/ultra/bus/GammaBus.scala:10:7
       automatic logic            _GEN_34;	// src/main/scala/ultra/bus/GammaBus.scala:122:17, :214:27, :227:32, :236:32
       automatic logic            _GEN_35;	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/GammaBus.scala:227:32, :236:32
       automatic logic            _GEN_36;	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/GammaBus.scala:214:27, :227:32, :236:32
-      automatic logic            wrap;	// src/main/scala/chisel3/util/Counter.scala:73:24
-      automatic logic            wrap_3;	// src/main/scala/chisel3/util/Counter.scala:73:24
-      automatic logic            _GEN_37;	// src/main/scala/ultra/bus/GammaBus.scala:176:17, :212:19, :271:30, :272:16
-      automatic logic            _GEN_38;	// src/main/scala/ultra/bus/GammaBus.scala:282:19
-      automatic logic            wrap_5;	// src/main/scala/chisel3/util/Counter.scala:73:24
-      automatic logic            _GEN_39;	// src/main/scala/ultra/bus/GammaBus.scala:212:19, :282:19, :315:30, :316:16
-      automatic logic            _GEN_40;	// src/main/scala/ultra/bus/GammaBus.scala:212:19, :282:19
-      automatic logic            _GEN_41;	// src/main/scala/ultra/bus/GammaBus.scala:337:16
-      automatic logic [3:0][1:0] _GEN_42;	// src/main/scala/ultra/bus/GammaBus.scala:176:17, :337:16, :344:13, :358:13
-      automatic logic [3:0][2:0] _GEN_43;	// src/main/scala/chisel3/util/Counter.scala:61:40, :87:20, src/main/scala/ultra/bus/GammaBus.scala:212:19, :214:27, :249:44
-      automatic logic [3:0][2:0] _GEN_44;	// src/main/scala/ultra/bus/GammaBus.scala:176:17, :282:19, :287:30, :315:30
+      automatic logic            _GEN_37;	// src/main/scala/chisel3/util/Counter.scala:73:24
+      automatic logic            _GEN_38;	// src/main/scala/ultra/bus/GammaBus.scala:176:17, :212:19, :271:30, :272:16
+      automatic logic            _GEN_39;	// src/main/scala/chisel3/util/Counter.scala:77:15, :98:11, src/main/scala/ultra/bus/GammaBus.scala:287:30, :293:33
+      automatic logic            _GEN_40;	// src/main/scala/ultra/bus/GammaBus.scala:282:19
+      automatic logic            _GEN_41;	// src/main/scala/ultra/bus/GammaBus.scala:212:19, :282:19, :315:30, :316:16
+      automatic logic            _GEN_42;	// src/main/scala/ultra/bus/GammaBus.scala:212:19, :282:19
+      automatic logic            _GEN_43;	// src/main/scala/chisel3/util/Counter.scala:77:15, :98:11, src/main/scala/ultra/bus/GammaBus.scala:315:30, :319:32
+      automatic logic            _GEN_44;	// src/main/scala/ultra/bus/GammaBus.scala:337:16
+      automatic logic [3:0][1:0] _GEN_45;	// src/main/scala/ultra/bus/GammaBus.scala:176:17, :337:16, :344:13, :358:13
+      automatic logic [3:0][1:0] _GEN_46;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:15, src/main/scala/ultra/bus/GammaBus.scala:212:19, :214:27, :249:44
+      automatic logic [3:0][1:0] _GEN_47;	// src/main/scala/ultra/bus/GammaBus.scala:176:17, :282:19, :287:30, :315:30
       _GEN_15 = ~irStat & io_iChannel_in_rreq;	// src/main/scala/ultra/bus/GammaBus.scala:60:23, :122:17, :124:32, :125:16
       inst2BaseLoad = _GEN_15 | isInst2BaseLoad;	// src/main/scala/ultra/bus/GammaBus.scala:60:23, :120:32, :121:34, :122:17, :124:32, :125:16, :127:23
       _GEN_16 = ~drStat & io_dChannel_in_rreq;	// src/main/scala/ultra/bus/GammaBus.scala:61:23, :148:17, :150:32, :151:16
@@ -261,7 +259,7 @@ module GammaBus(	// src/main/scala/ultra/bus/GammaBus.scala:10:7
       _GEN_26 = ~dwStat & io_dChannel_in_wreq;	// src/main/scala/ultra/bus/GammaBus.scala:62:23, :176:17, :178:32, :179:16
       data2ExtStoreBlock = ~dwStat & io_dChannel_in_wreq & _GEN_18 | isData2ExtStoreBlock;	// src/main/scala/ultra/bus/GammaBus.scala:62:23, :139:36, :140:37, :153:65, :154:27, :155:33, :176:17, :178:32, :181:65, :182:27, :183:34
       _GEN_27 = ~dwStat & io_dChannel_in_wreq & _GEN_17;	// src/main/scala/ultra/bus/GammaBus.scala:62:23, :148:17, :153:49, :176:17, :178:32, :181:65, :182:27
-      _GEN_28 = ~_GEN_27 & ~_GEN_19 | (|eRamStat) ? eRamCounter_value : 3'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/GammaBus.scala:85:25, :87:43, :148:17, :150:32, :153:65, :154:27, :176:17, :178:32, :181:65, :182:27
+      _GEN_28 = ~_GEN_27 & ~_GEN_19 | (|eRamStat) ? eRamCounter_value : 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/GammaBus.scala:85:25, :87:43, :148:17, :150:32, :153:65, :154:27, :176:17, :178:32, :181:65, :182:27
       _GEN_29 = ~(|eRamStat) | eRamOutReg_oe;	// src/main/scala/ultra/bus/GammaBus.scala:19:27, :85:25, :87:43, :148:17, :154:27, :159:24, :182:27, :187:24
       _GEN_30 = (|eRamStat) & eRamOutReg_we;	// src/main/scala/ultra/bus/GammaBus.scala:19:27, :85:25, :87:43, :148:17, :182:27, :187:24
       _GEN_31 =
@@ -276,14 +274,14 @@ module GammaBus(	// src/main/scala/ultra/bus/GammaBus.scala:10:7
       _GEN_34 = data2BaseStore | data2BaseLoad;	// src/main/scala/ultra/bus/GammaBus.scala:122:17, :144:32, :145:33, :148:17, :150:32, :166:66, :167:27, :176:17, :178:32, :198:66, :199:28, :214:27, :227:32, :236:32
       _GEN_35 = data2BaseLoad | inst2BaseLoad;	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/GammaBus.scala:121:34, :122:17, :124:32, :127:23, :144:32, :148:17, :150:32, :166:66, :167:27, :227:32, :236:32
       _GEN_36 = data2BaseStore | _GEN_35;	// src/main/scala/chisel3/util/Counter.scala:61:40, :98:11, src/main/scala/ultra/bus/GammaBus.scala:145:33, :176:17, :178:32, :198:66, :199:28, :214:27, :227:32, :236:32
-      wrap = bRamCounter_value == 3'h4;	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24, src/main/scala/ultra/bus/GammaBus.scala:249:31
-      wrap_3 = bRamCounter_value == 3'h4;	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24, src/main/scala/ultra/bus/GammaBus.scala:249:31
-      _GEN_37 = (&bRamStat) & wrap_3;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/GammaBus.scala:76:25, :176:17, :212:19, :271:30, :272:16
-      _GEN_38 = eRamStat == 2'h2;	// src/main/scala/ultra/bus/GammaBus.scala:85:25, :192:22, :282:19
-      wrap_5 = eRamCounter_value == 3'h4;	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24, src/main/scala/ultra/bus/GammaBus.scala:249:31
-      _GEN_39 = _GEN_38 & wrap_5;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/GammaBus.scala:212:19, :282:19, :315:30, :316:16
-      _GEN_40 = _GEN_5 | _GEN_6 | ~_GEN_39;	// src/main/scala/ultra/bus/GammaBus.scala:212:19, :282:19, :315:30, :316:16
-      _GEN_41 = uStat == 2'h2;	// src/main/scala/ultra/bus/GammaBus.scala:96:22, :192:22, :337:16
+      _GEN_37 = bRamCounter_value != 2'h3;	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24, src/main/scala/ultra/bus/GammaBus.scala:163:49
+      _GEN_38 = (&bRamStat) & (&bRamCounter_value);	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24, src/main/scala/ultra/bus/GammaBus.scala:76:25, :176:17, :212:19, :271:30, :272:16
+      _GEN_39 = (&eRamCounter_value) & data2ExtStoreBlock;	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24, :77:15, :98:11, src/main/scala/ultra/bus/GammaBus.scala:140:37, :176:17, :178:32, :181:65, :182:27, :183:34, :287:30, :293:33
+      _GEN_40 = eRamStat == 2'h2;	// src/main/scala/ultra/bus/GammaBus.scala:85:25, :192:22, :282:19
+      _GEN_41 = _GEN_40 & (&eRamCounter_value);	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24, src/main/scala/ultra/bus/GammaBus.scala:212:19, :282:19, :315:30, :316:16
+      _GEN_42 = _GEN_5 | _GEN_6 | ~_GEN_41;	// src/main/scala/ultra/bus/GammaBus.scala:212:19, :282:19, :315:30, :316:16
+      _GEN_43 = (&eRamCounter_value) & data2ExtLoadBlock;	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24, :77:15, :98:11, src/main/scala/ultra/bus/GammaBus.scala:139:36, :148:17, :150:32, :153:65, :154:27, :155:33, :315:30, :319:32
+      _GEN_44 = uStat == 2'h2;	// src/main/scala/ultra/bus/GammaBus.scala:96:22, :192:22, :337:16
       if (_GEN) begin	// src/main/scala/ultra/bus/GammaBus.scala:212:19
         if (data2BaseStore) begin	// src/main/scala/ultra/bus/GammaBus.scala:145:33, :176:17, :178:32, :198:66, :199:28
           bRamOutReg_wData <= _GEN_32;	// src/main/scala/ultra/bus/GammaBus.scala:18:27, :218:34, :219:22, :225:22
@@ -304,7 +302,7 @@ module GammaBus(	// src/main/scala/ultra/bus/GammaBus.scala:10:7
           end
           else if (inst2BaseLoad) begin	// src/main/scala/ultra/bus/GammaBus.scala:121:34, :122:17, :124:32, :127:23
             bRamOutReg_addr <=
-              {io_iChannel_in_rreq ? io_iChannel_in_pc[21:4] : irBuf_pc[21:4], 2'h0};	// src/main/scala/ultra/bus/GammaBus.scala:18:27, :103:22, :241:34, :242:22, :244:22, :369:{7,25}
+              {io_iChannel_in_rreq ? io_iChannel_in_pc[21:4] : irBuf_pc[21:4], 2'h0};	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/GammaBus.scala:18:27, :103:22, :241:34, :242:22, :244:22, :369:7
             bRamStat <= 2'h1;	// src/main/scala/ultra/bus/GammaBus.scala:76:25, :160:22
           end
         end
@@ -316,15 +314,15 @@ module GammaBus(	// src/main/scala/ultra/bus/GammaBus.scala:10:7
           iWordCounter_value <= 3'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40
       end
       else begin	// src/main/scala/ultra/bus/GammaBus.scala:212:19
-        automatic logic _GEN_45;	// src/main/scala/ultra/bus/GammaBus.scala:18:27, :212:19, :249:44
-        _GEN_45 = ~_GEN_0 | wrap_1 | ~wrap;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/GammaBus.scala:18:27, :211:23, :212:19, :249:{31,44}, :255:32
-        if (_GEN_45) begin	// src/main/scala/ultra/bus/GammaBus.scala:18:27, :212:19, :249:44
+        automatic logic _GEN_48;	// src/main/scala/ultra/bus/GammaBus.scala:18:27, :212:19, :249:44
+        _GEN_48 = ~_GEN_0 | wrap_1 | _GEN_37;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/GammaBus.scala:18:27, :211:23, :212:19, :249:{31,44}
+        if (_GEN_48) begin	// src/main/scala/ultra/bus/GammaBus.scala:18:27, :212:19, :249:44
         end
         else	// src/main/scala/ultra/bus/GammaBus.scala:18:27, :212:19, :249:44
           bRamOutReg_addr <= bRamOutReg_addr + 20'h1;	// src/main/scala/ultra/bus/GammaBus.scala:18:27, :257:46
-        if (_GEN_0 ? wrap_1 : _GEN_2 ? wrap_2 : _GEN_37)	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/GammaBus.scala:76:25, :176:17, :212:19, :249:{31,44}, :253:18, :263:30, :267:18, :271:30, :272:16, :274:18
-          bRamStat <= 2'h0;	// src/main/scala/ultra/bus/GammaBus.scala:76:25, :369:25
-        if (_GEN_45) begin	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/GammaBus.scala:18:27, :212:19, :249:44
+        if (_GEN_0 ? wrap_1 : _GEN_2 ? (&bRamCounter_value) : _GEN_38)	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24, src/main/scala/ultra/bus/GammaBus.scala:76:25, :176:17, :212:19, :249:{31,44}, :253:18, :263:30, :267:18, :271:30, :272:16, :274:18
+          bRamStat <= 2'h0;	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/GammaBus.scala:76:25
+        if (_GEN_48) begin	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/GammaBus.scala:18:27, :212:19, :249:44
         end
         else	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/GammaBus.scala:212:19, :249:44
           iWordCounter_value <= iWordCounter_value + 3'h1;	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:24
@@ -360,16 +358,14 @@ module GammaBus(	// src/main/scala/ultra/bus/GammaBus.scala:10:7
         end
       end
       else begin	// src/main/scala/ultra/bus/GammaBus.scala:282:19
-        automatic logic _GEN_46;	// src/main/scala/ultra/bus/GammaBus.scala:148:17, :176:17, :178:32, :181:65, :182:27
-        automatic logic _GEN_47;	// src/main/scala/ultra/bus/GammaBus.scala:148:17, :176:17, :178:32, :181:65, :182:27
-        automatic logic _GEN_48;	// src/main/scala/ultra/bus/GammaBus.scala:148:17, :176:17, :178:32, :181:65, :182:27
-        _GEN_46 = _GEN_27 ? _GEN_21 : _GEN_22;	// src/main/scala/ultra/bus/GammaBus.scala:19:27, :148:17, :150:32, :153:65, :154:27, :159:24, :176:17, :178:32, :181:65, :182:27
-        _GEN_47 = _GEN_27 ? _GEN_29 : _GEN_23;	// src/main/scala/ultra/bus/GammaBus.scala:19:27, :148:17, :150:32, :153:65, :154:27, :176:17, :178:32, :181:65, :182:27, :187:24
-        _GEN_48 = _GEN_27 ? _GEN_30 : _GEN_24;	// src/main/scala/ultra/bus/GammaBus.scala:19:27, :148:17, :150:32, :153:65, :154:27, :176:17, :178:32, :181:65, :182:27, :187:24
+        automatic logic _GEN_49;	// src/main/scala/ultra/bus/GammaBus.scala:148:17, :176:17, :178:32, :181:65, :182:27
+        automatic logic _GEN_50;	// src/main/scala/ultra/bus/GammaBus.scala:148:17, :176:17, :178:32, :181:65, :182:27
+        automatic logic _GEN_51;	// src/main/scala/ultra/bus/GammaBus.scala:148:17, :176:17, :178:32, :181:65, :182:27
+        _GEN_49 = _GEN_27 ? _GEN_21 : _GEN_22;	// src/main/scala/ultra/bus/GammaBus.scala:19:27, :148:17, :150:32, :153:65, :154:27, :159:24, :176:17, :178:32, :181:65, :182:27
+        _GEN_50 = _GEN_27 ? _GEN_29 : _GEN_23;	// src/main/scala/ultra/bus/GammaBus.scala:19:27, :148:17, :150:32, :153:65, :154:27, :176:17, :178:32, :181:65, :182:27, :187:24
+        _GEN_51 = _GEN_27 ? _GEN_30 : _GEN_24;	// src/main/scala/ultra/bus/GammaBus.scala:19:27, :148:17, :150:32, :153:65, :154:27, :176:17, :178:32, :181:65, :182:27, :187:24
         if (_GEN_6) begin	// src/main/scala/ultra/bus/GammaBus.scala:282:19
-          automatic logic _GEN_49;	// src/main/scala/ultra/bus/GammaBus.scala:176:17, :287:30, :293:33, :296:36
-          _GEN_49 = wrap_4 & data2ExtStoreBlock;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/GammaBus.scala:140:37, :176:17, :178:32, :181:65, :182:27, :183:34, :287:30, :293:33, :296:36
-          if (_GEN_49) begin	// src/main/scala/ultra/bus/GammaBus.scala:176:17, :287:30, :293:33, :296:36
+          if (_GEN_39) begin	// src/main/scala/chisel3/util/Counter.scala:77:15, :98:11, src/main/scala/ultra/bus/GammaBus.scala:287:30, :293:33
             eRamOutReg_wData <= _GEN_32;	// src/main/scala/ultra/bus/GammaBus.scala:19:27, :218:34, :219:22, :225:22
             eRamOutReg_addr <=
               io_dChannel_in_wreq ? io_dChannel_in_addr[21:2] : dwBuf_addr[21:2];	// src/main/scala/ultra/bus/GammaBus.scala:19:27, :105:22, :296:36, :297:24, :298:34, :303:24, :304:25
@@ -389,10 +385,10 @@ module GammaBus(	// src/main/scala/ultra/bus/GammaBus.scala:10:7
             eRamOutReg_addr <= io_dChannel_in_addr[21:2];	// src/main/scala/ultra/bus/GammaBus.scala:19:27, :159:59
             eRamOutReg_byteSelN <= 4'h0;	// src/main/scala/ultra/bus/GammaBus.scala:10:7, :19:27
           end
-          eRamOutReg_ce <= ~_GEN_49 & _GEN_46;	// src/main/scala/ultra/bus/GammaBus.scala:19:27, :148:17, :176:17, :178:32, :181:65, :182:27, :287:30, :293:33, :296:36
-          eRamOutReg_oe <= _GEN_49 | _GEN_47;	// src/main/scala/ultra/bus/GammaBus.scala:19:27, :148:17, :176:17, :178:32, :181:65, :182:27, :287:30, :293:33, :296:36
-          eRamOutReg_we <= ~_GEN_49 & _GEN_48;	// src/main/scala/ultra/bus/GammaBus.scala:19:27, :148:17, :176:17, :178:32, :181:65, :182:27, :287:30, :293:33, :296:36
-          if (wrap_4)	// src/main/scala/chisel3/util/Counter.scala:73:24
+          eRamOutReg_ce <= ~_GEN_39 & _GEN_49;	// src/main/scala/chisel3/util/Counter.scala:77:15, :98:11, src/main/scala/ultra/bus/GammaBus.scala:19:27, :148:17, :176:17, :178:32, :181:65, :182:27, :287:30, :293:33, :296:36
+          eRamOutReg_oe <= _GEN_39 | _GEN_50;	// src/main/scala/chisel3/util/Counter.scala:77:15, :98:11, src/main/scala/ultra/bus/GammaBus.scala:19:27, :148:17, :176:17, :178:32, :181:65, :182:27, :287:30, :293:33, :296:36
+          eRamOutReg_we <= ~_GEN_39 & _GEN_51;	// src/main/scala/chisel3/util/Counter.scala:77:15, :98:11, src/main/scala/ultra/bus/GammaBus.scala:19:27, :148:17, :176:17, :178:32, :181:65, :182:27, :287:30, :293:33, :296:36
+          if (&eRamCounter_value)	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24
             eRamStat <= {data2ExtStoreBlock, 1'h0};	// src/main/scala/ultra/bus/GammaBus.scala:85:25, :140:37, :176:17, :178:32, :181:65, :182:27, :183:34, :293:33, :294:20, :310:20, src/main/scala/ultra/bus/UltraBusUtils.scala:24:16
           else if (_GEN_27) begin	// src/main/scala/ultra/bus/GammaBus.scala:148:17, :176:17, :178:32, :181:65, :182:27
             if (~(|eRamStat))	// src/main/scala/ultra/bus/GammaBus.scala:19:27, :85:25, :87:43, :154:27, :159:24
@@ -404,9 +400,9 @@ module GammaBus(	// src/main/scala/ultra/bus/GammaBus.scala:10:7
             eRamStat <= 2'h1;	// src/main/scala/ultra/bus/GammaBus.scala:85:25, :160:22
         end
         else begin	// src/main/scala/ultra/bus/GammaBus.scala:282:19
-          automatic logic _GEN_50;	// src/main/scala/ultra/bus/GammaBus.scala:176:17, :282:19, :315:30, :319:32, :322:36
-          _GEN_50 = _GEN_38 & wrap_5 & data2ExtLoadBlock;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/GammaBus.scala:139:36, :148:17, :150:32, :153:65, :154:27, :155:33, :176:17, :282:19, :315:30, :319:32, :322:36
-          if (_GEN_50) begin	// src/main/scala/ultra/bus/GammaBus.scala:176:17, :282:19, :315:30, :319:32, :322:36
+          automatic logic _GEN_52;	// src/main/scala/ultra/bus/GammaBus.scala:176:17, :282:19, :315:30, :319:32, :322:36
+          _GEN_52 = _GEN_40 & _GEN_43;	// src/main/scala/chisel3/util/Counter.scala:77:15, :98:11, src/main/scala/ultra/bus/GammaBus.scala:176:17, :282:19, :315:30, :319:32, :322:36
+          if (_GEN_52) begin	// src/main/scala/ultra/bus/GammaBus.scala:176:17, :282:19, :315:30, :319:32, :322:36
             eRamOutReg_wData <= 32'h0;	// src/main/scala/ultra/bus/GammaBus.scala:19:27, src/main/scala/ultra/bus/UltraBusUtils.scala:57:16
             eRamOutReg_addr <=
               io_dChannel_in_rreq ? io_dChannel_in_addr[21:2] : drBuf_addr[21:2];	// src/main/scala/ultra/bus/GammaBus.scala:19:27, :104:22, :322:36, :323:{24,59}, :325:{24,50}
@@ -426,10 +422,10 @@ module GammaBus(	// src/main/scala/ultra/bus/GammaBus.scala:10:7
             eRamOutReg_addr <= io_dChannel_in_addr[21:2];	// src/main/scala/ultra/bus/GammaBus.scala:19:27, :159:59
             eRamOutReg_byteSelN <= 4'h0;	// src/main/scala/ultra/bus/GammaBus.scala:10:7, :19:27
           end
-          eRamOutReg_ce <= ~_GEN_50 & _GEN_46;	// src/main/scala/ultra/bus/GammaBus.scala:19:27, :148:17, :176:17, :178:32, :181:65, :182:27, :282:19, :315:30, :319:32, :322:36
-          eRamOutReg_oe <= ~_GEN_50 & _GEN_47;	// src/main/scala/ultra/bus/GammaBus.scala:19:27, :148:17, :176:17, :178:32, :181:65, :182:27, :282:19, :315:30, :319:32, :322:36
-          eRamOutReg_we <= _GEN_50 | _GEN_48;	// src/main/scala/ultra/bus/GammaBus.scala:19:27, :148:17, :176:17, :178:32, :181:65, :182:27, :282:19, :315:30, :319:32, :322:36
-          if (_GEN_39)	// src/main/scala/ultra/bus/GammaBus.scala:212:19, :282:19, :315:30, :316:16
+          eRamOutReg_ce <= ~_GEN_52 & _GEN_49;	// src/main/scala/ultra/bus/GammaBus.scala:19:27, :148:17, :176:17, :178:32, :181:65, :182:27, :282:19, :315:30, :319:32, :322:36
+          eRamOutReg_oe <= ~_GEN_52 & _GEN_50;	// src/main/scala/ultra/bus/GammaBus.scala:19:27, :148:17, :176:17, :178:32, :181:65, :182:27, :282:19, :315:30, :319:32, :322:36
+          eRamOutReg_we <= _GEN_52 | _GEN_51;	// src/main/scala/ultra/bus/GammaBus.scala:19:27, :148:17, :176:17, :178:32, :181:65, :182:27, :282:19, :315:30, :319:32, :322:36
+          if (_GEN_41)	// src/main/scala/ultra/bus/GammaBus.scala:212:19, :282:19, :315:30, :316:16
             eRamStat <= {1'h0, data2ExtLoadBlock};	// src/main/scala/ultra/bus/GammaBus.scala:85:25, :139:36, :148:17, :150:32, :153:65, :154:27, :155:33, :319:32, :320:20, :328:20, src/main/scala/ultra/bus/UltraBusUtils.scala:24:16
           else if (_GEN_27) begin	// src/main/scala/ultra/bus/GammaBus.scala:148:17, :176:17, :178:32, :181:65, :182:27
             if (~(|eRamStat))	// src/main/scala/ultra/bus/GammaBus.scala:19:27, :85:25, :87:43, :154:27, :159:24
@@ -443,19 +439,19 @@ module GammaBus(	// src/main/scala/ultra/bus/GammaBus.scala:10:7
       end
       if (_GEN_10)	// src/main/scala/ultra/bus/GammaBus.scala:337:16
         uTdata <= 8'h0;	// src/main/scala/ultra/bus/GammaBus.scala:30:23
-      else if (_GEN_11 | ~_GEN_41) begin	// src/main/scala/ultra/bus/GammaBus.scala:30:23, :282:19, :337:16, :359:14
+      else if (_GEN_11 | ~_GEN_44) begin	// src/main/scala/ultra/bus/GammaBus.scala:30:23, :282:19, :337:16, :359:14
       end
       else	// src/main/scala/ultra/bus/GammaBus.scala:30:23, :337:16
         uTdata <= dwBuf_wdata[7:0];	// src/main/scala/ultra/bus/GammaBus.scala:30:23, :105:22, :362:28
-      uTstart <= ~_GEN_10 & (~_GEN_11 & _GEN_41 | uTstart);	// src/main/scala/ultra/bus/GammaBus.scala:31:24, :282:19, :337:16, :339:15, :345:14
+      uTstart <= ~_GEN_10 & (~_GEN_11 & _GEN_44 | uTstart);	// src/main/scala/ultra/bus/GammaBus.scala:31:24, :282:19, :337:16, :339:15, :345:14
       uRclear <= ~_GEN_10 & (_GEN_11 & ~_GEN_13 & _GEN_14 | uRclear);	// src/main/scala/ultra/bus/GammaBus.scala:32:24, :282:19, :337:16, :341:15, :347:30
       irStat <= _GEN_1 & (_GEN_15 | irStat);	// src/main/scala/ultra/bus/GammaBus.scala:12:19, :60:23, :122:17, :124:32, :125:16, :212:19
       drStat <= _GEN_12 & _GEN_8 & _GEN_4 & (_GEN_16 | drStat);	// src/main/scala/ultra/bus/GammaBus.scala:61:23, :148:17, :150:32, :151:16, :212:19, :282:19, :337:16
       dwStat <=
-        (_GEN_10 | _GEN_11 | ~_GEN_41) & _GEN_40 & (_GEN | _GEN_0 | _GEN_2 | ~_GEN_37)
+        (_GEN_10 | _GEN_11 | ~_GEN_44) & _GEN_42 & (_GEN | _GEN_0 | _GEN_2 | ~_GEN_38)
         & (_GEN_26 | dwStat);	// src/main/scala/ultra/bus/GammaBus.scala:62:23, :176:17, :178:32, :179:16, :212:19, :271:30, :272:16, :282:19, :337:16, :359:14
-      _GEN_42 = {{_GEN_31}, {2'h0}, {2'h0}, {_GEN_31}};	// src/main/scala/ultra/bus/GammaBus.scala:148:17, :176:17, :178:32, :195:62, :196:17, :337:16, :344:13, :358:13, :369:25
-      uStat <= _GEN_42[uStat];	// src/main/scala/ultra/bus/GammaBus.scala:96:22, :176:17, :337:16, :344:13, :358:13
+      _GEN_45 = {{_GEN_31}, {2'h0}, {2'h0}, {_GEN_31}};	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/GammaBus.scala:148:17, :176:17, :178:32, :195:62, :196:17, :337:16, :344:13, :358:13
+      uStat <= _GEN_45[uStat];	// src/main/scala/ultra/bus/GammaBus.scala:96:22, :176:17, :337:16, :344:13, :358:13
       if (_GEN_15)	// src/main/scala/ultra/bus/GammaBus.scala:60:23, :122:17, :124:32, :125:16
         irBuf_pc <= io_iChannel_in_pc;	// src/main/scala/ultra/bus/GammaBus.scala:103:22
       if (_GEN_16) begin	// src/main/scala/ultra/bus/GammaBus.scala:61:23, :148:17, :150:32, :151:16
@@ -467,24 +463,24 @@ module GammaBus(	// src/main/scala/ultra/bus/GammaBus.scala:10:7
         dwBuf_addr <= io_dChannel_in_addr;	// src/main/scala/ultra/bus/GammaBus.scala:105:22
         dwBuf_wdata <= io_dChannel_in_wdata;	// src/main/scala/ultra/bus/GammaBus.scala:105:22
       end
-      _GEN_43 =
-        {{wrap_3 ? 3'h0 : bRamCounter_value + 3'h1},
-         {wrap_2 ? 3'h0 : bRamCounter_value + 3'h1},
-         {wrap_1 ? bRamCounter_value : wrap ? 3'h0 : bRamCounter_value + 3'h1},
-         {_GEN_36 ? 3'h0 : bRamCounter_value}};	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24, :77:{15,24}, :87:{20,28}, :98:11, src/main/scala/ultra/bus/GammaBus.scala:212:19, :214:27, :227:32, :236:32, :249:{31,44}
-      bRamCounter_value <= _GEN_43[bRamStat];	// src/main/scala/chisel3/util/Counter.scala:61:40, :87:20, src/main/scala/ultra/bus/GammaBus.scala:76:25, :212:19, :214:27, :249:44
-      _GEN_44 =
+      _GEN_46 =
+        {{bRamCounter_value + 2'h1},
+         {bRamCounter_value + 2'h1},
+         {wrap_1 ? bRamCounter_value : bRamCounter_value + 2'h1},
+         {_GEN_36 ? 2'h0 : bRamCounter_value}};	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:{15,24}, :98:11, src/main/scala/ultra/bus/GammaBus.scala:160:22, :212:19, :214:27, :227:32, :236:32, :249:{31,44}
+      bRamCounter_value <= _GEN_46[bRamStat];	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:15, src/main/scala/ultra/bus/GammaBus.scala:76:25, :212:19, :214:27, :249:44
+      _GEN_47 =
         {{_GEN_28},
-         {wrap_5 & (data2ExtLoadBlock | wrap_5) ? 3'h0 : eRamCounter_value + 3'h1},
-         {wrap_4 & (data2ExtStoreBlock | wrap_4) ? 3'h0 : eRamCounter_value + 3'h1},
-         {_GEN_28}};	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24, :77:{15,24}, :87:{20,28}, :98:11, src/main/scala/ultra/bus/GammaBus.scala:139:36, :140:37, :148:17, :150:32, :153:65, :154:27, :155:33, :176:17, :178:32, :181:65, :182:27, :183:34, :282:19, :287:30, :293:33, :315:30, :319:32
-      eRamCounter_value <= _GEN_44[eRamStat];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/GammaBus.scala:85:25, :176:17, :282:19, :287:30, :315:30
+         {_GEN_43 ? 2'h0 : eRamCounter_value + 2'h1},
+         {_GEN_39 ? 2'h0 : eRamCounter_value + 2'h1},
+         {_GEN_28}};	// src/main/scala/chisel3/util/Counter.scala:61:40, :77:{15,24}, :98:11, src/main/scala/ultra/bus/GammaBus.scala:148:17, :160:22, :176:17, :178:32, :181:65, :182:27, :282:19, :287:30, :293:33, :315:30, :319:32
+      eRamCounter_value <= _GEN_47[eRamStat];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/GammaBus.scala:85:25, :176:17, :282:19, :287:30, :315:30
       isInst2BaseLoad <= (~_GEN | _GEN_34) & inst2BaseLoad;	// src/main/scala/ultra/bus/GammaBus.scala:120:32, :121:34, :122:17, :124:32, :127:23, :148:17, :212:19, :214:27, :227:32, :236:32
       isData2ExtLoadBlock <= _GEN_8 & data2ExtLoadBlock;	// src/main/scala/ultra/bus/GammaBus.scala:139:36, :148:17, :150:32, :153:65, :154:27, :155:33, :212:19, :282:19
-      isData2ExtStoreBlock <= _GEN_40 & data2ExtStoreBlock;	// src/main/scala/ultra/bus/GammaBus.scala:140:37, :176:17, :178:32, :181:65, :182:27, :183:34, :212:19, :282:19
+      isData2ExtStoreBlock <= _GEN_42 & data2ExtStoreBlock;	// src/main/scala/ultra/bus/GammaBus.scala:140:37, :176:17, :178:32, :181:65, :182:27, :183:34, :212:19, :282:19
       isData2BaseLoad <= (~_GEN | data2BaseStore) & data2BaseLoad;	// src/main/scala/ultra/bus/GammaBus.scala:144:32, :145:33, :148:17, :150:32, :166:66, :167:27, :176:17, :178:32, :198:66, :199:28, :212:19, :214:27
       isData2BaseStore <= ~(_GEN & data2BaseStore) & data2BaseStore;	// src/main/scala/ultra/bus/GammaBus.scala:145:33, :176:17, :178:32, :198:66, :199:28, :212:19, :214:27, :215:26
-      if (_GEN | ~_GEN_0 | wrap_1 | ~wrap) begin	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/GammaBus.scala:211:23, :212:19, :249:{31,44}, :255:32
+      if (_GEN | ~_GEN_0 | wrap_1 | _GEN_37) begin	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/GammaBus.scala:211:23, :212:19, :249:{31,44}
       end
       else	// src/main/scala/ultra/bus/GammaBus.scala:211:23, :212:19
         irData <= {io_baseRam_in_rData, irData[127:32]};	// src/main/scala/ultra/bus/GammaBus.scala:211:23, :256:{41,50}
@@ -531,19 +527,19 @@ module GammaBus(	// src/main/scala/ultra/bus/GammaBus.scala:10:7
         dwBuf_addr = {_RANDOM[4'h7][31:22], _RANDOM[4'h8][21:0]};	// src/main/scala/ultra/bus/GammaBus.scala:10:7, :105:22
         dwBuf_wdata = {_RANDOM[4'h8][31:22], _RANDOM[4'h9][21:0]};	// src/main/scala/ultra/bus/GammaBus.scala:10:7, :105:22
         iWordCounter_value = _RANDOM[4'h9][24:22];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/GammaBus.scala:10:7, :105:22
-        bRamCounter_value = _RANDOM[4'h9][27:25];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/GammaBus.scala:10:7, :105:22
-        eRamCounter_value = _RANDOM[4'h9][30:28];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/GammaBus.scala:10:7, :105:22
-        isInst2BaseLoad = _RANDOM[4'h9][31];	// src/main/scala/ultra/bus/GammaBus.scala:10:7, :105:22, :120:32
-        isData2ExtLoadBlock = _RANDOM[4'hA][0];	// src/main/scala/ultra/bus/GammaBus.scala:10:7, :139:36
-        isData2ExtStoreBlock = _RANDOM[4'hA][1];	// src/main/scala/ultra/bus/GammaBus.scala:10:7, :139:36, :140:37
-        isData2BaseLoad = _RANDOM[4'hA][2];	// src/main/scala/ultra/bus/GammaBus.scala:10:7, :139:36, :144:32
-        isData2BaseStore = _RANDOM[4'hA][3];	// src/main/scala/ultra/bus/GammaBus.scala:10:7, :139:36, :145:33
+        bRamCounter_value = _RANDOM[4'h9][26:25];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/GammaBus.scala:10:7, :105:22
+        eRamCounter_value = _RANDOM[4'h9][28:27];	// src/main/scala/chisel3/util/Counter.scala:61:40, src/main/scala/ultra/bus/GammaBus.scala:10:7, :105:22
+        isInst2BaseLoad = _RANDOM[4'h9][29];	// src/main/scala/ultra/bus/GammaBus.scala:10:7, :105:22, :120:32
+        isData2ExtLoadBlock = _RANDOM[4'h9][30];	// src/main/scala/ultra/bus/GammaBus.scala:10:7, :105:22, :139:36
+        isData2ExtStoreBlock = _RANDOM[4'h9][31];	// src/main/scala/ultra/bus/GammaBus.scala:10:7, :105:22, :140:37
+        isData2BaseLoad = _RANDOM[4'hA][0];	// src/main/scala/ultra/bus/GammaBus.scala:10:7, :144:32
+        isData2BaseStore = _RANDOM[4'hA][1];	// src/main/scala/ultra/bus/GammaBus.scala:10:7, :144:32, :145:33
         irData =
-          {_RANDOM[4'hA][31:4],
+          {_RANDOM[4'hA][31:2],
            _RANDOM[4'hB],
            _RANDOM[4'hC],
            _RANDOM[4'hD],
-           _RANDOM[4'hE][3:0]};	// src/main/scala/ultra/bus/GammaBus.scala:10:7, :139:36, :211:23
+           _RANDOM[4'hE][1:0]};	// src/main/scala/ultra/bus/GammaBus.scala:10:7, :144:32, :211:23
       `endif // RANDOMIZE_REG_INIT
     end // initial
     `ifdef FIRRTL_AFTER_INITIAL	// src/main/scala/ultra/bus/GammaBus.scala:10:7
@@ -551,7 +547,7 @@ module GammaBus(	// src/main/scala/ultra/bus/GammaBus.scala:10:7
     `endif // FIRRTL_AFTER_INITIAL
   `endif // ENABLE_INITIAL_REG_
   async_transmitter #(
-    .ClkFrequency(230000000)
+    .ClkFrequency(220000000)
   ) uTransmitter (	// src/main/scala/ultra/bus/GammaBus.scala:28:28
     .clk       (clock),
     .TxD_start (uTstart),	// src/main/scala/ultra/bus/GammaBus.scala:31:24
@@ -560,7 +556,7 @@ module GammaBus(	// src/main/scala/ultra/bus/GammaBus.scala:10:7
     .TxD_busy  (_uTransmitter_TxD_busy)
   );
   async_receiver #(
-    .ClkFrequency(230000000)
+    .ClkFrequency(220000000)
   ) uReceiver (	// src/main/scala/ultra/bus/GammaBus.scala:29:25
     .clk            (clock),
     .RxD            (io_uart_rxd),
@@ -579,7 +575,7 @@ module GammaBus(	// src/main/scala/ultra/bus/GammaBus.scala:10:7
           : _GEN_14 ? {24'h0, _uReceiver_RxD_data} : _GEN_9;	// src/main/scala/ultra/bus/GammaBus.scala:10:7, :28:28, :29:25, :43:60, :212:19, :282:19, :337:16, :347:30, :349:33, :352:33, :374:22, :385:13
   assign io_dChannel_out_rrdy = ~drStat;	// src/main/scala/ultra/bus/GammaBus.scala:10:7, :61:23, :65:34
   assign io_dChannel_out_rvalid =
-    ~_GEN_10 & _GEN_11 | ~_GEN_5 & _GEN_7 | ~_GEN_3 & _GEN_2 & wrap_2;	// src/main/scala/chisel3/util/Counter.scala:73:24, src/main/scala/ultra/bus/GammaBus.scala:10:7, :13:19, :148:17, :212:19, :282:19, :287:30, :288:16, :337:16
+    ~_GEN_10 & _GEN_11 | ~_GEN_5 & _GEN_7 | ~_GEN_3 & _GEN_2 & (&bRamCounter_value);	// src/main/scala/chisel3/util/Counter.scala:61:40, :73:24, src/main/scala/ultra/bus/GammaBus.scala:10:7, :13:19, :148:17, :212:19, :282:19, :287:30, :288:16, :337:16
   assign io_dChannel_out_wrdy = ~dwStat;	// src/main/scala/ultra/bus/GammaBus.scala:10:7, :62:23, :66:34
   assign io_baseRam_out_wData = bRamOutReg_wData;	// src/main/scala/ultra/bus/GammaBus.scala:10:7, :18:27
   assign io_baseRam_out_addr = bRamOutReg_addr;	// src/main/scala/ultra/bus/GammaBus.scala:10:7, :18:27

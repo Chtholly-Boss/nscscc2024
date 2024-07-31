@@ -10,10 +10,10 @@ object UltraBusParams {
   val iBandWidth = iWords * wordLength
   val dBandWidth = dWords * wordLength
   val _M = math.pow(10,6).toInt
-  val cpuFrequency = 220 * _M
+  val cpuFrequency = 165 * _M
   val sramFrequency = 60 * _M
-  val memCycles = 4
-  val mulCycles = 2
+  val memCycles = 3
+  val mulCycles = 1
 
   val initPcAddr = "h8000_0000".U
   // Sram Virtual Addr(31,22)

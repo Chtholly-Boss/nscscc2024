@@ -1,226 +1,325 @@
 package ultra.pipeline.exe
+
 import chisel3._
 import chisel3.util._
-import UltraExePorts._
-import UltraExeUtils._
-import UltraExeParams.{ExeType => tp}
-import UltraExeParams._
-import ultra.pipeline.exe.UltraExePorts.ExeAsidePorts.ExeAsideOut
+import ultra.bus.UltraBusParams._
+import ultra.pipeline.exe.UltraExeParams.{ExeType => tp, _}
+import ultra.pipeline.exe.UltraExePorts._
+import ultra.pipeline.exe.UltraExeUtils._
+import ultra.pipeline.regfile.RegfileUtils.initWctrl
+
 class UltraExeStage extends Module {
   val io = IO(new AlphaExeIo)
-  // alias the decode info
-  val decode = io.pipe.decode.in
-
-  val pipeOutReg = RegInit(initExeOut)
-  io.pipe.wback.out := pipeOutReg
-  val preResBuf = RegInit(initExeOut)
-  object ExeState extends ChiselEnum {
-    val
-    IDLE,
-    MUL,
-    LOAD_BLOCK,
-    LOADING,
-    STORE_BLOCK
-    = Value
-  }
-  import ExeState._
-  val exstat = RegInit(IDLE)
-  def default() = {
-    exstat := IDLE
+  def initAllOut() = {
     io.pipe.decode.out.ack := false.B
-    pipeOutReg := initExeOut
+    io.pipe.wback.out := initExeOut
     io.pipe.br := initExeBranchInfo
     io.aside.out := initExeAsideOut
   }
-  default()
+  initAllOut()
+  // Alias the IO signals
+  val decodeIn = io.pipe.decode.in
+  val exeOut = io.pipe.wback.out
+  val ack = io.pipe.decode.out.ack
 
-  def diffRegWithPreWrite(addr:UInt,data:UInt):UInt = {
-    val res = WireDefault(0.U(32.W))
-    when(
-      preResBuf.bits.en &&
-        preResBuf.bits.addr === addr
-    ){
-      res := preResBuf.bits.data
-    }.otherwise {
-      res := data
-    }
-    res
+  val regLeft = WireDefault(decodeIn.bits.operands.regData_1)
+  val regRight = WireDefault(decodeIn.bits.operands.regData_2)
+  val aluRight = WireDefault(regRight)
+  when(decodeIn.bits.operands.hasImm){
+    aluRight := decodeIn.bits.operands.imm
   }
-  val regLeft = Wire(UInt(32.W))
-  val regRight = Wire(UInt(32.W))
-  regLeft := diffRegWithPreWrite(
-    decode.readInfo.reg_1.addr,decode.bits.operands.regData_1
-  )
-  regRight := diffRegWithPreWrite(
-    decode.readInfo.reg_2.addr,decode.bits.operands.regData_2
-  )
-
-  val alu = Module(new Alu)
-  alu.io.in.op := io.pipe.decode.in.bits.exeOp
-  alu.io.in.operand.left := regLeft
-  when(decode.bits.operands.hasImm){
-    alu.io.in.operand.right := decode.bits.operands.imm
-  }.otherwise{
-    alu.io.in.operand.right := regRight
-  }
-
-
-  def store2PreRes(en:Bool,addr:UInt,data:UInt) = {
-    when(addr === 0.U){
-      preResBuf := initExeOut
-    }.otherwise{
-      preResBuf.bits.en := en
-      preResBuf.bits.addr := addr
-      preResBuf.bits.data := data
-    }
-  }
-  // Process Compute
-  def processComp() = {
-    exstat := IDLE
-    pipeOutReg.bits.en := true.B
-    pipeOutReg.bits.addr := decode.bits.wCtrl.addr
-    pipeOutReg.bits.data := alu.io.out.res
-    store2PreRes(true.B,decode.bits.wCtrl.addr,alu.io.out.res)
-  }
-  // Process Branch
   val branchTarget = WireDefault(
-    decode.fetchInfo.pc.asSInt + decode.bits.operands.imm.asSInt
-  ).asUInt
+    (decodeIn.fetchInfo.pc.asSInt + decodeIn.bits.operands.imm.asSInt).asUInt
+  )
   val defaultTarget = WireDefault(
-    decode.fetchInfo.pc.asSInt + 4.S
-  ).asUInt
-  def processBranch() = {
-    exstat := IDLE
-    pipeOutReg.bits := decode.bits.wCtrl
-    store2PreRes(decode.bits.wCtrl.en,decode.bits.wCtrl.addr,decode.bits.wCtrl.data)
-    switch(decode.bits.exeOp.opFunc){
-      is (Branch.bne) {
-        when(regLeft =/= regRight){
-          io.pipe.br.npc := branchTarget
-          io.pipe.br.isMispredict := !decode.fetchInfo.predictTaken
-        }.otherwise{
-          io.pipe.br.npc := defaultTarget
-          io.pipe.br.isMispredict := decode.fetchInfo.predictTaken
-        }
-      }
-      is (Branch.bge) {
-        when(regLeft.asSInt >= regRight.asSInt){
-          io.pipe.br.npc := branchTarget
-          io.pipe.br.isMispredict := !decode.fetchInfo.predictTaken
-        }.otherwise{
-          io.pipe.br.npc := defaultTarget
-          io.pipe.br.isMispredict := decode.fetchInfo.predictTaken
-        }
-      }
-      is (Branch.beq) {
-        when(regLeft === regRight){
-          io.pipe.br.npc := branchTarget
-          io.pipe.br.isMispredict := !decode.fetchInfo.predictTaken
-        }.otherwise{
-          io.pipe.br.npc := defaultTarget
-          io.pipe.br.isMispredict := decode.fetchInfo.predictTaken
-        }
-      }
+    (decodeIn.fetchInfo.pc.asSInt + 4.S).asUInt
+  )
+  //***************************************************
+  //***************************************************
+  //***************************************************
+  object RS extends ChiselEnum {
+    val
+      IDLE,
+      BLOCK,
+      RUNNING
+    = Value
+  }
+  val rStat = RegInit(RS.IDLE)
+  val rWrBuf = RegInit(initWctrl)
+  val rAwHazard = WireDefault(
+    decodeIn.readInfo.reg_1.addr === rWrBuf.addr ||
+      decodeIn.readInfo.reg_2.addr === rWrBuf.addr
+  )
+  val wAwHazard = WireDefault(
+    decodeIn.bits.wCtrl.addr === rWrBuf.addr
+  )
+  val rHasHazard = WireDefault(rAwHazard || wAwHazard)
+  val rReqBuf = RegInit(initExeAsideOut)
+  switch(rStat){
+    is(RS.IDLE){
+      // Determined by the req process
     }
-  }
-  // Process Jump
-  def processJump() = {
-    exstat := IDLE
-    pipeOutReg.bits := decode.bits.wCtrl
-    store2PreRes(decode.bits.wCtrl.en,decode.bits.wCtrl.addr,decode.bits.wCtrl.data)
-    io.pipe.br.isMispredict := true.B
-    io.pipe.br.npc := (regLeft.asSInt + decode.bits.operands.imm.asSInt).asUInt
-  }
-  // Process Load/Store
-  val asideOutWire = WireDefault(initExeAsideOut)
-  asideOutWire.addr := alu.io.out.res
-  asideOutWire.rreq := decode.bits.exeOp.opType === tp.load
-  asideOutWire.wreq := decode.bits.exeOp.opType === tp.store
-  asideOutWire.wdata := regRight
-  when(
-    decode.bits.exeOp.opFunc === Store.st_b ||
-      decode.bits.exeOp.opFunc === Load.ld_b
-  ){
-    asideOutWire.byteSelN := selByte(asideOutWire.addr)
-  }.otherwise{
-    asideOutWire.byteSelN := "b0000".U
-  }
-  val asideOutBuf = RegInit(initExeAsideOut)
-  def processStore(req:ExeAsideOut) = {
-    exstat := IDLE
-    io.aside.out := req
-  }
-  def processLoad(req:ExeAsideOut) = {
-    exstat := LOADING
-    io.aside.out := req
-  }
-  // Select a path based on opType
-  def exePathSelect() = {
-    switch(decode.bits.exeOp.opType){
-      is(tp.arith,tp.shift,tp.logic){
-        processComp()
-      }
-      is(tp.branch){
-        processBranch()
-      }
-      is(tp.jump){
-        processJump()
-      }
-      is(tp.load){
-        loadWctrlBuf.bits := decode.bits.wCtrl
-        asideOutBuf := asideOutWire
-        when(io.aside.in.rrdy){
-          processLoad(asideOutWire)
-        }.otherwise{
-          exstat := LOAD_BLOCK
-        }
-      }
-      is(tp.store){
-        asideOutBuf := asideOutWire
-        when(io.aside.in.wrdy){
-          processStore(asideOutWire)
-        }.otherwise{
-          exstat := STORE_BLOCK
-        }
-      }
-    }
-  }
-
-  val loadWctrlBuf = RegInit(initExeOut)
-
-  switch(exstat){
-    is(IDLE){
-      default()
-      when(decode.req){
-        io.pipe.decode.out.ack := true.B
-        exePathSelect()
-      }
-    }
-    is(LOAD_BLOCK){
-      default()
+    is(RS.BLOCK){
       when(io.aside.in.rrdy){
-        processLoad(asideOutBuf)
-      }.otherwise{
-        exstat := LOAD_BLOCK
+        io.aside.out := rReqBuf
+        rStat := RS.RUNNING
       }
     }
-    is(LOADING){
-      default()
+    is(RS.RUNNING){
       when(io.aside.in.rvalid){
-        exstat := IDLE
-        pipeOutReg := loadWctrlBuf
-        pipeOutReg.bits.data := selByteInWords(asideOutBuf.byteSelN,io.aside.in.rdata)
-        store2PreRes(true.B,loadWctrlBuf.bits.addr,selByteInWords(asideOutBuf.byteSelN,io.aside.in.rdata))
-      }.otherwise{
-        exstat := LOADING
+        rStat := RS.IDLE
+        exeOut.bits.en := true.B
+        when(rWrBuf.addr === 0.U){
+          exeOut.bits.en := false.B
+        }
+        exeOut.bits.addr := rWrBuf.addr
+        exeOut.bits.data := io.aside.in.rdata
       }
     }
-    is(STORE_BLOCK){
-      default()
-      when(io.aside.in.wrdy){
-        processStore(asideOutBuf)
+  }
+  //****************************************************
+  //***************************************************
+  //***************************************************
+  object WS extends ChiselEnum {
+    val
+      IDLE,
+      BLOCK
+    = Value
+  }
+  val wStat = RegInit(WS.IDLE)
+  val wReqBuf = RegInit(initExeAsideOut)
+  switch(wStat){
+    is(WS.IDLE){
+      // Determined by the req process
+    }
+    is(WS.BLOCK){
+      when(io.aside.in.wrdy && rStat === RS.IDLE){
+        io.aside.out := wReqBuf
+        wStat := WS.IDLE
+      }
+    }
+  }
+  //****************************************************
+  //***************************************************
+  //***************************************************
+  object MS extends ChiselEnum {
+    val
+      IDLE,
+      WORK,
+      DONE
+    = Value
+  }
+  val mStat = RegInit(MS.IDLE)
+  val mWrBuf = RegInit(initWctrl)
+  val mrAwHazard = WireDefault(
+    decodeIn.readInfo.reg_1.addr === mWrBuf.addr ||
+      decodeIn.readInfo.reg_2.addr === mWrBuf.addr
+  )
+  val mwAwHazard = WireDefault(
+    decodeIn.bits.wCtrl.addr === mWrBuf.addr
+  )
+  val mHasHazard = WireDefault(mrAwHazard || mwAwHazard)
+  val mOperandBuf = RegInit(initOperands)
+  val mRes = WireDefault((mOperandBuf.left.asSInt * mOperandBuf.right.asSInt).asUInt)
+  val mCounter = Counter(mulCycles)
+  switch(mStat){
+    is(MS.IDLE){
+      // Determined by the req process
+    }
+    is(MS.WORK){
+      when(mCounter.inc()){
+        mStat := MS.DONE
+      }
+    }
+    is(MS.DONE){
+      when(io.aside.in.rvalid){
+        mStat := MS.DONE
       }.otherwise{
-        exstat := STORE_BLOCK
+        mStat := MS.IDLE
+        exeOut.bits.en := true.B
+        when(mWrBuf.addr === 0.U){
+          exeOut.bits.en := false.B
+        }
+        exeOut.bits.addr := mWrBuf.addr
+        exeOut.bits.data := mRes
+      }
+    }
+  }
+  //****************************************************
+  //***************************************************
+  //***************************************************
+  // Default aside out Info
+  val asideOutDefault = WireDefault(initExeAsideOut)
+  asideOutDefault.rreq := decodeIn.bits.exeOp.opType === tp.load
+  asideOutDefault.wreq := decodeIn.bits.exeOp.opType === tp.store
+  asideOutDefault.addr := (regLeft.asSInt + decodeIn.bits.operands.imm.asSInt).asUInt
+  asideOutDefault.wdata := regRight
+  asideOutDefault.byteSelN := 0.U(4.W)
+  when(decodeIn.bits.exeOp.opFunc === 2.U){
+    asideOutDefault.byteSelN := ~(1.U << asideOutDefault.addr(1,0))
+  }
+  // Request Process
+  when(decodeIn.req){
+    when(io.aside.in.rvalid){
+      // Do nothing
+    }.elsewhen(mStat === MS.DONE){
+      // Do nothing.
+    }otherwise{
+      when(rStat =/= RS.IDLE && rHasHazard){
+        // Do nothing
+      }.elsewhen(mStat =/= MS.IDLE && mHasHazard){
+        // Do nothing
+      }.otherwise{
+        switch(decodeIn.bits.exeOp.opType){
+          is(tp.nop){
+            ack := true.B
+          }
+          is(tp.arith){
+            when(decodeIn.bits.exeOp.opFunc === Arithmetic.mul){
+              when(mStat === MS.IDLE){
+                ack := true.B
+                mCounter.reset()
+                mOperandBuf.left := regLeft
+                mOperandBuf.right := regRight
+                mWrBuf := decodeIn.bits.wCtrl
+                mStat := MS.WORK
+              }.otherwise{
+                // wait until mStat turn to IDLE
+              }
+            }.otherwise{
+              ack := true.B
+              exeOut.bits.en := true.B
+              when(decodeIn.bits.wCtrl.addr === 0.U){
+                exeOut.bits.en := false.B
+              }
+              exeOut.bits.addr := decodeIn.bits.wCtrl.addr
+              switch(decodeIn.bits.exeOp.opFunc){
+                is(Arithmetic.add){
+                  exeOut.bits.data := (regLeft.asSInt + aluRight.asSInt).asUInt
+                }
+                is(Arithmetic.sub){
+                  exeOut.bits.data := (regLeft.asSInt - aluRight.asSInt).asUInt
+                }
+                is(Arithmetic.sltu){
+                  exeOut.bits.data := (regLeft < aluRight).asUInt
+                }
+              }
+            }
+
+          }
+          is(tp.logic){
+            ack := true.B
+            exeOut.bits.en := true.B
+            when(decodeIn.bits.wCtrl.addr === 0.U){
+              exeOut.bits.en := false.B
+            }
+            exeOut.bits.addr := decodeIn.bits.wCtrl.addr
+            switch(decodeIn.bits.exeOp.opFunc){
+              is(Logic.and){
+                exeOut.bits.data := regLeft & aluRight
+              }
+              is(Logic.or){
+                exeOut.bits.data := regLeft | aluRight
+              }
+              is(Logic.xor){
+                exeOut.bits.data := regLeft ^ aluRight
+              }
+            }
+          }
+          is(tp.shift){
+            ack := true.B
+            exeOut.bits.en := true.B
+            when(decodeIn.bits.wCtrl.addr === 0.U){
+              exeOut.bits.en := false.B
+            }
+            exeOut.bits.addr := decodeIn.bits.wCtrl.addr
+            switch(decodeIn.bits.exeOp.opFunc){
+              is(Shift.sll){
+                exeOut.bits.data := regLeft << aluRight(4,0)
+              }
+              is(Shift.srl){
+                exeOut.bits.data := regLeft >> aluRight(4,0)
+              }
+            }
+          }
+          is(tp.branch){
+            ack := true.B
+            exeOut.bits.en := true.B
+            when(decodeIn.bits.wCtrl.addr === 0.U){
+              exeOut.bits.en := false.B
+            }
+            exeOut.bits.addr := decodeIn.bits.wCtrl.addr
+            exeOut.bits.data := decodeIn.bits.wCtrl.data
+            switch(decodeIn.bits.exeOp.opFunc){
+              is(Branch.beq){
+                when(regLeft === regRight){
+                  io.pipe.br.isMispredict := !decodeIn.fetchInfo.predictTaken
+                  io.pipe.br.npc := branchTarget
+                }.otherwise{
+                  io.pipe.br.isMispredict := decodeIn.fetchInfo.predictTaken
+                  io.pipe.br.npc := defaultTarget
+                }
+              }
+              is(Branch.bne){
+                when(regLeft =/= regRight){
+                  io.pipe.br.isMispredict := !decodeIn.fetchInfo.predictTaken
+                  io.pipe.br.npc := branchTarget
+                }.otherwise{
+                  io.pipe.br.isMispredict := decodeIn.fetchInfo.predictTaken
+                  io.pipe.br.npc := defaultTarget
+                }
+              }
+              is(Branch.bge){
+                when(regLeft.asSInt >= regRight.asSInt){
+                  io.pipe.br.isMispredict := !decodeIn.fetchInfo.predictTaken
+                  io.pipe.br.npc := branchTarget
+                }.otherwise{
+                  io.pipe.br.isMispredict := decodeIn.fetchInfo.predictTaken
+                  io.pipe.br.npc := defaultTarget
+                }
+              }
+            }
+          }
+          is(tp.jump){
+            ack := true.B
+            exeOut.bits.en := true.B
+            when(decodeIn.bits.wCtrl.addr === 0.U){
+              exeOut.bits.en := false.B
+            }
+            exeOut.bits.addr := decodeIn.bits.wCtrl.addr
+            exeOut.bits.data := decodeIn.bits.wCtrl.data
+            io.pipe.br.isMispredict := true.B
+            io.pipe.br.npc := (regLeft.asSInt + decodeIn.bits.operands.imm.asSInt).asUInt
+          }
+          is(tp.load){
+            when(rStat === RS.IDLE){
+              ack := true.B
+              rReqBuf := asideOutDefault
+              rWrBuf := decodeIn.bits.wCtrl
+              when(io.aside.in.rrdy){
+                rStat := RS.RUNNING
+                io.aside.out := asideOutDefault
+              }.otherwise{
+                rStat := RS.BLOCK
+              }
+            }.otherwise{
+              // Wait until rStat turn to IDLE
+            }
+          }
+          is(tp.store){
+            when(wStat === WS.IDLE){
+              ack := true.B
+              wReqBuf := asideOutDefault
+              when(io.aside.in.wrdy && rStat === RS.IDLE){
+                io.aside.out := asideOutDefault
+              }.otherwise{
+                wStat := WS.BLOCK
+              }
+            }.otherwise{
+              // wait until wStat turn to IDLE
+            }
+          }
+        }
       }
     }
   }

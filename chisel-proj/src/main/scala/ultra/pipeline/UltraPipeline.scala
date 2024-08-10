@@ -27,7 +27,7 @@ class UltraPipeline extends Module {
   decodeStage.io.pipe.fetch.in <> fetchStage.io.pipe.out
   decodeStage.io.pipe.fetch.out <> fetchStage.io.pipe.in
 
-  val exeStage = Module(new UltraExeStage)
+  val exeStage = Module(new GammaExeStage)
   exeStage.io.aside.in := io.dChannel.in
   io.dChannel.out := exeStage.io.aside.out
 

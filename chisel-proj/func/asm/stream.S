@@ -2,6 +2,7 @@
     .text
     .global _start
 _start:
+    nop
 UTEST_STREAM:
     li.w        $a0,0x80100000
     li.w        $a1,0x80400000

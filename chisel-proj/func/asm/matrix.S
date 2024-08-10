@@ -2,6 +2,7 @@
     .text
     .global _start
 _start:
+    nop
 UTEST_MATRIX:
     li.w        $a0, 0x80400000
     li.w        $a1, 0x80410000

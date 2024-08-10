@@ -2,6 +2,7 @@
     .text
     .global _start
 _start:
+    nop
 UTEST_CRYPTONIGHT:
     // a0 -> pad
     // a1 -> a

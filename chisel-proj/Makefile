@@ -16,7 +16,7 @@ VERILOG_SRC=$(VIVADO)/thinpad_top.srcs/sources_1/new
 
 # Tasks
 # - Add Your Test Target Here
-TEST_OBJECTS = matrix.txt
+TEST_OBJECTS = foo.txt
 test: $(TEST_OBJECTS)
 	cp *.txt $(TEST_HOME)
 	rm -f *.o *.om *.bin *.data *.txt

@@ -2,6 +2,7 @@
     .text
     .global _start
 _start:
+    nop
     addi.w      $t0,$zero,0x1   # t0 = 1
     addi.w      $t1,$zero,0x1   # t1 = 1
     lu12i.w     $a0,-0x7fc00    # a0 = 0x80400000

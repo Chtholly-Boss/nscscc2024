@@ -39,3 +39,8 @@ You'd better not specify registers randomly.
 | t0-t8 | r12-r20 | local variables |
 | s0-s8 | r23-r31 | local variables |
 
+## More Instructions
+You'd better add the following instructions into the core:
+
+* blt
+* sll

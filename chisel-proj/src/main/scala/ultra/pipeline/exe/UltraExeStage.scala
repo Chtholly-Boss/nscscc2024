@@ -102,52 +102,6 @@ class UltraExeStage extends Module {
   //****************************************************
   //***************************************************
   //***************************************************
-  object MS extends ChiselEnum {
-    val
-      IDLE,
-      WORK,
-      DONE
-    = Value
-  }
-  val mStat = RegInit(MS.IDLE)
-  val mWrBuf = RegInit(initWctrl)
-  val mrAwHazard = WireDefault(
-    decodeIn.readInfo.reg_1.addr === mWrBuf.addr ||
-      decodeIn.readInfo.reg_2.addr === mWrBuf.addr
-  )
-  val mwAwHazard = WireDefault(
-    decodeIn.bits.wCtrl.addr === mWrBuf.addr
-  )
-  val mHasHazard = WireDefault(mrAwHazard || mwAwHazard)
-  val mOperandBuf = RegInit(initOperands)
-  val mRes = WireDefault((mOperandBuf.left.asSInt * mOperandBuf.right.asSInt).asUInt)
-  val mCounter = Counter(mulCycles)
-  switch(mStat){
-    is(MS.IDLE){
-      // Determined by the req process
-    }
-    is(MS.WORK){
-      when(mCounter.inc()){
-        mStat := MS.DONE
-      }
-    }
-    is(MS.DONE){
-      when(io.aside.in.rvalid){
-        mStat := MS.DONE
-      }.otherwise{
-        mStat := MS.IDLE
-        exeOut.bits.en := true.B
-        when(mWrBuf.addr === 0.U){
-          exeOut.bits.en := false.B
-        }
-        exeOut.bits.addr := mWrBuf.addr
-        exeOut.bits.data := mRes
-      }
-    }
-  }
-  //****************************************************
-  //***************************************************
-  //***************************************************
   // Default aside out Info
   val asideOutDefault = WireDefault(initExeAsideOut)
   asideOutDefault.rreq := decodeIn.bits.exeOp.opType === tp.load
@@ -162,12 +116,8 @@ class UltraExeStage extends Module {
   when(decodeIn.req){
     when(io.aside.in.rvalid){
       // Do nothing
-    }.elsewhen(mStat === MS.DONE){
-      // Do nothing.
-    }otherwise{
+    }.otherwise{
       when(rStat =/= RS.IDLE && rHasHazard){
-        // Do nothing
-      }.elsewhen(mStat =/= MS.IDLE && mHasHazard){
         // Do nothing
       }.otherwise{
         switch(decodeIn.bits.exeOp.opType){
@@ -175,37 +125,26 @@ class UltraExeStage extends Module {
             ack := true.B
           }
           is(tp.arith){
-            when(decodeIn.bits.exeOp.opFunc === Arithmetic.mul){
-              when(mStat === MS.IDLE){
-                ack := true.B
-                mCounter.reset()
-                mOperandBuf.left := regLeft
-                mOperandBuf.right := regRight
-                mWrBuf := decodeIn.bits.wCtrl
-                mStat := MS.WORK
-              }.otherwise{
-                // wait until mStat turn to IDLE
+            ack := true.B
+            exeOut.bits.en := true.B
+            when(decodeIn.bits.wCtrl.addr === 0.U){
+              exeOut.bits.en := false.B
+            }
+            exeOut.bits.addr := decodeIn.bits.wCtrl.addr
+            switch(decodeIn.bits.exeOp.opFunc){
+              is(Arithmetic.add){
+                exeOut.bits.data := (regLeft.asSInt + aluRight.asSInt).asUInt
               }
-            }.otherwise{
-              ack := true.B
-              exeOut.bits.en := true.B
-              when(decodeIn.bits.wCtrl.addr === 0.U){
-                exeOut.bits.en := false.B
+              is(Arithmetic.sub){
+                exeOut.bits.data := (regLeft.asSInt - aluRight.asSInt).asUInt
               }
-              exeOut.bits.addr := decodeIn.bits.wCtrl.addr
-              switch(decodeIn.bits.exeOp.opFunc){
-                is(Arithmetic.add){
-                  exeOut.bits.data := (regLeft.asSInt + aluRight.asSInt).asUInt
-                }
-                is(Arithmetic.sub){
-                  exeOut.bits.data := (regLeft.asSInt - aluRight.asSInt).asUInt
-                }
-                is(Arithmetic.sltu){
-                  exeOut.bits.data := (regLeft < aluRight).asUInt
-                }
+              is(Arithmetic.sltu){
+                exeOut.bits.data := (regLeft < aluRight).asUInt
+              }
+              is(Arithmetic.mul){
+                exeOut.bits.data := (regLeft.asSInt * regRight.asSInt).asUInt
               }
             }
-
           }
           is(tp.logic){
             ack := true.B

@@ -62,7 +62,7 @@ class FetchPlugin extends Module {
     val npc = WireDefault(pc + 4.U)
     val taken = WireDefault(false.B)
     switch(inst(31,26)){
-      is(Inst.beq,Inst.bge,Inst.bne){
+      is(Inst.beq,Inst.bge,Inst.bne,Inst.blt){
         when(inst(25) === 1.U){
           taken := true.B
           npc := (pc.asSInt + (inst(25,10) ## 0.U(2.W)).asSInt).asUInt

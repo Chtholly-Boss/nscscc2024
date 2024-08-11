@@ -47,6 +47,11 @@ class Decoder_3R extends BaseDecoder {
       io.out.bits.exeOp.opType := ExeType.logic
       io.out.bits.exeOp.opFunc := Logic.xor
     }
+    is (Inst.sll_w) {
+      io.out.isMatched := true.B
+      io.out.bits.exeOp.opType := ExeType.shift
+      io.out.bits.exeOp.opFunc := Shift.sll
+    }
     is (Inst.srl_w) {
       io.out.isMatched := true.B
       io.out.bits.exeOp.opType := ExeType.shift

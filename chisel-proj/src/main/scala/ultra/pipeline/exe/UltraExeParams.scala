@@ -37,13 +37,14 @@ object UltraExeParams {
     val mul = 4.U
   }
   object Branch {
-    val num = 6
+    val num = 7
     val nop = 0.U
     val bne = 1.U
     val beq = 2.U
     val bge = 3.U
     val b_ = 4.U
     val bl = 5.U
+    val blt = 6.U
   }
   object JumpBranch {
     val num = 2

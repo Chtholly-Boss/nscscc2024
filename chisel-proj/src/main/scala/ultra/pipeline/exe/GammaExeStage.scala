@@ -291,6 +291,15 @@ class GammaExeStage extends Module {
                   io.pipe.br.npc := defaultTarget
                 }
               }
+              is(Branch.blt){
+                when(regLeft.asSInt < regRight.asSInt){
+                  io.pipe.br.isMispredict := !decodeIn.fetchInfo.predictTaken
+                  io.pipe.br.npc := branchTarget
+                }.otherwise{
+                  io.pipe.br.isMispredict := decodeIn.fetchInfo.predictTaken
+                  io.pipe.br.npc := defaultTarget
+                }
+              }
             }
           }
           is(tp.jump){

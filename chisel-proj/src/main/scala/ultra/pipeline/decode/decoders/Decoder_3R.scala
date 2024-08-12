@@ -5,6 +5,10 @@ import chisel3.util._
 import ultra.pipeline.decode.UltraDecodeParams.{_3R => Inst}
 import ultra.pipeline.exe.UltraExeParams._
 class Decoder_3R extends BaseDecoder {
+  // alias
+  val opType = io.out.bits.exeOp.opType
+  val opFunc = io.out.bits.exeOp.opFunc
+
   val opcode      = WireDefault(io.in.inst(31, 15))
   val rk          = WireDefault(io.in.inst(14, 10))
   val rj          = WireDefault(io.in.inst(9, 5))
@@ -19,57 +23,67 @@ class Decoder_3R extends BaseDecoder {
   switch (opcode) {
     is (Inst.add_w) {
       io.out.isMatched := true.B
-      io.out.bits.exeOp.opType := ExeType.arith
-      io.out.bits.exeOp.opFunc := Arithmetic.add
+      opType := ExeType.arith
+      opFunc := Arithmetic.add
     }
     is (Inst.sub_w) {
       io.out.isMatched := true.B
-      io.out.bits.exeOp.opType := ExeType.arith
-      io.out.bits.exeOp.opFunc := Arithmetic.sub
+      opType := ExeType.arith
+      opFunc := Arithmetic.sub
     }
     is (Inst.mul_w) {
       io.out.isMatched := true.B
-      io.out.bits.exeOp.opType := ExeType.arith
-      io.out.bits.exeOp.opFunc := Arithmetic.mul
+      opType := ExeType.arith
+      opFunc := Arithmetic.mul
     }
     is (Inst.and_w) {
       io.out.isMatched := true.B
-      io.out.bits.exeOp.opType := ExeType.logic
-      io.out.bits.exeOp.opFunc := Logic.and
+      opType := ExeType.logic
+      opFunc := Logic.and
     }
     is (Inst.or_w) {
       io.out.isMatched := true.B
-      io.out.bits.exeOp.opType := ExeType.logic
-      io.out.bits.exeOp.opFunc := Logic.or
+      opType := ExeType.logic
+      opFunc := Logic.or
     }
     is (Inst.xor_w) {
       io.out.isMatched := true.B
-      io.out.bits.exeOp.opType := ExeType.logic
-      io.out.bits.exeOp.opFunc := Logic.xor
+      opType := ExeType.logic
+      opFunc := Logic.xor
     }
     is (Inst.sll_w) {
       io.out.isMatched := true.B
-      io.out.bits.exeOp.opType := ExeType.shift
-      io.out.bits.exeOp.opFunc := Shift.sll
+      opType := ExeType.shift
+      opFunc := Shift.sll
     }
     is (Inst.srl_w) {
       io.out.isMatched := true.B
-      io.out.bits.exeOp.opType := ExeType.shift
-      io.out.bits.exeOp.opFunc := Shift.srl
+      opType := ExeType.shift
+      opFunc := Shift.srl
     }
     is (Inst.slli_w) {
       io.out.isMatched := true.B
-      io.out.bits.exeOp.opType := ExeType.shift
-      io.out.bits.exeOp.opFunc := Shift.sll
+      opType := ExeType.shift
+      opFunc := Shift.sll
       io.out.bits.hasImm := true.B
       io.out.bits.imm := imm5
     }
     is (Inst.srli_w) {
       io.out.isMatched := true.B
-      io.out.bits.exeOp.opType := ExeType.shift
-      io.out.bits.exeOp.opFunc := Shift.srl
+      opType := ExeType.shift
+      opFunc := Shift.srl
       io.out.bits.hasImm := true.B
       io.out.bits.imm := imm5
+    }
+    is (Inst.div_w){
+      io.out.isMatched := true.B
+      opType := ExeType.arith
+      opFunc := Arithmetic.div
+    }
+    is (Inst.mod_w){
+      io.out.isMatched := true.B
+      opType := ExeType.arith
+      opFunc := Arithmetic.mod
     }
   }
 }

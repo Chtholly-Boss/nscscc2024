@@ -1,4 +1,10 @@
 package ultra.pipeline.exe
+
+/**
+ * This ExeStage passed lab1-3 and perf test on 215M
+ * You should use this Stage when you want to solve the problem by asm
+ */
+
 import chisel3._
 import chisel3.util._
 import UltraExePorts._

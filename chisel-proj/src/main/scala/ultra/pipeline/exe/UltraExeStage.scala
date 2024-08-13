@@ -1,4 +1,10 @@
 package ultra.pipeline.exe
+
+/**
+ * This Stage is specialized to do the accelerate on hardware
+ * You should use this stage when you want to solve the problem in Chisel
+ */
+
 import chisel3._
 import chisel3.util._
 import UltraExePorts._
@@ -119,12 +125,8 @@ class UltraExeStage extends Module {
     // Multiplication or Division
     val
       IDLE,
-      M_WORK,
-      M_DONE,
       Div_WORK,
-      Div_DONE,
-      Mod_WORK,
-      Mod_DONE
+      Div_DONE
     = Value
   }
 
@@ -138,10 +140,6 @@ class UltraExeStage extends Module {
     decodeIn.bits.wCtrl.addr === mWrBuf.addr
   )
   val mHasHazard = WireDefault(mrAwHazard || mwAwHazard)
-  // These Signals are Multiplication relevant
-  val mOperandBuf = RegInit(initOperands)
-  val mRes = WireDefault((mOperandBuf.left.asSInt * mOperandBuf.right.asSInt).asUInt)
-  val mCounter = Counter(mulCycles)
   // These Signals are Division Relevant
   val divU = Module(new DivU)
   divU.io.in.valid := false.B
@@ -152,24 +150,6 @@ class UltraExeStage extends Module {
   switch(mStat){
     is(MDS.IDLE){
       // Determined by the req process
-    }
-    is(MDS.M_WORK){
-      when(mCounter.inc()){
-        mStat := MDS.M_DONE
-      }
-    }
-    is(MDS.M_DONE){
-      when(io.aside.in.rvalid){
-        // do nothing
-      }.otherwise{
-        mStat := MDS.IDLE
-        exeOut.bits.en := true.B
-        when(mWrBuf.addr === 0.U){
-          exeOut.bits.en := false.B
-        }
-        exeOut.bits.addr := mWrBuf.addr
-        exeOut.bits.data := mRes
-      }
     }
     is(MDS.Div_WORK){
       when(divU.io.out.valid){
@@ -188,25 +168,6 @@ class UltraExeStage extends Module {
         }
         exeOut.bits.addr := mWrBuf.addr
         exeOut.bits.data := quotientBuf
-      }
-    }
-    is(MDS.Mod_WORK){
-      when(divU.io.out.valid){
-        remainderBuf := divU.io.out.bits.remainder
-        mStat := MDS.Mod_DONE
-      }
-    }
-    is(MDS.Mod_DONE){
-      when(io.aside.in.rvalid){
-        // do nothing
-      }.otherwise{
-        mStat := MDS.IDLE
-        exeOut.bits.en := true.B
-        when(mWrBuf.addr === 0.U){
-          exeOut.bits.en := false.B
-        }
-        exeOut.bits.addr := mWrBuf.addr
-        exeOut.bits.data := remainderBuf
       }
     }
   }
@@ -229,9 +190,7 @@ class UltraExeStage extends Module {
     when(io.aside.in.rvalid){
       // Load is Writing
     }.elsewhen(
-      mStat === MDS.M_DONE ||
-        mStat === MDS.Div_DONE ||
-        mStat === MDS.Mod_DONE
+      mStat === MDS.Div_DONE
     ){
       // Mul or Div is Writing
     }.otherwise{
@@ -245,28 +204,11 @@ class UltraExeStage extends Module {
             ack := true.B
           }
           is(tp.arith){
-            when(decodeIn.bits.exeOp.opFunc === Arithmetic.mul){
-              when(mStat === MDS.IDLE){
-                ack := true.B
-                mCounter.reset()
-                mOperandBuf.left := regLeft
-                mOperandBuf.right := regRight
-                mWrBuf := decodeIn.bits.wCtrl
-                mStat := MDS.M_WORK
-              }
-              // wait until mStat turn to IDLE
-            }.elsewhen(decodeIn.bits.exeOp.opFunc === Arithmetic.div){
+            when(decodeIn.bits.exeOp.opFunc === Arithmetic.div){
               when(mStat === MDS.IDLE){
                 ack := true.B
                 divU.io.in.valid := true.B
                 mStat := MDS.Div_WORK
-                mWrBuf := decodeIn.bits.wCtrl
-              }
-            }.elsewhen(decodeIn.bits.exeOp.opFunc === Arithmetic.mod){
-              when(mStat === MDS.IDLE){
-                ack := true.B
-                divU.io.in.valid := true.B
-                mStat := MDS.Mod_WORK
                 mWrBuf := decodeIn.bits.wCtrl
               }
             }.otherwise{
@@ -354,15 +296,6 @@ class UltraExeStage extends Module {
               }
               is(Branch.bge){
                 when(regLeft.asSInt >= regRight.asSInt){
-                  io.pipe.br.isMispredict := !decodeIn.fetchInfo.predictTaken
-                  io.pipe.br.npc := branchTarget
-                }.otherwise{
-                  io.pipe.br.isMispredict := decodeIn.fetchInfo.predictTaken
-                  io.pipe.br.npc := defaultTarget
-                }
-              }
-              is(Branch.blt){
-                when(regLeft.asSInt < regRight.asSInt){
                   io.pipe.br.isMispredict := !decodeIn.fetchInfo.predictTaken
                   io.pipe.br.npc := branchTarget
                 }.otherwise{

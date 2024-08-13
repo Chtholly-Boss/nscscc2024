@@ -11,9 +11,10 @@ TOOLKITS=./toolkit
 FUNC=./func
 TEST_HOME=$(FUNC)/bintests/
 ASM_HOME=$(FUNC)/asm
-VIVADO=../vivado-proj
-VERILOG_SRC=$(VIVADO)/thinpad_top.srcs/sources_1/new
 
+REPO_1=/home/cauchy2b/repos_git/plat1/2024673
+REPO_2=/home/cauchy2b/repos_git/plat2/2024673
+REPO_3=/home/cauchy2b/repos_git/plat3/2024673
 # Tasks
 # - Add Your Test Target Here
 TEST_OBJECTS = foo.txt
@@ -34,13 +35,20 @@ test: $(TEST_OBJECTS)
 %.txt:%.data
 	@$(TOOLKITS)/Converter.sh < $< > $@
 
-
-verilog:
-	@echo "Generating Verilog File..."
-	@sbt run > /dev/null
-	@echo "Moving Verilog Src to Vivado project..."
-	@mv *.sv $(VERILOG_SRC)
-	@echo "Changing to the Src Directory"
-	@cd $(VERILOG_SRC)
+repo1:
+	cp *.sv $(REPO_1)/thinpad_top.srcs/sources_1/new/
+	cp *.S 	$(REPO_1)/asm
+	@echo "entering repo of platform1..."
+	cd $(REPO_1)
+repo2:
+	cp *.sv $(REPO_2)/thinpad_top.srcs/sources_1/new/
+	cp *.S 	$(REPO_2)/asm
+	@echo "entering repo of platform2..."
+	cd $(REPO_2)
+repo3:
+	cp *.sv $(REPO_3)/thinpad_top.srcs/sources_1/new/
+	cp *.S 	$(REPO_3)/asm
+	@echo "entering repo of platform3..."
+	cd $(REPO_3)
 clean:
 	rm -rf $(TEST_HOME)/*

@@ -1951,7 +1951,7 @@ module UltraExeStage(	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:1
   wire        _GEN_8 = mStat == 2'h1;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:133:22, :150:16, :211:23
   wire        _GEN_9 = mStat == 2'h2;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:84:15, :133:22, :150:16
   wire        _GEN_10 = ~(|mStat) | _GEN_8 | ~_GEN_9 | io_aside_in_rvalid;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:77:16, :133:22, :150:16, :161:31
-  wire        _GEN_11 = _GEN_10 ? ~_GEN_3 & _GEN_2 & (|rWrBuf_addr) : (|mWrBuf_addr);	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:20:23, :66:22, :67:23, :77:16, :88:31, :89:15, :91:26, :134:23, :150:16, :166:26
+  wire        _GEN_11 = _GEN_10 ? ~_GEN_3 & _GEN_2 & (|rWrBuf_addr) : (|mWrBuf_addr);	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:20:23, :66:22, :67:23, :77:16, :88:31, :89:15, :91:26, :134:23, :150:16, :165:26
   wire [4:0]  _GEN_12 = _GEN_10 ? (_GEN_4 ? 5'h0 : rWrBuf_addr) : mWrBuf_addr;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:20:23, :67:23, :77:16, :134:23, :150:16, src/main/scala/ultra/pipeline/regfile/RegfileUtils.scala:10:15
   wire [31:0] _GEN_13 = _GEN_10 ? (_GEN_4 ? 32'h0 : io_aside_in_rdata) : quotientBuf;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:20:23, :77:16, :148:28, :150:16
   wire        asideOutDefault_rreq = io_pipe_decode_in_bits_exeOp_opType == 4'h6;	// src/main/scala/ultra/pipeline/exe/UltraExeStage.scala:16:7, :180:54

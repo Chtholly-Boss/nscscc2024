@@ -140,7 +140,7 @@ class UltraExeStage extends Module {
     decodeIn.bits.wCtrl.addr === mWrBuf.addr
   )
   val mHasHazard = WireDefault(mrAwHazard || mwAwHazard)
-  // These Signals are Division Relevant
+  // Add your hardware accelerator here
   val divU = Module(new DivU)
   divU.io.in.valid := false.B
   divU.io.in.bits.left := regLeft
@@ -149,9 +149,9 @@ class UltraExeStage extends Module {
   val remainderBuf = RegInit(0.U(32.W))
   switch(mStat){
     is(MDS.IDLE){
-      // Determined by the req process
     }
     is(MDS.Div_WORK){
+      // Buf your result here
       when(divU.io.out.valid){
         mStat := MDS.Div_DONE
         quotientBuf := divU.io.out.bits.quotient
@@ -159,7 +159,6 @@ class UltraExeStage extends Module {
     }
     is(MDS.Div_DONE){
       when(io.aside.in.rvalid){
-        // do nothing
       }.otherwise{
         mStat := MDS.IDLE
         exeOut.bits.en := true.B
@@ -167,6 +166,7 @@ class UltraExeStage extends Module {
           exeOut.bits.en := false.B
         }
         exeOut.bits.addr := mWrBuf.addr
+        // output your result here
         exeOut.bits.data := quotientBuf
       }
     }

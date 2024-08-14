@@ -15,6 +15,7 @@ ASM_HOME=$(FUNC)/asm
 REPO_1=/home/cauchy2b/repos_git/plat1/2024673
 REPO_2=/home/cauchy2b/repos_git/plat2/2024673
 REPO_3=/home/cauchy2b/repos_git/plat3/2024673
+VCD_REPO=/home/cauchy2b/repos_git/nscscc2024/chisel-proj/test_run_dir
 # Tasks
 # - Add Your Test Target Here
 TEST_OBJECTS = foo.txt
@@ -35,20 +36,15 @@ test: $(TEST_OBJECTS)
 %.txt:%.data
 	@$(TOOLKITS)/Converter.sh < $< > $@
 
+single:$(VCD_REPO)/Single_should_Pass/*
+	sbt "testOnly SingleSpec -- -DwriteVcd=1"
+double:$(VCD_REPO)/Double_should_Pass/*
+	sbt "testOnly DoubleSpec -- -DwriteVcd=1"
 repo1:
-	cp *.sv $(REPO_1)/thinpad_top.srcs/sources_1/new/
-	cp *.S 	$(REPO_1)/asm
-	@echo "entering repo of platform1..."
-	cd $(REPO_1)
+	cp *.s 	$(REPO_1)/asm
 repo2:
-	cp *.sv $(REPO_2)/thinpad_top.srcs/sources_1/new/
-	cp *.S 	$(REPO_2)/asm
-	@echo "entering repo of platform2..."
-	cd $(REPO_2)
+	cp *.s 	$(REPO_2)/asm
 repo3:
-	cp *.sv $(REPO_3)/thinpad_top.srcs/sources_1/new/
-	cp *.S 	$(REPO_3)/asm
-	@echo "entering repo of platform3..."
-	cd $(REPO_3)
+	cp *.s 	$(REPO_3)/asm
 clean:
 	rm -rf $(TEST_HOME)/*

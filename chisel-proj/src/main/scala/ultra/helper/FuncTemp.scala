@@ -25,8 +25,7 @@ object FuncTemp {
     object State extends ChiselEnum{
       val
       IDLE,
-      CALC,
-      DONE
+      CALC
       = Value
     }
     import State._
@@ -41,7 +40,7 @@ object FuncTemp {
 
 
     // Implementation Here
-
+    val cond = WireDefault(true.B)
     // State Machine
     val stat = RegInit(IDLE)
     switch(stat){
@@ -53,11 +52,11 @@ object FuncTemp {
         }
       }
       is(CALC){
-
-      }
-      is(DONE){
-
-        io.out.done := true.B
+        when(cond){
+          // calculation finished
+          io.out.done := true.B
+          io.out.res := 0.U
+        }
       }
     }
   }
@@ -85,8 +84,7 @@ object FuncTemp {
     object State extends ChiselEnum{
       val
       IDLE,
-      CALC,
-      DONE
+      CALC
       = Value
     }
     import State._
@@ -102,7 +100,7 @@ object FuncTemp {
 
 
     // Implementation Here
-
+    val cond = WireDefault(true.B)
     // State Machine
     val stat = RegInit(IDLE)
     switch(stat){
@@ -115,10 +113,11 @@ object FuncTemp {
         }
       }
       is(CALC){
-
-      }
-      is(DONE){
-        io.out.done := true.B
+        when(cond){
+          // Calculation finished
+          io.out.done := true.B
+          io.out.res := 0.U
+        }
       }
     }
   }

@@ -1,8 +1,8 @@
 package ultra.pipeline.exe
 
 /**
- * This Stage is specialized to do the accelerate on hardware
- * You should use this stage when you want to solve the problem in Chisel
+ * This ExeStage passed lab1-3 and perf test on 215M
+ * You should use this Stage when you want to solve the problem by asm
  */
 
 import chisel3._
@@ -13,7 +13,7 @@ import UltraExeParams.{ExeType => tp}
 import UltraExeParams._
 import ultra.pipeline.regfile.RegfileUtils.initWctrl
 import ultra.bus.UltraBusParams._
-class UltraExeStage extends Module {
+class GammaExeStage extends Module {
   val io = IO(new AlphaExeIo)
   def initAllOut() = {
     io.pipe.decode.out.ack := false.B
@@ -58,9 +58,9 @@ class UltraExeStage extends Module {
   //***************************************************
   object RS extends ChiselEnum {
     val
-    IDLE,
-    BLOCK,
-    RUNNING
+      IDLE,
+      BLOCK,
+      RUNNING
     = Value
   }
   val rStat = RegInit(RS.IDLE)
@@ -101,8 +101,8 @@ class UltraExeStage extends Module {
   //***************************************************
   object WS extends ChiselEnum {
     val
-    IDLE,
-    BLOCK
+      IDLE,
+      BLOCK
     = Value
   }
   val wStat = RegInit(WS.IDLE)
@@ -121,16 +121,14 @@ class UltraExeStage extends Module {
   //****************************************************
   //***************************************************
   //***************************************************
-  object MDS extends ChiselEnum {
-    // Multiplication or Division
+  object MS extends ChiselEnum {
     val
       IDLE,
-      Div_WORK,
-      Div_DONE
+      WORK,
+      DONE
     = Value
   }
-
-  val mStat = RegInit(MDS.IDLE)
+  val mStat = RegInit(MS.IDLE)
   val mWrBuf = RegInit(initWctrl)
   val mrAwHazard = WireDefault(
     decodeIn.readInfo.reg_1.addr === mWrBuf.addr ||
@@ -140,38 +138,32 @@ class UltraExeStage extends Module {
     decodeIn.bits.wCtrl.addr === mWrBuf.addr
   )
   val mHasHazard = WireDefault(mrAwHazard || mwAwHazard)
-  // Add your hardware accelerator here
-  val divU = Module(new DivU)
-  divU.io.in.valid := false.B
-  divU.io.in.bits.left := regLeft
-  divU.io.in.bits.right := regRight
-  val quotientBuf = RegInit(0.U(32.W))
-  val remainderBuf = RegInit(0.U(32.W))
+  val mOperandBuf = RegInit(initOperands)
+  val mRes = WireDefault((mOperandBuf.left.asSInt * mOperandBuf.right.asSInt).asUInt)
+  val mCounter = Counter(mulCycles)
   switch(mStat){
-    is(MDS.IDLE){
+    is(MS.IDLE){
+      // Determined by the req process
     }
-    is(MDS.Div_WORK){
-      // Buf your result here
-      when(divU.io.out.valid){
-        mStat := MDS.Div_DONE
-        quotientBuf := divU.io.out.bits.quotient
+    is(MS.WORK){
+      when(mCounter.inc()){
+        mStat := MS.DONE
       }
     }
-    is(MDS.Div_DONE){
+    is(MS.DONE){
       when(io.aside.in.rvalid){
+        mStat := MS.DONE
       }.otherwise{
-        mStat := MDS.IDLE
+        mStat := MS.IDLE
         exeOut.bits.en := true.B
         when(mWrBuf.addr === 0.U){
           exeOut.bits.en := false.B
         }
         exeOut.bits.addr := mWrBuf.addr
-        // output your result here
-        exeOut.bits.data := quotientBuf
+        exeOut.bits.data := mRes
       }
     }
   }
-
   //****************************************************
   //***************************************************
   //***************************************************
@@ -188,15 +180,13 @@ class UltraExeStage extends Module {
   // Request Process
   when(decodeIn.req){
     when(io.aside.in.rvalid){
-      // Load is Writing
-    }.elsewhen(
-      mStat === MDS.Div_DONE
-    ){
-      // Mul or Div is Writing
-    }.otherwise{
+      // Do nothing
+    }.elsewhen(mStat === MS.DONE){
+      // Do nothing.
+    }otherwise{
       when(rStat =/= RS.IDLE && rHasHazard){
         // Do nothing
-      }.elsewhen(mStat =/= MDS.IDLE && mHasHazard){
+      }.elsewhen(mStat =/= MS.IDLE && mHasHazard){
         // Do nothing
       }.otherwise{
         switch(decodeIn.bits.exeOp.opType){
@@ -204,12 +194,16 @@ class UltraExeStage extends Module {
             ack := true.B
           }
           is(tp.arith){
-            when(decodeIn.bits.exeOp.opFunc === Arithmetic.div){
-              when(mStat === MDS.IDLE){
+            when(decodeIn.bits.exeOp.opFunc === Arithmetic.mul){
+              when(mStat === MS.IDLE){
                 ack := true.B
-                divU.io.in.valid := true.B
-                mStat := MDS.Div_WORK
+                mCounter.reset()
+                mOperandBuf.left := regLeft
+                mOperandBuf.right := regRight
                 mWrBuf := decodeIn.bits.wCtrl
+                mStat := MS.WORK
+              }.otherwise{
+                // wait until mStat turn to IDLE
               }
             }.otherwise{
               ack := true.B
@@ -296,6 +290,15 @@ class UltraExeStage extends Module {
               }
               is(Branch.bge){
                 when(regLeft.asSInt >= regRight.asSInt){
+                  io.pipe.br.isMispredict := !decodeIn.fetchInfo.predictTaken
+                  io.pipe.br.npc := branchTarget
+                }.otherwise{
+                  io.pipe.br.isMispredict := decodeIn.fetchInfo.predictTaken
+                  io.pipe.br.npc := defaultTarget
+                }
+              }
+              is(Branch.blt){
+                when(regLeft.asSInt < regRight.asSInt){
                   io.pipe.br.isMispredict := !decodeIn.fetchInfo.predictTaken
                   io.pipe.br.npc := branchTarget
                 }.otherwise{

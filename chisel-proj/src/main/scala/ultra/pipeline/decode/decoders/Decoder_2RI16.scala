@@ -38,6 +38,13 @@ class Decoder_2RI16 extends BaseDecoder {
       io.out.bits.exeOp.opFunc := Branch.bge
       immSext := imm16.asSInt << 2
     }
+    is (Inst.blt) {
+      io.out.isMatched := true.B
+      io.out.bits.exeOp.opType := ExeType.branch
+      io.out.bits.exeOp.opFunc := Branch.blt
+      immSext := imm16.asSInt << 2
+
+    }
     is (Inst.bne) {
       io.out.isMatched := true.B
       io.out.bits.exeOp.opType := ExeType.branch

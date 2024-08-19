@@ -11,12 +11,14 @@ TOOLKITS=./toolkit
 FUNC=./func
 TEST_HOME=$(FUNC)/bintests/
 ASM_HOME=$(FUNC)/asm
-VIVADO=../vivado-proj
-VERILOG_SRC=$(VIVADO)/thinpad_top.srcs/sources_1/new
 
+REPO_1=/home/cauchy2b/repos_git/plat1/2024673
+REPO_2=/home/cauchy2b/repos_git/plat2/2024673
+REPO_3=/home/cauchy2b/repos_git/plat3/2024673
+VCD_REPO=/home/cauchy2b/repos_git/nscscc2024/chisel-proj/test_run_dir
 # Tasks
 # - Add Your Test Target Here
-TEST_OBJECTS = fib.txt matrix.txt stream.txt
+TEST_OBJECTS = foo.txt
 test: $(TEST_OBJECTS)
 	cp *.txt $(TEST_HOME)
 	rm -f *.o *.om *.bin *.data *.txt
@@ -34,13 +36,15 @@ test: $(TEST_OBJECTS)
 %.txt:%.data
 	@$(TOOLKITS)/Converter.sh < $< > $@
 
-
-verilog:
-	@echo "Generating Verilog File..."
-	@sbt run > /dev/null
-	@echo "Moving Verilog Src to Vivado project..."
-	@mv *.sv $(VERILOG_SRC)
-	@echo "Changing to the Src Directory"
-	@cd $(VERILOG_SRC)
+single:$(VCD_REPO)/Single_should_Pass/*
+	sbt "testOnly SingleSpec -- -DwriteVcd=1"
+double:$(VCD_REPO)/Double_should_Pass/*
+	sbt "testOnly DoubleSpec -- -DwriteVcd=1"
+repo1:
+	cp *.s 	$(REPO_1)/asm
+repo2:
+	cp *.s 	$(REPO_2)/asm
+repo3:
+	cp *.s 	$(REPO_3)/asm
 clean:
 	rm -rf $(TEST_HOME)/*

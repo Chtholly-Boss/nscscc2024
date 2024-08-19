@@ -4,6 +4,7 @@
     .text
     .global _start
 _start:
+    nop
     beq         zero,zero,fib
 
 info:

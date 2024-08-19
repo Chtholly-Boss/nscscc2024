@@ -17,10 +17,13 @@ object UltraDecodeParams {
     val and_w   = "b0000_0000_0001_0100_1".U
     val or_w    = "b0000_0000_0001_0101_0".U
     val xor_w   = "b0000_0000_0001_0101_1".U
+    val sll_w   = "b0000_0000_0001_0111_0".U
     val srl_w   = "b0000_0000_0001_0111_1".U
     val slli_w  = "b0000_0000_0100_0000_1".U
     val srli_w  = "b0000_0000_0100_0100_1".U
     val mul_w   = "b0000_0000_0001_1100_0".U
+    val div_w   = "b0000_0000_0010_0000_0".U
+    val mod_w   = "b0000_0000_0010_0000_1".U
   }
   object _2RI12 {
     val addi_w = "b0000_0010_10".U
@@ -35,6 +38,7 @@ object UltraDecodeParams {
   object _2RI16 {
     val bne  = "b010_111".U
     val beq  = "b010_110".U
+    val blt  = "b011_000".U
     val bge  = "b011_001".U
     val b_   = "b010_100".U
     val bl   = "b010_101".U

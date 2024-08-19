@@ -6,7 +6,7 @@ object IcacheParams {
   val bandwidth = iBandWidth
   val iRomAddrWidth = 22
   val offsetWidth = iOffsetWidth
-  val indexWidth = 4
+  val indexWidth = 3
   val tagWidth = iRomAddrWidth - offsetWidth - indexWidth
   val validBit = tagWidth
   val depth = 1 << indexWidth

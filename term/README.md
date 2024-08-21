@@ -1,6 +1,6 @@
 ## Setup
 Before using the terminal, you should set the environment variable:
-`export GCCPREFIX=/.../the/path/to/loongarch-gnu/
+`export GCCPREFIX=/.../the/path/to/loongarch-gnu/prefix-`
 ## Usage
 ```bash
 python3 term.py -t IP:PORT
